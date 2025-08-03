@@ -3,11 +3,9 @@ using Microsoft.OpenApi.Models;
 using StockManager.DataContext.Context;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using StockManager.Services;
-using System;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
-using AutoMapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +17,7 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlite("Filena
 
 //builder.Services.AddScoped<IUserService, UserService>();
 
-//builder.Services.AddAutoMapper(typeof(AutoMapperProfile));  
+builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear(); // => remove default claims
 builder.Services
