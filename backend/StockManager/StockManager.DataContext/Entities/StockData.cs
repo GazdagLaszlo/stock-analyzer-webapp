@@ -1,4 +1,4 @@
-﻿namespace StockManager.Entities
+﻿namespace StockManager.DataContext.Entities
 {
     public class StockData
     {

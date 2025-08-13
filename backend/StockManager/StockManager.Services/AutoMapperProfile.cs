@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using StockManager.DataContext.Entities;
+using StockManager.DataContext.DTOs;
 
 namespace StockManager.Services
 {
@@ -6,7 +8,10 @@ namespace StockManager.Services
     {
         public AutoMapperProfile() 
         {
-            
+            CreateMap<UserCreateDto, User>();
+            CreateMap<User, UserDto>();
+            CreateMap<UserUpdateDto, User>();
         }
     }
 }
+    

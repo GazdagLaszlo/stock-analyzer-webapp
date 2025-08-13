@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using StockManager.Entities;
+using StockManager.DataContext.Entities;
 using System;
 using System.Collections.Generic;
 using System.Data;
