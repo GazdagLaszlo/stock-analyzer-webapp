@@ -10,10 +10,15 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+builder.Services.AddHttpClient();
 
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlite("Filename=stockmanagerDB.db"));
 
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IStockService, StockService>();
+builder.Services.AddHostedService<StockUpdaterBackgroundService>();
+builder.Services.AddScoped<StockUpdaterService>();
+builder.Services.AddHttpClient<StockUpdaterService>();
 
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 
