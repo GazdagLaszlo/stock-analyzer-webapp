@@ -1,0 +1,20 @@
+﻿using StockManager.DataContext.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace StockManager.DataContext.DTOs
+{
+    public class PortfolioItemDto
+    {
+        public int Id { get; set; }
+        public StockDto Stock { get; set; }
+        public double Quantity { get; set; }
+        public double PurchasePrice { get; set; }
+        public double TargetPrice { get; set; }
+        public string Note { get; set; }
+        public double ProfitLoss { get; set; }
+    }
+}

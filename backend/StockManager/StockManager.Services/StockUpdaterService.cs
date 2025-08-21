@@ -36,8 +36,6 @@ namespace StockManager.Services
             _httpClient.DefaultRequestHeaders.Add("X-Api-Key", ninjaApiKey);
             var ninjaResponse = await _httpClient.GetStringAsync("https://api.api-ninjas.com/v1/sp500");
             
-
-
             string finnhubApiKey = "d2e57s1r01qjrul642d0d2e57s1r01qjrul642dg";
 
             /*
