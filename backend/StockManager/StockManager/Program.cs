@@ -16,6 +16,8 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlite("Filena
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IStockService, StockService>();
+builder.Services.AddScoped<IPortfolioService, PortfolioService>();
+builder.Services.AddScoped<IPortfolioItemService, PortfolioItemService>();
 builder.Services.AddHostedService<StockUpdaterBackgroundService>();
 builder.Services.AddScoped<StockUpdaterService>();
 builder.Services.AddHttpClient<StockUpdaterService>();
@@ -92,6 +94,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

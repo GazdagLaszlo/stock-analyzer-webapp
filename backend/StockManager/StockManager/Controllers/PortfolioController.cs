@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using StockManager.DataContext.DTOs;
 using StockManager.Services;
 using System.Security.Claims;
@@ -7,7 +8,7 @@ namespace StockManager.Controllers
 {
     [ApiController]
     [Route("api/[controller]/[action]")]
-    //[Authorize]
+    [Authorize]
     public class PortfolioController(IPortfolioService portfolioService) : ControllerBase
     {
         private int UserId => int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);

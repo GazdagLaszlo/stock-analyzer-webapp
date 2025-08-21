@@ -19,7 +19,7 @@ namespace StockManager.Services
         Task<PortfolioDto> UpdateAsync(int id, PortfolioUpdateDto updateDto);
         Task DeleteAsync(int id);
     }
-    class PortfolioService(AppDbContext context, IMapper mapper) : IPortfolioService
+    public class PortfolioService(AppDbContext context, IMapper mapper) : IPortfolioService
     {
         public async Task CreateAsync(PortfolioCreateDto portfolioCreateDto, int userId)
         {
@@ -61,7 +61,7 @@ namespace StockManager.Services
                 throw new KeyNotFoundException($"Portfolio with id - {id} not found!");
             }
 
-            mapper.Map<Portfolio>(updateDto);
+            mapper.Map(updateDto, portfolio);
 
             await context.SaveChangesAsync();
 

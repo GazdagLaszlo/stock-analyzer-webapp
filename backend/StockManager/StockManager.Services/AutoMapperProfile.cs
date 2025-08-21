@@ -20,6 +20,10 @@ namespace StockManager.Services
             CreateMap<Portfolio, PortfolioDto>();
             CreateMap<PortfolioCreateDto, Portfolio>();
             CreateMap<PortfolioUpdateDto, Portfolio>();
+
+            CreateMap<PortfolioItem, PortfolioItemDto>();
+            CreateMap<PortfolioItemCreateDto, PortfolioItem>();
+            CreateMap<PortfolioItemUpdateDto, PortfolioItem>();
         }
     }
 }

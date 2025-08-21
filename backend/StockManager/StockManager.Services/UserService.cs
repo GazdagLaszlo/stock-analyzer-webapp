@@ -16,7 +16,7 @@ public interface IUserService
 {
     Task<UserDto> RegisterAsync(UserCreateDto userDto);
     Task<string> LoginAsync(UserLoginDto userDto);
-    Task<UserUpdateDto> UpdateUserAsync(int userId, UserUpdateDto userDto);
+    Task<UserDto> UpdateUserAsync(int userId, UserUpdateDto userDto);
     Task<IList<UserDto>> GetAllUsersAsync();
     Task DeleteUserAsync(int userId);
     Task<UserDto> Me(int userId);
@@ -89,7 +89,7 @@ public class UserService(AppDbContext context, IMapper mapper) : IUserService
         return mapper.Map<IList<UserDto>>(users);
     }
 
-    public async Task<UserUpdateDto> UpdateUserAsync(int userId, UserUpdateDto userUpdateDto)
+    public async Task<UserDto> UpdateUserAsync(int userId, UserUpdateDto userUpdateDto)
     {
         var user = await context.Users
             .FirstOrDefaultAsync(x => x.Id == userId);
@@ -98,12 +98,11 @@ public class UserService(AppDbContext context, IMapper mapper) : IUserService
             throw new KeyNotFoundException($"User not found with id: {userId}");
         }
 
-        mapper.Map<User>(userUpdateDto);
+        mapper.Map(userUpdateDto, user);
 
-        context.Users.Update(user);
         await context.SaveChangesAsync();
 
-        return userUpdateDto;
+        return mapper.Map<UserDto>(user);
     }
 
     public async Task DeleteUserAsync(int userId)
@@ -114,6 +113,16 @@ public class UserService(AppDbContext context, IMapper mapper) : IUserService
         {
             throw new KeyNotFoundException($"User not found with id: {userId}");
         }
+
+        var watchlist = await context.WatchLists
+            .FirstOrDefaultAsync(x => x.UserId == userId);
+
+        if (watchlist == null)
+        {
+            throw new KeyNotFoundException($"Watchlist not found with id: {watchlist.Id}");
+        }
+
+        context.WatchLists.Remove(watchlist);
         context.Users.Remove(user);
         await context.SaveChangesAsync();
     }

@@ -3,8 +3,10 @@
     public class PortfolioItem
     {
         public int Id { get; set; }
+        public Portfolio Portfolio { get; set; }
         public int PortfolioId { get; set; }
         public Stock Stock { get; set; }
+        public int StockId { get; set; }
         public double Quantity { get; set; }
         public double PurchasePrice { get; set; } //átlagos vételi ár
         public double TargetPrice { get; set; }

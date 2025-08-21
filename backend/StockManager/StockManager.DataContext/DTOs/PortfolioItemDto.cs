@@ -17,4 +17,23 @@ namespace StockManager.DataContext.DTOs
         public string Note { get; set; }
         public double ProfitLoss { get; set; }
     }
+
+    public class PortfolioItemCreateDto
+    {
+        public int PortfolioId { get; set; }
+        public int StockId { get; set; }
+        public double Quantity { get; set; }
+        public double PurchasePrice { get; set; }
+        public double TargetPrice { get; set; }
+        public string Note { get; set; }
+    }
+
+    public class PortfolioItemUpdateDto
+    {
+        public int StockId { get; set; }
+        public double Quantity { get; set; }
+        public double PurchasePrice { get; set; }
+        public double TargetPrice { get; set; }
+        public string Note { get; set; }
+    }
 }
