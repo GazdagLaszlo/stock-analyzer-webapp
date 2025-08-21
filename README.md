@@ -10,10 +10,9 @@ A szoftver célja egy olyan web alapú alkalmazás fejlesztése, amely lehetős�
 - Backend: **C# .NET 9 - Entity Framework Core Web API**
 - Adatbázis: **SQLite**
 - Fejlesztői eszközök: Visual Studio Code, Visual Studio 2022
-- Egyéb: **Fetch API**
-		   Finnhub.io - https://finnhub.io - Finnhub Stock API
-		   Api Ninjas - https://api-ninjas.com - Api Ninjas Stock API
-
+- Egyéb: **Fetch API**  
+	Finnhub.io - https://finnhub.io - Finnhub Stock API  
+	Api Ninjas - https://api-ninjas.com - Api Ninjas Stock API
 
 --
 
