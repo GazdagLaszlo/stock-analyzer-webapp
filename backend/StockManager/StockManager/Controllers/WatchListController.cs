@@ -1,12 +1,21 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using StockManager.DataContext.DTOs;
+using StockManager.Services;
 
 namespace StockManager.Controllers
 {
-    public class WatchListController : Controller
+    [ApiController]
+    [Route("api/[controller]/[action]")]
+    //[Authorize]
+    public class WatchListController(IWatchListService watchListService) : ControllerBase
     {
-        public IActionResult Index()
+        [HttpGet("{id:int}")]
+        //[Authorize(Roles = "")]
+        [ProducesResponseType<WatchListDto>(StatusCodes.Status200OK)]
+        public async Task<ActionResult<WatchListDto>> GetByIdAsync(int id)
         {
-            return View();
+            var result = await watchListService.GetByIdAsync(id);
+            return Ok(result);
         }
     }
 }

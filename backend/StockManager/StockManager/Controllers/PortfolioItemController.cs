@@ -28,7 +28,7 @@ namespace StockManager.Controllers
 
         [HttpGet("{id:int}")]
         //[Authorize(Roles = "")]
-        [ProducesResponseType<IList<PortfolioItemDto>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<PortfolioItemDto>(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
             var result = await portfolioItemService.GetByIdAsync(id);

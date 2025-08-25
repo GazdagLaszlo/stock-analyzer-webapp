@@ -30,7 +30,7 @@ namespace StockManager.Controllers
 
         [HttpGet("{id:int}")]
         //[Authorize(Roles = "")]
-        [ProducesResponseType<IList<TransactionDto>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<TransactionDto>(StatusCodes.Status200OK)]
         public async Task<ActionResult<TransactionDto>> GetByIdAsync(int id)
         {
             var result = await transactionService.GetByIdAsync(id);

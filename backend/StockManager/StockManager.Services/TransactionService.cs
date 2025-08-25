@@ -75,7 +75,7 @@ namespace StockManager.Services
             mapper.Map(updateDto, transaction);
             await context.SaveChangesAsync();
 
-            return mapper.Map<TransactionDto>(updateDto);
+            return mapper.Map<TransactionDto>(transaction);
         }
         public async Task DeleteAsync(int id)
         {

@@ -31,7 +31,12 @@ namespace StockManager.Services
                     .ForMember(dest => dest.Fee, opt => opt.MapFrom(src => src.Fee ?? 0))
                     .ForMember(dest => dest.Note, opt => opt.MapFrom(src => src.Note ?? string.Empty));
             CreateMap<TransactionUpdateDto, Transaction>();
-            CreateMap<TransactionUpdateDto, TransactionDto>();
+
+            CreateMap<WatchList, WatchListDto>();
+
+            CreateMap<WatchListItem, WatchListItemDto>();
+            CreateMap<WatchListItemCreateDto, WatchListItem>();
+            CreateMap<WatchListItemUpdateDto, WatchListItem>();
         }
     }
 }
