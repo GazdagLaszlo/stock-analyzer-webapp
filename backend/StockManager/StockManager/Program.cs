@@ -18,6 +18,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IStockService, StockService>();
 builder.Services.AddScoped<IPortfolioService, PortfolioService>();
 builder.Services.AddScoped<IPortfolioItemService, PortfolioItemService>();
+builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddHostedService<StockUpdaterBackgroundService>();
 builder.Services.AddScoped<StockUpdaterService>();
 builder.Services.AddHttpClient<StockUpdaterService>();
@@ -65,7 +66,7 @@ builder.Services.AddSwaggerGen(c =>
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,
-        Description = "Please insert JWT token",
+        Description = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjMiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiR2F6ZGFnIEzDoXN6bMOzIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvZW1haWxhZGRyZXNzIjoidGVzdEB0ZXN0LmNvbSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkludmVzdG9yIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvc2lkIjoiZGMyZWYyYzYtMzllNC00YjhmLWIzOTQtNTllNTVmOTg3MzhkIiwiYXV0aF90aW1lIjoiMDgvMjUvMjAyNSAxNzoyMjoyMiIsImV4cCI6MTc1NjU2NzM0MiwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NTE2MCIsImF1ZCI6Imh0dHBzOi8vbG9jYWxob3N0OjUxNjAifQ.gScb8wvtCss7bqX2CbBHItiv2VU6i6FbzgKkjADnZJA",
         Name = "Authorization",
         Type = SecuritySchemeType.ApiKey,
         BearerFormat = "JWT",
@@ -95,11 +96,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseCors();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
-app.UseCors();
 
 app.Run();

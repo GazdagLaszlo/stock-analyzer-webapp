@@ -13,7 +13,7 @@
         public double Price { get; set; }
         public DateTime Date { get; set; }
         public TransactionType TransactionType { get; set; }
-        public double Fee { get; set; }
-        public string Note { get; set; }
+        public double? Fee { get; set; }
+        public string? Note { get; set; }
     }
 }

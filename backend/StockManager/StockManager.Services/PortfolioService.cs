@@ -14,7 +14,7 @@ namespace StockManager.Services
     public interface IPortfolioService
     {
         Task CreateAsync(PortfolioCreateDto portfolioCreateDto, int userId);
-        Task<IList<PortfolioDto>> GetAllAsync();
+        Task<IList<PortfolioDto>> GetAllAsync(int userId);
         Task<PortfolioDto> GetByIdAsync(int id);
         Task<PortfolioDto> UpdateAsync(int id, PortfolioUpdateDto updateDto);
         Task DeleteAsync(int id);
@@ -29,10 +29,11 @@ namespace StockManager.Services
             await context.AddAsync(portfolio);
             await context.SaveChangesAsync();
         }        
-        public async Task<IList<PortfolioDto>> GetAllAsync()
+        public async Task<IList<PortfolioDto>> GetAllAsync(int userId)
         {
             var portfolios = await context.Portfolios
                 .Include(x => x.PortfolioItems)
+                .Where(x => x.UserId == userId)
                 .ToListAsync();
 
             return mapper.Map<IList<PortfolioDto>>(portfolios);
@@ -65,7 +66,7 @@ namespace StockManager.Services
 
             await context.SaveChangesAsync();
 
-            return mapper.Map<PortfolioDto>(portfolio);
+            return mapper.Map<PortfolioDto>(updateDto);
         }        
         public async Task DeleteAsync(int id)
         {

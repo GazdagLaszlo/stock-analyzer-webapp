@@ -24,6 +24,14 @@ namespace StockManager.Services
             CreateMap<PortfolioItem, PortfolioItemDto>();
             CreateMap<PortfolioItemCreateDto, PortfolioItem>();
             CreateMap<PortfolioItemUpdateDto, PortfolioItem>();
+            CreateMap<PortfolioItemUpdateDto, PortfolioDto>();
+
+            CreateMap<Transaction, TransactionDto>();
+            CreateMap<TransactionCreateDto, Transaction>()
+                    .ForMember(dest => dest.Fee, opt => opt.MapFrom(src => src.Fee ?? 0))
+                    .ForMember(dest => dest.Note, opt => opt.MapFrom(src => src.Note ?? string.Empty));
+            CreateMap<TransactionUpdateDto, Transaction>();
+            CreateMap<TransactionUpdateDto, TransactionDto>();
         }
     }
 }

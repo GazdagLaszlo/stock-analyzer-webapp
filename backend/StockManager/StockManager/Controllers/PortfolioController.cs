@@ -11,12 +11,12 @@ namespace StockManager.Controllers
     [Authorize]
     public class PortfolioController(IPortfolioService portfolioService) : ControllerBase
     {
-        private int UserId => int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        private int _userId => int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromBody] PortfolioCreateDto createDto)
         {
-            await portfolioService.CreateAsync(createDto, UserId);
+            await portfolioService.CreateAsync(createDto, _userId);
             return Ok();
         }
 
@@ -25,7 +25,7 @@ namespace StockManager.Controllers
         [ProducesResponseType<IList<PortfolioDto>>(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllAsync()
         {
-            var result = await portfolioService.GetAllAsync();
+            var result = await portfolioService.GetAllAsync(_userId);
             return Ok(result);
         }
 
