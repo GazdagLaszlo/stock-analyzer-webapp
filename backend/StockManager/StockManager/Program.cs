@@ -21,6 +21,7 @@ builder.Services.AddScoped<IPortfolioItemService, PortfolioItemService>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<IWatchListService, WatchListService>();
 builder.Services.AddScoped<IWatchListItemService, WatchListItemService>();
+builder.Services.AddScoped<IStockDataService, StockDataService>();
 builder.Services.AddHostedService<StockUpdaterBackgroundService>();
 builder.Services.AddScoped<StockUpdaterService>();
 builder.Services.AddHttpClient<StockUpdaterService>();

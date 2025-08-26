@@ -36,5 +36,6 @@ namespace StockManager.DataContext.DTOs
         public string? Sector { get; set; }
         public double? Price { get; set; }
         public double MarketCap { get; set; }
+        public int StockDataId { get; set; }
     }
 }

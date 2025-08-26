@@ -14,8 +14,8 @@ namespace StockManager.Controllers
         //[Authorize(Roles = "")]
         public async Task<IActionResult> CreateAsync([FromBody] StockCreateDto stockCreateDto)
         {
-            await stockService.CreateAsync(stockCreateDto);
-            return Ok();
+            var result = await stockService.CreateAsync(stockCreateDto);
+            return Ok(result);
         }
 
         [HttpGet]

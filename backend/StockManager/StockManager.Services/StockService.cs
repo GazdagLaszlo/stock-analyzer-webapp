@@ -8,7 +8,7 @@ namespace StockManager.Services
 {
     public interface IStockService
     {
-        Task CreateAsync(StockCreateDto stockCreateDto);
+        Task<StockDto> CreateAsync(StockCreateDto stockCreateDto);
         Task<IList<StockDto>> GetAllAsync();
         Task<StockDto> GetByIdAsync(int id);
         Task<StockDto> UpdateAsync(int id, StockUpdateDto updateDto);
@@ -23,12 +23,14 @@ namespace StockManager.Services
             _context = context;
             _mapper = mapper;
         }
-        public async Task CreateAsync(StockCreateDto stockCreateDto)
+        public async Task<StockDto> CreateAsync(StockCreateDto stockCreateDto)
         {
             var stock = _mapper.Map<Stock>(stockCreateDto);
 
             await _context.Stocks.AddAsync(stock);
             await _context.SaveChangesAsync();
+
+            return _mapper.Map<StockDto>(stock);
         }
 
         public async Task<IList<StockDto>> GetAllAsync()

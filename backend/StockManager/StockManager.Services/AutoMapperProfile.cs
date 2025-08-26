@@ -13,7 +13,8 @@ namespace StockManager.Services
             CreateMap<UserUpdateDto, User>();
 
             CreateMap<StockCreateDto, Stock>();
-            CreateMap<Stock, StockDto>();
+            CreateMap<Stock, StockDto>()
+                .ForMember(dest => dest.StockDataId, opt => opt.MapFrom(src => src.StockData.Id));
             CreateMap<StockUpdateDto, Stock>()
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
@@ -28,8 +29,8 @@ namespace StockManager.Services
 
             CreateMap<Transaction, TransactionDto>();
             CreateMap<TransactionCreateDto, Transaction>()
-                    .ForMember(dest => dest.Fee, opt => opt.MapFrom(src => src.Fee ?? 0))
-                    .ForMember(dest => dest.Note, opt => opt.MapFrom(src => src.Note ?? string.Empty));
+                .ForMember(dest => dest.Fee, opt => opt.MapFrom(src => src.Fee ?? 0))
+                .ForMember(dest => dest.Note, opt => opt.MapFrom(src => src.Note ?? string.Empty));
             CreateMap<TransactionUpdateDto, Transaction>();
 
             CreateMap<WatchList, WatchListDto>();
@@ -37,6 +38,10 @@ namespace StockManager.Services
             CreateMap<WatchListItem, WatchListItemDto>();
             CreateMap<WatchListItemCreateDto, WatchListItem>();
             CreateMap<WatchListItemUpdateDto, WatchListItem>();
+
+            CreateMap<StockData, StockDataDto>();
+            CreateMap<StockDataCreateDto, StockData>();
+            CreateMap<StockDataUpdateDto, StockData>();
         }
     }
 }
