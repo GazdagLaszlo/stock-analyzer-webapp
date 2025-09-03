@@ -4,10 +4,11 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "generate": "openapi-generator-cli generate -i swagger.json -g typescript-fetch -o ./generated-sources/openapi --skip-validate-spec --additional-properties=supportsES6=true",
+    "dev": "npm run generate && vite",
+    "build": "npm run generate && vite build"
   },
   "dependencies": {
     "react": "^19.1.1",
