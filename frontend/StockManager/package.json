@@ -6,11 +6,13 @@
   "scripts": {
     "lint": "eslint .",
     "preview": "vite preview",
-    "generate": "openapi-generator-cli generate -i swagger.json -g typescript-fetch -o ./generated-sources/openapi --skip-validate-spec --additional-properties=supportsES6=true",
+    "generate": "openapi-generator-cli generate -i swagger.json -g typescript-axios -o ./generated-sources/openapi --skip-validate-spec --additional-properties=supportsES6=true",
     "dev": "npm run generate && vite",
     "build": "npm run generate && vite build"
   },
   "dependencies": {
+    "axios": "^1.11.0",
+    "bulma": "^1.0.4",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.8.2"
