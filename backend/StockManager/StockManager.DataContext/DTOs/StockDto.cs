@@ -13,11 +13,12 @@ namespace StockManager.DataContext.DTOs
         [JsonPropertyName("ticker")]
         public string Symbol { get; set; }
         [JsonPropertyName("marketCapitalization")]
-        public double MarketCap { get; set; }
+        public double? MarketCap { get; set; }
         [JsonPropertyName("company_name")]
         public string CompanyName { get; set; }
         [JsonPropertyName("sector")]
         public string Sector {  get; set; }
+        public double Price { get; set; }
     }
 
     public class StockUpdateDto {
@@ -26,6 +27,7 @@ namespace StockManager.DataContext.DTOs
         public double? MarketCapitalization { get; set; }
         public string? CompanyName { get; set; }
         public string? Sector { get; set; }
+        public double? Price { get; set; }
     }
 
     public class StockDto

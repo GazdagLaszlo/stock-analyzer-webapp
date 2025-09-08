@@ -1,26 +1,23 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using StockManager.DataContext.DTOs;
+using StockManager.DataContext.Entities;
+using StockManager.Services;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using StockManager.DataContext.DTOs;
-using StockManager.Services;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace StockManager.Services
-{
-    public class Metric
-    {
-        public double marketCapitalization { get; set; }   
-    }
-    public class MetricResponse
-    {
-        public Metric metric { get; set; }
-    }
+{    
     public class StockUpdaterService
     {
+        const string ninjaApiKey = "";
+        const string finnhubApiKey = "";
+
         private readonly HttpClient _httpClient;
         private readonly IStockService _stockService;
 
@@ -30,68 +27,108 @@ namespace StockManager.Services
             _stockService = stockService;
         }
 
-        public async Task GetSP500Stocks()
+        public async Task GetStocks()
         {
-            string ninjaApiKey = "3ILBgQDAH8BATGJp0aPiYA==0y3W4FYJYdhruc2g";
-            _httpClient.DefaultRequestHeaders.Add("X-Api-Key", ninjaApiKey);
-            var ninjaResponse = await _httpClient.GetStringAsync("https://api.api-ninjas.com/v1/sp500");
-            
-            string finnhubApiKey = "d2e57s1r01qjrul642d0d2e57s1r01qjrul642dg";
-
-            /*
-            var url = $"https://finnhub.io/api/v1/stock/symbol?exchange=US&token={apiKey}";
-            var response = await _httpClient.GetAsync(url);
-            response.EnsureSuccessStatusCode();
-            var responseString = await response.Content.ReadAsStringAsync();
-            var companys = JsonSerializer.Deserialize<List<StockCreateDto>>(responseString);
-            */
-            var companys = JsonSerializer.Deserialize<List<StockCreateDto>>(ninjaResponse);
-
+            var companies = await GetSP500Companies();
             var allStocks = await _stockService.GetAllAsync();
 
-            foreach (var company in companys)
+            foreach (var company in companies)
             {
-                var getStock = $"https://finnhub.io/api/v1/stock/metric?symbol={company.Symbol}&metric=all&token={finnhubApiKey}";
-                var response = await _httpClient.GetAsync(getStock);
-                if (!response.IsSuccessStatusCode)
+                var marketCap = await GetMarketCapAsync(company.Symbol);
+                var price = await GetStockPriceAsync(company.Symbol);
+                if (marketCap == null)
                 {
-                    Console.WriteLine($"Nem sikerült lekérni {company.Symbol}, status: {response.StatusCode}");
                     continue;
                 }
-                var responseString = await response.Content.ReadAsStringAsync();
 
-                var stock = JsonSerializer.Deserialize<MetricResponse>(responseString);
+                await SaveStock(company, marketCap, price, allStocks);
 
-                if (!allStocks.Any(x => x.Symbol == company.Symbol))
-                {
-
-                    var dto = new StockCreateDto
-                    {
-                        Symbol = company.Symbol,
-                        MarketCap = stock.metric.marketCapitalization,
-                        CompanyName = company.CompanyName,
-                        Sector = company.Sector,
-                    };
-                    await _stockService.CreateAsync(dto);
-                }
-                else
-                {
-                    var stockToUpdate = allStocks.FirstOrDefault(x => x.Symbol.Equals(company.Symbol));
-
-                    var updateDto = new StockUpdateDto
-                    {
-                        Symbol = company.Symbol,
-                        MarketCapitalization = stock.metric.marketCapitalization,
-                        CompanyName = company.CompanyName,
-                        Sector = company.Sector,
-                    };
-
-                    await _stockService.UpdateAsync(stockToUpdate.Id, updateDto);
-                }
-
-                //60 request/min is the max capacity on Finnhub.io
                 await Task.Delay(1200);
             }
+        }
+        public async Task<List<StockCreateDto>> GetSP500Companies()
+        {
+            _httpClient.DefaultRequestHeaders.Add("X-Api-Key", ninjaApiKey);
+            var ninjaResponse = await _httpClient.GetStringAsync("https://api.api-ninjas.com/v1/sp500");
+            return JsonSerializer.Deserialize<List<StockCreateDto>>(ninjaResponse);
+        }
+        private async Task<double?> GetMarketCapAsync(string symbol)
+        {
+            var getStock = $"https://finnhub.io/api/v1/stock/metric?symbol={symbol}&metric=all&token={finnhubApiKey}";
+            var response = await _httpClient.GetAsync(getStock);
+            if (!response.IsSuccessStatusCode)
+            {
+                Console.WriteLine($"Nem sikerült lekérni {symbol}, status: {response.StatusCode}");
+                return null;
+            }
+            var responseString = await response.Content.ReadAsStringAsync();
+
+            using var doc = JsonDocument.Parse(responseString);
+            var metric = doc.RootElement.GetProperty("metric");
+            var marketCap = metric.GetProperty("marketCapitalization").GetDouble();
+
+            return marketCap;
+        }
+        private async Task SaveStock(StockCreateDto company, double? marketCap, double price, IList<StockDto> allStocks)
+        {
+            var stockExists = allStocks.FirstOrDefault(x => x.Symbol == company.Symbol);
+            
+            if(stockExists == null)
+            {
+                var dto = new StockCreateDto
+                {
+                    Symbol = company.Symbol,
+                    MarketCap = marketCap,
+                    CompanyName = company.CompanyName,
+                    Sector = company.Sector,
+                    Price = price,
+                };
+                await _stockService.CreateAsync(dto);
+            }
+            else
+            {
+                var updateDto = new StockUpdateDto
+                {
+                    Symbol = company.Symbol,
+                    MarketCapitalization = marketCap,
+                    CompanyName = company.CompanyName,
+                    Sector = company.Sector,
+                    Price = price,
+                };
+
+                await _stockService.UpdateAsync(stockExists.Id, updateDto);
+            }
+        }
+        public async Task<bool> CheckMarketStatus()
+        {
+            var getStatus = $"https://finnhub.io/api/v1/stock/market-status?exchange=US&token={finnhubApiKey}";
+            var response = await _httpClient.GetAsync(getStatus);
+            if (!response.IsSuccessStatusCode)
+            {
+                Console.WriteLine($"Nem sikerült lekérni a piac státuszát: {response.StatusCode}");
+            }
+            var responseString = await response.Content.ReadAsStringAsync();
+
+            using var doc = JsonDocument.Parse(responseString);
+            var isOpen = doc.RootElement.GetProperty("isOpen").GetBoolean();
+
+            return isOpen;
+        }
+
+        public async Task<double> GetStockPriceAsync(string symbol)
+        {
+            var getPrice = $"https://finnhub.io/api/v1/quote?symbol={symbol}&token={finnhubApiKey}";
+            var response = await _httpClient.GetAsync(getPrice);
+            if (!response.IsSuccessStatusCode)
+            {
+                Console.WriteLine($"Nem sikerült lekérni az árfolyamot: {response.StatusCode}");
+            }
+            var responseString = await response.Content.ReadAsStringAsync();
+
+            using var doc = JsonDocument.Parse(responseString);
+            var price = doc.RootElement.GetProperty("c").GetDouble();
+
+            return price;
         }
     }
 }

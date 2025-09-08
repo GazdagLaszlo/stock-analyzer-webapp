@@ -21,15 +21,28 @@ namespace StockManager.Services
         }
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            //Csak akkor kéri le, ha nyitva a piac
+            var symbols = new List<string> { "BINANCE:BTCUSDT" };
+
+            using var scope = _scopeFactory.CreateScope();
+
+            var wsService = scope.ServiceProvider.GetRequiredService<StockPriceUpdaterWebSocketService>();
+            var updaterService = scope.ServiceProvider.GetRequiredService<StockUpdaterService>();
+            bool isOpen = await updaterService.CheckMarketStatus();
+
+            //Ellenőrizni, hogy mikor fusson a websocket és mikor kérjünk le árfolyamot. Ne fusson le mind a 2
+            Task? wsTask = null;
+            if (isOpen)
+            {
+                wsTask = wsService.ConnectAndListenAsync(symbols, stoppingToken);
+            }
+
             while (!stoppingToken.IsCancellationRequested)
             {
                 try
-                {
-                    using var scope = _scopeFactory.CreateScope();
-                    var updaterService = scope.ServiceProvider.GetRequiredService<StockUpdaterService>();
-                    await updaterService.GetSP500Stocks();
-
-                    await Task.Delay(TimeSpan.FromDays(1), stoppingToken);                                    
+                {                    
+                    await updaterService.GetStocks();
+                    await Task.Delay(TimeSpan.FromDays(1), stoppingToken);                         
                 }
                 catch (Exception ex)
                 {
@@ -37,6 +50,18 @@ namespace StockManager.Services
                     await Task.Delay(5000, stoppingToken);
                 }
             }
-        }
+
+            if (wsTask != null)
+            {
+                try
+                {
+                    await wsTask;
+                }
+                catch (OperationCanceledException)
+                {
+                    
+                }
+            }
+        }    
     }
 }

@@ -23,8 +23,12 @@ builder.Services.AddScoped<IWatchListService, WatchListService>();
 builder.Services.AddScoped<IWatchListItemService, WatchListItemService>();
 builder.Services.AddScoped<IStockDataService, StockDataService>();
 builder.Services.AddHostedService<StockUpdaterBackgroundService>();
+
 builder.Services.AddScoped<StockUpdaterService>();
 builder.Services.AddHttpClient<StockUpdaterService>();
+
+builder.Services.AddHttpClient<StockPriceUpdaterWebSocketService>();
+builder.Services.AddSingleton<StockPriceUpdaterWebSocketService>();
 
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 
@@ -96,6 +100,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "StockManager API v1"));
 }
+
+var webSocketOptions = new WebSocketOptions
+{
+    KeepAliveInterval = TimeSpan.FromMinutes(2)
+};
+//webSocketOptions.AllowedOrigins.Add("http://localhost:5173");
+app.UseWebSockets(webSocketOptions);
 
 app.UseHttpsRedirection();
 

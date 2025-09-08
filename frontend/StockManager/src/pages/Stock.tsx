@@ -17,13 +17,14 @@ const Stock = () => {
 
     const sortedStocks = [...stocks].sort((a, b) => (b.marketCap ?? 0) - (a.marketCap ?? 0));
 
-    const rows = sortedStocks.map((stock) => (
+    const rows = sortedStocks.map((stock, index) => (
         <tr key={stock.id}>
+            <td>{index + 1}</td>
             <td>{stock.symbol}</td>
             <td>{stock.companyName}</td>
             <td>{stock.sector}</td>
-            <td>{stock.price}</td>
-            <td>{stock.marketCap}</td>
+            <td>${stock.price}</td>
+            <td>{stock.marketCap?.toFixed(0)}</td>
         </tr>
     ));
     
@@ -34,6 +35,7 @@ const Stock = () => {
             <table className="table is-fullwidth mt-6">
                 <thead>
                     <tr>
+                        <th>Sorszám</th>
                         <th>Szimbólum</th>
                         <th>Név</th>
                         <th>Szektor</th>

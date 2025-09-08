@@ -8,7 +8,7 @@ namespace StockManager.Controllers
     [ApiController]
     [Route("api/[controller]/[action]")]
     //[Authorize]
-    public class StockController(IStockService stockService) : ControllerBase
+    public class StockController(IStockService stockService, StockPriceUpdaterWebSocketService priceService) : ControllerBase
     {
         [HttpPost]
         //[Authorize(Roles = "")]
@@ -43,6 +43,14 @@ namespace StockManager.Controllers
         {
             var result = await stockService.UpdateAsync(id, stockUpdateDto);
             return Ok(result);
+        }
+
+        [HttpGet]
+        public IActionResult GetPrice([FromQuery] string symbol)
+        {
+            if (priceService.Latest.TryGetValue(symbol.ToUpperInvariant(), out var price))
+                return Ok(new { symbol, price });
+            return NotFound(new { error = "Nincs adat erre a szimbólumra." });
         }
     }
 }
