@@ -1,0 +1,15 @@
+body, .navbar, .table td, .table th{
+  background-color: white;
+}
+
+.panel-tabs>a, .title, .panel>p, .navbar-item, .table td, .table thead th, .title, .panel p, a, .subtitle, body, .navbar, span{
+  color: black;
+}
+
+.subtitle{
+  font-weight: bold;
+}
+
+.navbar-item:hover{
+  background-color: rgb(241, 241, 241);
+}

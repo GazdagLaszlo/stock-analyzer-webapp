@@ -1,0 +1,9 @@
+.table-row:hover td{
+    background-color: rgb(48, 48, 48);
+    transition: .5s;
+    cursor: pointer;
+}
+
+.table-row td{
+    transition: .5s;
+}

@@ -1,24 +1,25 @@
 import type { StockDto } from "../../generated-sources/openapi";
 import api from "../api/api";
 import { useState, useEffect } from "react";
+import './Stock.scss';
+import { useNavigate } from "react-router-dom";
 
 const Stock = () => {
-
+    const navigate = useNavigate();
     const [stocks, setStocks] = useState<StockDto[]>([]);
 
     useEffect(() => {
         api.Stock.apiStockGetAllGet().then(res => {
             setStocks(res.data);
-            console.log("Stock:"+res.data);
         }).catch(error => {
             console.error("Error while loading stocks: ", error);
         })        
-    }, []);    
+    }, []);
 
     const sortedStocks = [...stocks].sort((a, b) => (b.marketCap ?? 0) - (a.marketCap ?? 0));
 
     const rows = sortedStocks.map((stock, index) => (
-        <tr key={stock.id}>
+        <tr key={stock.id} className="table-row" onClick={() => navigate(`${stock.symbol}`, { state: { stockId: stock.id } })}>
             <td>{index + 1}</td>
             <td>{stock.symbol}</td>
             <td>{stock.companyName}</td>

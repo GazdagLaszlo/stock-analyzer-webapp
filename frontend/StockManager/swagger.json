@@ -600,6 +600,27 @@
         }
       }
     },
+    "/api/Stock/GetPrice": {
+      "get": {
+        "tags": [
+          "Stock"
+        ],
+        "parameters": [
+          {
+            "name": "symbol",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/StockData/Create": {
       "post": {
         "tags": [
@@ -1555,15 +1576,28 @@
           },
           "marketCapitalization": {
             "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "finnhubIndustry": {
+            "type": "string",
+            "nullable": true
+          },
+          "price": {
+            "type": "number",
             "format": "double"
           },
-          "company_name": {
+          "exchange": {
             "type": "string",
             "nullable": true
           },
-          "sector": {
-            "type": "string",
-            "nullable": true
+          "shareOutstanding": {
+            "type": "number",
+            "format": "double"
           }
         },
         "additionalProperties": false
@@ -1716,6 +1750,14 @@
           "stockDataId": {
             "type": "integer",
             "format": "int32"
+          },
+          "exchange": {
+            "type": "string",
+            "nullable": true
+          },
+          "shareOutstanding": {
+            "type": "number",
+            "format": "double"
           }
         },
         "additionalProperties": false
@@ -1739,6 +1781,19 @@
           "sector": {
             "type": "string",
             "nullable": true
+          },
+          "price": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "exchange": {
+            "type": "string",
+            "nullable": true
+          },
+          "shareOutstanding": {
+            "type": "number",
+            "format": "double"
           }
         },
         "additionalProperties": false

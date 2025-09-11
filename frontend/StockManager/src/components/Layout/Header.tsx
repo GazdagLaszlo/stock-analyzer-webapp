@@ -5,8 +5,8 @@ const Header = () => {
     return <>
         <header>
             <nav className='navbar'>
-                <div className='navbar-brand'>
-                    <Link to="/" className='has-text-white'>
+                <div className='navbar-brand mt-5'>
+                    <Link to="/">
                         <p className='is-size-4 has-text-weight-bold'>StockManager</p>
                         <p>Részvénypiaci elemző és portfólió-kezelő</p>
                     </Link>

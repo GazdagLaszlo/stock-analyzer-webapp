@@ -1,0 +1,30 @@
+.data-boxes{
+    gap: 20px;
+}
+
+.data-box, .data-box-2{
+    border: 1.5px solid rgb(194, 194, 194);  
+    /*box-shadow: 0 4px 10px rgba(0,0,0,0.2);*/
+    height: 150px;
+    background-color: rgb(250, 250, 250);
+    border-radius: 10px;    
+
+    > p{
+        background-color: rgb(250, 250, 250);
+        border-radius: 10px;
+    }
+}
+
+.data-box-2{
+    height: fit-content;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.main-box{
+    margin: 0 auto;
+}
+
+.image>img{
+    border-radius: 10px;
+}

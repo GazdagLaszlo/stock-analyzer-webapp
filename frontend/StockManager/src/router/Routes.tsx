@@ -3,6 +3,7 @@ import Portfolio from "../pages/Portfolio";
 import Stock from "../pages/Stock";
 import Transaction from "../pages/Transaction";
 import Watchlist from "../pages/WatchList";
+import StockView from "../pages/StockView.tsx";
 
 export const routes = [
     {
@@ -28,6 +29,11 @@ export const routes = [
     {
         path: "transactions",
         component: <Transaction/>,
+        isPrivate: false
+    },
+    {
+        path: "stocks/:symbol",
+        component: <StockView />,
         isPrivate: false
     },
 ]

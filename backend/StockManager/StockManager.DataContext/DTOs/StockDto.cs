@@ -14,11 +14,15 @@ namespace StockManager.DataContext.DTOs
         public string Symbol { get; set; }
         [JsonPropertyName("marketCapitalization")]
         public double? MarketCap { get; set; }
-        [JsonPropertyName("company_name")]
+        [JsonPropertyName("name")]
         public string CompanyName { get; set; }
-        [JsonPropertyName("sector")]
+        [JsonPropertyName("finnhubIndustry")]
         public string Sector {  get; set; }
-        public double Price { get; set; }
+        public double Price { get; set; }        
+        [JsonPropertyName("exchange")]
+        public string Exchange { get; set; }
+        [JsonPropertyName("shareOutstanding")]
+        public double ShareOutstanding { get; set; }
     }
 
     public class StockUpdateDto {
@@ -28,6 +32,8 @@ namespace StockManager.DataContext.DTOs
         public string? CompanyName { get; set; }
         public string? Sector { get; set; }
         public double? Price { get; set; }
+        public string Exchange { get; set; }
+        public double ShareOutstanding { get; set; }
     }
 
     public class StockDto
@@ -39,5 +45,7 @@ namespace StockManager.DataContext.DTOs
         public double? Price { get; set; }
         public double MarketCap { get; set; }
         public int StockDataId { get; set; }
+        public string Exchange { get; set; }
+        public double ShareOutstanding { get; set; }
     }
 }

@@ -2,7 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import 'bulma/css/bulma.min.css';
-import './main.css';
+import './main.scss';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
