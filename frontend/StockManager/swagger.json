@@ -501,19 +501,18 @@
         }
       }
     },
-    "/api/Stock/GetById/{id}": {
+    "/api/Stock/GetBySymbol/{symbol}": {
       "get": {
         "tags": [
           "Stock"
         ],
         "parameters": [
           {
-            "name": "id",
+            "name": "symbol",
             "in": "path",
             "required": true,
             "schema": {
-              "type": "integer",
-              "format": "int32"
+              "type": "string"
             }
           }
         ],

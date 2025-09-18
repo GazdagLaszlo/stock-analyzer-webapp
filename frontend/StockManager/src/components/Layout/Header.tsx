@@ -3,12 +3,12 @@ import { Link } from "react-router-dom";
 
 const Header = () => {
     return <>
-        <header>
+        <header style={{borderBottom: "1px solid black"}} className='pb-4'>
             <nav className='navbar'>
                 <div className='navbar-brand mt-5'>
                     <Link to="/">
                         <p className='is-size-4 has-text-weight-bold'>StockManager</p>
-                        <p>Részvénypiaci elemző és portfólió-kezelő</p>
+                        <p>Stock analyst and Portfolio Manager</p>
                     </Link>
 
                     <a role="button" className="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
@@ -21,11 +21,11 @@ const Header = () => {
 
                 <div className='navbar-menu'>
                     <div className='navbar-end'>
-                        <Link className='navbar-item' to="/dashboard">Kezdőlap</Link>
-                        <Link className='navbar-item' to="/stocks">Részvények</Link>
-                        <Link className='navbar-item' to="/portfolio">Portfólió</Link>
-                        <Link className='navbar-item' to="/watchlist">Figyelőlista</Link>
-                        <Link className='navbar-item' to="/transactions">Tranzakciók</Link>
+                        <Link className='navbar-item' to="/dashboard">Dashboard</Link>
+                        <Link className='navbar-item' to="/stocks">Stocks</Link>
+                        <Link className='navbar-item' to="/portfolio">Portfolio</Link>
+                        <Link className='navbar-item' to="/watchlist">Watchlist</Link>
+                        <Link className='navbar-item' to="/transactions">Transactions</Link>
                     </div>                    
                 </div>
             </nav>            

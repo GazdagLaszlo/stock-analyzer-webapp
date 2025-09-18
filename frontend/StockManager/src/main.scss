@@ -1,8 +1,12 @@
+body {
+  font-family: 'Sofia Sans Condensed', sans-serif;
+}
+
 body, .navbar, .table td, .table th{
   background-color: white;
 }
 
-.panel-tabs>a, .title, .panel>p, .navbar-item, .table td, .table thead th, .title, .panel p, a, .subtitle, body, .navbar, span{
+.panel-tabs>a, .title, .panel>p, .navbar-item, .table td, .table thead th, .title, .panel p, a, .subtitle, body, .navbar, span, .breadcrumb a{
   color: black;
 }
 

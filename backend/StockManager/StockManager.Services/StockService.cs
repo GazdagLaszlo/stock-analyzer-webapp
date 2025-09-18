@@ -10,7 +10,7 @@ namespace StockManager.Services
     {
         Task<StockDto> CreateAsync(StockCreateDto stockCreateDto);
         Task<IList<StockDto>> GetAllAsync();
-        Task<StockDto> GetByIdAsync(int id);
+        Task<StockDto> GetBySymbolAsync(string symbol);
         Task<StockDto> UpdateAsync(int id, StockUpdateDto updateDto);
     }
     public class StockService : IStockService
@@ -40,12 +40,14 @@ namespace StockManager.Services
             return _mapper.Map<IList<StockDto>>(stocks);
         }
 
-        public async Task<StockDto> GetByIdAsync(int id)
+        public async Task<StockDto> GetBySymbolAsync(string symbol)
         {
-            var stock = await _context.Stocks.FindAsync(id);
+            var stock = await _context.Stocks
+                .Where(x => x.Symbol == symbol)
+                .FirstOrDefaultAsync();
             if(stock == null)
             {
-                throw new KeyNotFoundException($"Stock not found with id: {id}");
+                throw new KeyNotFoundException($"Stock not found with symbol: {symbol}");
             }
 
             return _mapper.Map<StockDto>(stock);

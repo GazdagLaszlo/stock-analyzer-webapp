@@ -11,6 +11,10 @@
     "build": "npm run generate && vite build"
   },
   "dependencies": {
+    "@fontsource/exo": "^5.2.6",
+    "@fontsource/ibm-plex-sans": "^5.2.6",
+    "@fontsource/sofia-sans-condensed": "^5.2.6",
+    "@microsoft/signalr": "^9.0.6",
     "axios": "^1.11.0",
     "bulma": "^1.0.4",
     "react": "^19.1.1",
