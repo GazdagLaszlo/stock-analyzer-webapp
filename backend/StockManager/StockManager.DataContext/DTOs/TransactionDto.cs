@@ -15,6 +15,7 @@ namespace StockManager.DataContext.DTOs
         public TransactionType TransactionType { get; set; }
         public double? Fee { get; set; }
         public string? Note { get; set; }
+        public int PortfolioItemId { get; set; }
     }
 
     public class TransactionDto

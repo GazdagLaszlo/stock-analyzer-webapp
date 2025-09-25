@@ -432,6 +432,29 @@
         }
       }
     },
+    "/api/PortfolioItem/GetPortfolioItemProfit/{portfolioItemId}": {
+      "get": {
+        "tags": [
+          "PortfolioItem"
+        ],
+        "parameters": [
+          {
+            "name": "portfolioItemId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/Stock/Create": {
       "post": {
         "tags": [

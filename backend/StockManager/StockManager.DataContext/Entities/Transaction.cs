@@ -12,9 +12,12 @@
         public int StockId { get; set; }
         public Stock Stock { get; set; }
         public double Price { get; set; }
+        public double Quantity { get; set; }
         public DateTime Date { get; set; }
         public TransactionType TransactionType { get; set; }
         public double? Fee { get; set; }
         public string? Note { get; set; }
+        public int PortfolioItemId { get; set; }
+        public PortfolioItem PortfolioItem { get; set; }
     }
 }

@@ -18,6 +18,7 @@ namespace StockManager.Services
         Task<PortfolioItemDto> GetByIdAsync(int portfolioItemid);
         Task<PortfolioItemDto> UpdateAsync(int id, PortfolioItemUpdateDto updateDto);
         Task DeleteAsync(int portfolioItemId);
+        Task<double> GetPortfolioItemProfitAsync(int portfolioItemId);
     }
     public class PortfolioItemService(AppDbContext context, IMapper mapper) : IPortfolioItemService
     {
@@ -25,7 +26,7 @@ namespace StockManager.Services
         {
             var stock = await context.Stocks
                 .FirstOrDefaultAsync(x => x.Id == portfolioItemCreateDto.StockId);
-            if (stock == null) 
+            if (stock == null)
             {
                 throw new KeyNotFoundException($"Stock with id - {portfolioItemCreateDto.StockId} not found!");
             }
@@ -104,6 +105,49 @@ namespace StockManager.Services
 
             context.PortfolioItems.Remove(portfolioItem);
             await context.SaveChangesAsync();
-        }                        
+        }                 
+        
+        public async Task<double> GetPortfolioItemProfitAsync(int portfolioItemId)
+        {
+            var portfolioItem = await context.PortfolioItems
+                .Include(x => x.Stock)
+                .Include(x => x.Transactions)
+                .FirstOrDefaultAsync(x => x.Id == portfolioItemId);
+            if (portfolioItem == null)
+            {
+                throw new KeyNotFoundException($"PortfolioItem with id - {portfolioItemId} not found!");
+            }
+
+            if(!portfolioItem.Transactions.Any())
+            {
+                return 0;
+            }
+
+            double sumValue = 0;
+            double sumQuantity = 0;
+
+            foreach ( var transaction in portfolioItem.Transactions.OrderBy(x => x.Date))
+            {
+                if(transaction.TransactionType == TransactionType.Buy)
+                {
+                    sumValue += transaction.Price * transaction.Quantity;
+                    sumQuantity += transaction.Quantity;
+                }
+                else if(transaction.TransactionType == TransactionType.Sell)
+                {
+                    //Átlagos vételi árhoz viszonyítjuk az eladást, nem a jelenlegi eladási árhoz
+                    double averagePrice = sumValue / sumQuantity;
+                    sumValue -= averagePrice * transaction.Quantity;
+                    sumQuantity -= transaction.Quantity;
+                }
+            }
+
+            double averageBuyPrice = sumValue / sumQuantity;
+            double currentValue = portfolioItem.Stock.Price * portfolioItem.Quantity;
+
+            double profit = currentValue - averageBuyPrice * portfolioItem.Quantity;
+
+            return profit;
+        }
     }
 }

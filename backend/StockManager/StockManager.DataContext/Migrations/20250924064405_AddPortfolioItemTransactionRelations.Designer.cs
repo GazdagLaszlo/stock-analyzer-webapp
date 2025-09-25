@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StockManager.DataContext.Context;
 
@@ -10,9 +11,11 @@ using StockManager.DataContext.Context;
 namespace StockManager.DataContext.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250924064405_AddPortfolioItemTransactionRelations")]
+    partial class AddPortfolioItemTransactionRelations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.8");
@@ -95,7 +98,7 @@ namespace StockManager.DataContext.Migrations
                     b.Property<double?>("MarketCap")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("Price")
+                    b.Property<double?>("Price")
                         .HasColumnType("REAL");
 
                     b.Property<string>("Sector")
@@ -169,9 +172,6 @@ namespace StockManager.DataContext.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<double>("Price")
-                        .HasColumnType("REAL");
-
-                    b.Property<double>("Quantity")
                         .HasColumnType("REAL");
 
                     b.Property<int>("StockId")

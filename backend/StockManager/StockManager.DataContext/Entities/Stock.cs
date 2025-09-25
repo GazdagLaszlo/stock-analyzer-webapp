@@ -12,7 +12,7 @@
 
 
         //Záráskor 1x menteni
-        public double? Price { get; set; }
+        public double Price { get; set; }
         public double? MarketCap { get; set; }
     }
 }

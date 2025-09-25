@@ -33,6 +33,7 @@ namespace StockManager.Services
         {
             var portfolios = await context.Portfolios
                 .Include(x => x.PortfolioItems)
+                .ThenInclude(x => x.Stock)
                 .Where(x => x.UserId == userId)
                 .ToListAsync();
 
