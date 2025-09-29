@@ -10,6 +10,7 @@
 
         //Záráskor 1x menteni
         //Kezdetben nem lesz History
+        //Dinamikusan számolni frontend oldalon
         public decimal? Value { get; set; } //In dollar
         public decimal? ProfitLoss { get; set; } //In dollar
     }

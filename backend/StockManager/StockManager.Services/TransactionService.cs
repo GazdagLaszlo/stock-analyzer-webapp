@@ -32,8 +32,64 @@ namespace StockManager.Services
                 throw new KeyNotFoundException($"Stock with id - {transactionCreateDto.StockId} not found!");
             }
 
+
+            //A tranzakciónak kell, hogy portfolioItem-hez tartozzon fixen,
+            //mert ez alapján dönthető el, hogy melyik portfolio-ban van benne.
+
+            //Lehet több tranzakció ugyanarra a részvényre, de más portfoliokban.
+            //Ezeket külön kell kezelnünk.
+
+            var portfolio = await context.Portfolios
+                .Include(x => x.PortfolioItems)
+                    .ThenInclude(x => x.Transactions)
+                .FirstOrDefaultAsync(x => x.Id == transactionCreateDto.PortfolioId && x.UserId == userId);
+
+            if(portfolio == null)
+            {
+                throw new KeyNotFoundException($"Portfolio not found!");
+            }
+
+            var portfolioItem = portfolio.PortfolioItems
+                .FirstOrDefault(x => x.StockId == transactionCreateDto.StockId);
+
+            if (portfolioItem != null)
+            {
+                //Létezik ilyen stock a portfolio-ban, nem kell újat létrehozni
+
+                if(transactionCreateDto.TransactionType == TransactionType.Buy)
+                {
+                    portfolioItem.AveragePurchasePrice =
+                        (portfolioItem.AveragePurchasePrice * portfolioItem.Quantity + 
+                        transactionCreateDto.Price * transactionCreateDto.Quantity) / (portfolioItem.Quantity + transactionCreateDto.Quantity);
+
+                    portfolioItem.Quantity += transactionCreateDto.Quantity;
+                }
+                else if (transactionCreateDto.TransactionType == TransactionType.Sell)
+                {
+                    if(portfolioItem.Quantity < transactionCreateDto.Quantity)
+                    {
+                        throw new InvalidOperationException("Not enough stock quantity to sell!");
+                    }
+                    portfolioItem.Quantity -= transactionCreateDto.Quantity;
+                }
+            }
+            else
+            {
+                //Nem létezik, létrehozunk új PortfolioItem-et
+                portfolioItem = new PortfolioItem
+                {
+                    PortfolioId = transactionCreateDto.PortfolioId,
+                    StockId = transactionCreateDto.StockId,
+                    Quantity = transactionCreateDto.Quantity,
+                    AveragePurchasePrice = transactionCreateDto.Price,
+                };
+
+                await context.PortfolioItems.AddAsync(portfolioItem);
+            }
+
             var transaction = mapper.Map<Transaction>(transactionCreateDto);
             transaction.UserId = userId;
+            transaction.PortfolioItem = portfolioItem;
 
             await context.AddAsync(transaction);
             await context.SaveChangesAsync();

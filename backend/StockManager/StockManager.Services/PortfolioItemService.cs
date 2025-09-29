@@ -142,7 +142,7 @@ namespace StockManager.Services
                 }
             }
 
-            double averageBuyPrice = sumValue / sumQuantity;
+            double averageBuyPrice = sumQuantity == 0 ? 0 : sumValue / sumQuantity;
             double currentValue = portfolioItem.Stock.Price * portfolioItem.Quantity;
 
             double profit = currentValue - averageBuyPrice * portfolioItem.Quantity;

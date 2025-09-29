@@ -1505,7 +1505,7 @@
             "type": "number",
             "format": "double"
           },
-          "purchasePrice": {
+          "averagePurchasePrice": {
             "type": "number",
             "format": "double"
           },
@@ -1534,7 +1534,7 @@
             "type": "number",
             "format": "double"
           },
-          "purchasePrice": {
+          "averagePurchasePrice": {
             "type": "number",
             "format": "double"
           },
@@ -1564,7 +1564,7 @@
             "type": "number",
             "format": "double"
           },
-          "purchasePrice": {
+          "averagePurchasePrice": {
             "type": "number",
             "format": "double"
           },
@@ -1831,6 +1831,10 @@
             "type": "number",
             "format": "double"
           },
+          "quantity": {
+            "type": "number",
+            "format": "double"
+          },
           "date": {
             "type": "string",
             "format": "date-time"
@@ -1846,6 +1850,10 @@
           "note": {
             "type": "string",
             "nullable": true
+          },
+          "portfolioId": {
+            "type": "integer",
+            "format": "int32"
           }
         },
         "additionalProperties": false

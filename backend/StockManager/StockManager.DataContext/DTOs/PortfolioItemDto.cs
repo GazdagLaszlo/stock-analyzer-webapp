@@ -12,7 +12,7 @@ namespace StockManager.DataContext.DTOs
         public int Id { get; set; }
         public StockDto Stock { get; set; }
         public double Quantity { get; set; }
-        public double PurchasePrice { get; set; }
+        public double AveragePurchasePrice { get; set; }
         public double TargetPrice { get; set; }
         public string Note { get; set; }
         public double ProfitLoss { get; set; }
@@ -23,7 +23,7 @@ namespace StockManager.DataContext.DTOs
         public int PortfolioId { get; set; }
         public int StockId { get; set; }
         public double Quantity { get; set; }
-        public double PurchasePrice { get; set; }
+        public double AveragePurchasePrice { get; set; }
         public double TargetPrice { get; set; }
         public string Note { get; set; }
     }
@@ -32,7 +32,7 @@ namespace StockManager.DataContext.DTOs
     {
         public int StockId { get; set; }
         public double Quantity { get; set; }
-        public double PurchasePrice { get; set; }
+        public double AveragePurchasePrice { get; set; }
         public double TargetPrice { get; set; }
         public string Note { get; set; }
     }
