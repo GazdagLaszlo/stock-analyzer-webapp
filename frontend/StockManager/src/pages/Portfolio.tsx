@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import './Portfolio.scss';
-import { TransactionType, type PortfolioDto, type StockDto } from '../../generated-sources/openapi';
+import { TransactionType, type PortfolioCreateDto, type PortfolioDto, type PortfolioItemDto, type StockDto } from '../../generated-sources/openapi';
 import api from "../api/api";
+import PortfolioItemMenu from '../components/Portfolio/PortfolioItemMenu';
 
 const Portfolio = () => {
     const [portfolios, setPortfolios] = useState<PortfolioDto[]>([]);
@@ -9,10 +10,10 @@ const Portfolio = () => {
     const [selectedPortfolioId, setSelectedPortfolioId] = useState<number | null>();
     const [itemProfits, setItemProfits] = useState<{[id: number]: number}>({});
     const [portfolioValue, setPortfolioValue] = useState<number | null>();
-    const [transactionModalOpen, setTransactionModalOpen] = useState(false);
-    const [stockModalOpen, setStockModalOpen] = useState(false);
     const [transactionType, setTransactionType] = useState("Buy");
     const [selectedStock, setSelectedStock] = useState<StockDto>();
+    const [newPortfolioName, setNewPortfolioName] = useState<PortfolioCreateDto>();
+    const [selectedPortfolioItem, setSelectedPortfolioItem] = useState<PortfolioItemDto>();
 
     const [transactionCreateData, setTransactionCreateData] = useState({
         price: '',
@@ -21,6 +22,11 @@ const Portfolio = () => {
         fee: '',
         note: "",
     });
+
+    const [transactionModalOpen, setTransactionModalOpen] = useState(false);
+    const [stockModalOpen, setStockModalOpen] = useState(false);
+    const [portfolioModalOpen, setPortfolioModalOpen] = useState(false);
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
     useEffect(() => {
         api.Portfolio.apiPortfolioGetAllGet().then(res => {
@@ -92,6 +98,25 @@ const Portfolio = () => {
         setTransactionModalOpen(false);
     }
 
+    const createPortfolio = async () => {    
+        await api.Portfolio.apiPortfolioCreatePost(newPortfolioName);
+
+        const response = await api.Portfolio.apiPortfolioGetAllGet();
+        setPortfolios(response.data);    
+
+        setNewPortfolioName({});
+        setPortfolioModalOpen(false);
+    }
+
+    const deletePortfolioItem = async (id: number | undefined ) => {
+        if(id){
+            await api.PortfolioItem.apiPortfolioItemDeleteIdDelete(id)
+        }        
+
+        const response = await api.Portfolio.apiPortfolioGetAllGet();
+        setPortfolios(response.data);
+    }
+
     const loadStocks = async () => {
         api.Stock.apiStockGetAllGet().then(res => {
             setStocks(res.data);
@@ -111,12 +136,12 @@ const Portfolio = () => {
         >
             <td>{index + 1}</td>
             <td>{stock.symbol}</td>
-            <td>{stock.companyName}</td>                                    
+            <td>{stock.companyName}</td>
         </tr>
     ));
     
 
-    const buttons = portfolios.map((portfolio) => (
+    const portfolioButtons = portfolios.map((portfolio) => (
         <button key={portfolio.id} className={"button mr-2 " + (selectedPortfolioId == portfolio.id ? "is-dark" : "")} onClick={() => setSelectedPortfolioId(portfolio.id)}>
             {portfolio.name}
         </button>
@@ -130,6 +155,12 @@ const Portfolio = () => {
             <td>{((item.quantity ?? 0)*(item.stock?.price ?? 0)).toFixed(2)} USD ({item.quantity?.toFixed(2)} {item.stock?.symbol})</td>
             <td>{itemProfits[item.id!] !== undefined ? itemProfits[item.id!].toFixed(2) : 'N/A'} USD</td>
             <td>{(item.stock?.price && item.averagePurchasePrice) ? (((item.stock.price / item.averagePurchasePrice)-1)*100).toFixed(2) : "N/A"} %</td>        
+            <td className='is-narrow'>
+                <PortfolioItemMenu
+                    onAddTransaction={() => {setSelectedStock(item.stock); setTransactionModalOpen(true);}}
+                    onDeleteItem={() => {  if (item.id != null) { setSelectedPortfolioItem(item); setDeleteModalOpen(true)} }}
+                />
+            </td>
         </tr>
     ));
 
@@ -145,7 +176,10 @@ const Portfolio = () => {
         <div className='mt-5'>
             <div className='is-flex is-justify-content-space-between'>
                 <div>
-                    {buttons}
+                    {portfolioButtons}
+                    <button className='button' onClick={() => setPortfolioModalOpen(true)}>
+                        +
+                    </button>
                 </div>
                 <div>
                     <button className='button is-dark' onClick={() => setTransactionModalOpen(true)}>
@@ -176,6 +210,7 @@ const Portfolio = () => {
                             <th>Holdings</th>
                             <th>Profit (USD)</th>
                             <th>Profit (%)</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -184,6 +219,8 @@ const Portfolio = () => {
                 </table>                
             </div>            
 
+
+            {/*Transaction modal*/}
             <div className={`modal ${transactionModalOpen ? 'is-active' : ''}`}>
                 <div className="modal-background" onClick={() => setTransactionModalOpen(false)}></div>
                 <div className="modal-content">
@@ -266,6 +303,8 @@ const Portfolio = () => {
                 <button className="modal-close is-large" aria-label="close" onClick={() => setTransactionModalOpen(false)}></button>
             </div>
 
+
+            {/*Stock select modal*/}
             <div className={`modal ${stockModalOpen ? 'is-active' : ''}`}>
                 <div className="modal-background" onClick={() => setStockModalOpen(false)}></div>
                 <div className="modal-content">
@@ -287,6 +326,52 @@ const Portfolio = () => {
                 <button className="modal-close is-large" aria-label="close" onClick={() => setStockModalOpen(false)}></button>
             </div>
 
+
+            {/*Add portfolio modal*/}
+            <div className={`modal ${portfolioModalOpen ? 'is-active' : ''}`}>
+                <div className="modal-background" onClick={() => setPortfolioModalOpen(false)}></div>
+                <div className="modal-content">
+                    <div className="card p-6">
+                        <h1 className='title is-4 mb-6'>Create portfolio</h1>
+                        <div className="field">
+                            <label className="label">Portfolio name</label>
+                            <div className="control">
+                                <input className="input" type="text"
+                                onChange={(e) => setNewPortfolioName({ ...newPortfolioName, name: e.target.value })}/>
+                            </div>
+                        </div>
+                        <div className='is-flex is-justify-content-center mt-6'>
+                            <button className='button is-dark' onClick={createPortfolio}>
+                                Create
+                            </button>
+                        </div>       
+                    </div>                    
+                </div>
+                <button className="modal-close is-large" aria-label="close" onClick={() => setPortfolioModalOpen(false)}></button>
+            </div>
+
+            {/*Delete modal*/}
+            <div className={`modal ${deleteModalOpen ? "is-active" : ""}`}>
+                <div className="modal-background" onClick={() => setDeleteModalOpen(false)}></div>
+                <div className="modal-card">
+                    <header className="modal-card-head">
+                        <h1 className='modal-card-title'>Delete position</h1>
+                        <button className="delete" aria-label="close" onClick={() => setDeleteModalOpen(false)}></button>
+                    </header>
+                    <section className="modal-card-body">
+                        Are you sure you want to delete {selectedStock?.symbol}?
+                        All transactions history will be lost.
+                    </section>
+                    <footer className="modal-card-foot is-justify-content-right">
+                        <button className="button mr-2" onClick={() => setDeleteModalOpen(false)}>
+                            Cancel
+                        </button>
+                        <button className="button is-danger" onClick={() => { deletePortfolioItem(selectedPortfolioItem?.id); setDeleteModalOpen(false) }}>
+                            Delete
+                        </button>
+                    </footer>
+                </div>
+            </div>
         </div>
     );
 }

@@ -105,7 +105,7 @@ namespace StockManager.Services
 
             context.PortfolioItems.Remove(portfolioItem);
             await context.SaveChangesAsync();
-        }                 
+        }
         
         public async Task<double> GetPortfolioItemProfitAsync(int portfolioItemId)
         {

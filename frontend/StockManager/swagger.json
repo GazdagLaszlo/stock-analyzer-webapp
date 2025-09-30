@@ -1549,6 +1549,13 @@
           "profitLoss": {
             "type": "number",
             "format": "double"
+          },
+          "transactions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TransactionDto"
+            },
+            "nullable": true
           }
         },
         "additionalProperties": false
