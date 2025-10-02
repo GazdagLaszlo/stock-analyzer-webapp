@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import './Portfolio.scss';
 import { TransactionType, type PortfolioCreateDto, type PortfolioDto, type PortfolioItemDto, type StockDto } from '../../generated-sources/openapi';
 import api from "../api/api";
 import PortfolioItemMenu from '../components/Portfolio/PortfolioItemMenu';
+import Stock from './Stock';
 
 const Portfolio = () => {
     const [portfolios, setPortfolios] = useState<PortfolioDto[]>([]);
@@ -14,6 +15,7 @@ const Portfolio = () => {
     const [selectedStock, setSelectedStock] = useState<StockDto>();
     const [newPortfolioName, setNewPortfolioName] = useState<PortfolioCreateDto>();
     const [selectedPortfolioItem, setSelectedPortfolioItem] = useState<PortfolioItemDto>();
+    const [searchInput, setSearchInput] = useState("");
 
     const [transactionCreateData, setTransactionCreateData] = useState({
         price: '',
@@ -111,7 +113,7 @@ const Portfolio = () => {
     const deletePortfolioItem = async (id: number | undefined ) => {
         if(id){
             await api.PortfolioItem.apiPortfolioItemDeleteIdDelete(id)
-        }        
+        }
 
         const response = await api.Portfolio.apiPortfolioGetAllGet();
         setPortfolios(response.data);
@@ -128,13 +130,19 @@ const Portfolio = () => {
 
     const sortedStocks = [...stocks].sort((a, b) => (b.marketCap ?? 0) - (a.marketCap ?? 0));
 
-    const rows = sortedStocks.map((stock, index) => (
-        <tr 
-            key={stock.id} 
-            className="table-row" 
-            onClick={() => {setSelectedStock(stock); setStockModalOpen(false)}}
-        >
+    const filteredStocks = sortedStocks.filter(stock => 
+        stock.symbol?.toLowerCase().startsWith(searchInput.toLowerCase()) ||
+        stock.companyName?.toLowerCase().startsWith(searchInput.toLowerCase())
+    );
+
+    const rows = filteredStocks.map((stock, index) => (
+        <tr key={stock.id} className="table-row" onClick={() => {setSelectedStock(stock); setStockModalOpen(false)}}>
             <td>{index + 1}</td>
+            <td>
+                <figure className='image is-24x24'>
+                    <img src={`https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${stock.symbol}.png`}/>
+                </figure>
+            </td>
             <td>{stock.symbol}</td>
             <td>{stock.companyName}</td>
         </tr>
@@ -226,7 +234,6 @@ const Portfolio = () => {
                 <div className="modal-content">
                     <div className="card p-6">
                         <h1 className='title is-4 mb-6'>Add transaction</h1>
-                        <label className='label'>Transaction type</label>
                         <div className='mt-1 mx-0 columns'>
                             <div className='column p-0 mr-3'>
                                 <button className={"button is-normal is-fullwidth has-text-weight-bold "
@@ -240,7 +247,7 @@ const Portfolio = () => {
                             </div>                                            
                         </div>                        
 
-                        <div className="field mt-5">
+                        <div className="field">
                             <label className='label'>Symbol</label>
                             <div className="select is-fullwidth" onClick={() => setStockModalOpen(true)} style={{ cursor: "pointer" }}>
                                 <button className="button is-fullwidth is-justify-content-start" onClick={loadStocks}>
@@ -251,15 +258,15 @@ const Portfolio = () => {
                             </div>
                         </div>                        
 
-                        <div className='columns mt-4'>
-                            <div className="field column">
+                        <div className='columns mb-0'>
+                            <div className="field column mb-0">
                                 <label className="label">Price</label>
                                 <div className="control">
                                     <input className="input" type="number" value={transactionCreateData.price}
                                     onChange={(e) => setTransactionCreateData({...transactionCreateData, price: e.target.value})}/>
                                 </div>
                             </div>
-                            <div className="field column">
+                            <div className="field column mb-0">
                                 <label className="label">Quantity</label>
                                 <div className="control">
                                     <input className="input" type="number" min={1} value={transactionCreateData.quantity}
@@ -268,15 +275,15 @@ const Portfolio = () => {
                             </div>                            
                         </div>    
 
-                        <div className="columns">
-                            <div className="field column">
+                        <div className="columns mb-0">
+                            <div className="field column mb-0">
                                 <label className="label">Date</label>
                                 <div className="control">
                                     <input className="input" type="date" value={transactionCreateData.date}
                                     onChange={(e) => setTransactionCreateData({...transactionCreateData, date: e.target.value})}/>
                                 </div>
                             </div>
-                            <div className="field column">
+                            <div className="field column mb-0">
                                 <label className="label">Fee</label>
                                 <div className="control">
                                     <input className="input" type="number" min={0} value={transactionCreateData.fee}
@@ -289,11 +296,12 @@ const Portfolio = () => {
                             <label className="label">Notes</label>
                             <div className="control">
                                 <textarea className="textarea" placeholder="Type notes..." value={transactionCreateData.note}
-                                onChange={(e) => setTransactionCreateData({...transactionCreateData, note: e.target.value})}></textarea>
+                                onChange={(e) => setTransactionCreateData({...transactionCreateData, note: e.target.value})}
+                                style={{height: "100px", minHeight: "0px"}}></textarea>
                             </div>
                         </div>
 
-                        <div className='is-flex is-justify-content-center mt-6'>
+                        <div className='is-flex is-justify-content-center mt-5'>
                             <button className='button is-dark' onClick={createTransaction}>
                                 Add transaction
                             </button>
@@ -307,20 +315,29 @@ const Portfolio = () => {
             {/*Stock select modal*/}
             <div className={`modal ${stockModalOpen ? 'is-active' : ''}`}>
                 <div className="modal-background" onClick={() => setStockModalOpen(false)}></div>
-                <div className="modal-content">
+                <div className="modal-content" style={{width: "60%"}}>
                     <div className="card p-6">
-                        <table className="table is-fullwidth mt-6">
-                            <thead>
-                                <tr>
-                                    <th>Sorszám</th>
-                                    <th>Szimbólum</th>
-                                    <th>Név</th>                                
-                                </tr>                    
-                            </thead>
-                            <tbody>
-                                {rows}
-                            </tbody>
-                        </table>
+                        <div className="field">
+                            <div className="control">
+                                <input type='text' className='input pl-5' placeholder='Keresés...'
+                                onChange={(e) => setSearchInput(e.target.value)} autoFocus/>
+                                {/*
+                                <span className="icon">
+                                    <i className="fas fa-search has-background-dark"></i>
+                                </span>
+                                */}
+                            </div>
+                        </div>             
+                        <div style={{ height: "500px", overflowY: "auto" }} className='mt-6'>
+                            <table className="table is-fullwidth">
+                                <thead>
+                                    <tr></tr>
+                                </thead>
+                                <tbody>
+                                    {rows}
+                                </tbody>
+                            </table>
+                        </div>                        
                     </div>                    
                 </div>
                 <button className="modal-close is-large" aria-label="close" onClick={() => setStockModalOpen(false)}></button>
