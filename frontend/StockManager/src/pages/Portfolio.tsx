@@ -320,14 +320,14 @@ const Portfolio = () => {
                         <div className="field">
                             <div className="control">
                                 <input type='text' className='input pl-5' placeholder='Keresés...'
-                                onChange={(e) => setSearchInput(e.target.value)} autoFocus/>
+                                onChange={(e) => setSearchInput(e.target.value)}/>
                                 {/*
                                 <span className="icon">
                                     <i className="fas fa-search has-background-dark"></i>
                                 </span>
                                 */}
                             </div>
-                        </div>             
+                        </div>
                         <div style={{ height: "500px", overflowY: "auto" }} className='mt-6'>
                             <table className="table is-fullwidth">
                                 <thead>
