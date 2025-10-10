@@ -1,5 +1,5 @@
 import {Navigate, Route, Routes} from "react-router-dom";
-import BasicLayout from "../components/Layout/BasicLayout.tsx";
+import BasicLayout from "../components/Layout/BasicLayout/BasicLayout.tsx";
 //import useAuth from "../hooks/useAuth.tsx";
 import { routes } from "./Routes.tsx";
 //import {ReactElement} from "react";

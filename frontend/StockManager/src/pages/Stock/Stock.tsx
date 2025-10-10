@@ -1,14 +1,15 @@
-import type { StockDto } from "../../generated-sources/openapi";
-import api from "../api/api";
+import type { StockDto } from "../../../generated-sources/openapi";
+import api from "../../api/api";
 import { useState, useEffect } from "react";
 import './Stock.scss';
 import { useNavigate } from "react-router-dom";
-
+import * as signalR from "@microsoft/signalr";
 
 const Stock = () => {
     const navigate = useNavigate();
     const [stocks, setStocks] = useState<StockDto[]>([]);
-    
+    const [connection, setConnection] = useState<signalR.HubConnection | null>(null);
+    const [searchInput, setSearchInput] = useState("");
 
     useEffect(() => {
         api.Stock.apiStockGetAllGet().then(res => {
@@ -17,10 +18,37 @@ const Stock = () => {
             console.error("Error while loading stocks: ", error);
         });
 
+        const newConnection = new signalR.HubConnectionBuilder()
+            .withUrl("https://localhost:5201/stockPriceHub")
+            .withAutomaticReconnect()
+            .build();
 
+        setConnection(newConnection);
+
+        return () => {
+            newConnection.stop();
+        };
     }, []);
 
+    useEffect(() => {
+        if (connection) {
+            connection.start()
+                .then(() => {
+                    console.log("SignalR connected");
 
+                    // Feliratkozunk minden részvényre
+                    stocks.forEach(stock => connection.invoke("Subscribe", stock.symbol));
+
+                    // Live árfolyam frissítés
+                    connection.on("ReceiveRate", (symbol: string, price: number) => {
+                        setStocks(prev =>
+                            prev.map(s => s.symbol === symbol ? { ...s, price } : s)
+                        );
+                    });
+                })
+                .catch(err => console.error("SignalR connection error:", err));
+        }
+    }, [connection, stocks]);
 
 
     const sortedStocks = [...stocks].sort((a, b) => (b.marketCap ?? 0) - (a.marketCap ?? 0));

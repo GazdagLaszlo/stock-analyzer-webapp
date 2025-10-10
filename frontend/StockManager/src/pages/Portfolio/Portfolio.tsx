@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import './Portfolio.scss';
-import { TransactionType, type PortfolioCreateDto, type PortfolioDto, type PortfolioItemDto, type StockDto } from '../../generated-sources/openapi';
-import api from "../api/api";
-import PortfolioItemMenu from '../components/Portfolio/PortfolioItemMenu';
+import { TransactionType, type PortfolioCreateDto, type PortfolioDto, type PortfolioItemDto, type StockDto } from '../../../generated-sources/openapi';
+import api from "../../api/api";
+import PortfolioItemMenu from '../../components/Portfolio/PortfolioItemMenu';
 
 const Portfolio = () => {
     const [portfolios, setPortfolios] = useState<PortfolioDto[]>([]);
