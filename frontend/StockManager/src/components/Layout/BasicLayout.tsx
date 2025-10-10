@@ -4,8 +4,8 @@ import {Outlet} from "react-router-dom";
 
 const BasicLayout = () => {
 
-    return <>
-        <div className="container">
+    return(
+        <div className="container" style={{minHeight: "100vh"}}>
             <Header/>
 
             <main className="mt-4">
@@ -14,7 +14,7 @@ const BasicLayout = () => {
 
             <Footer/>
         </div>        
-    </>       
+    )    
 }
 
 export default BasicLayout;

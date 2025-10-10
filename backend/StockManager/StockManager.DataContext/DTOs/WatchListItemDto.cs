@@ -10,7 +10,7 @@ namespace StockManager.DataContext.DTOs
     public class WatchListItemDto
     {
         public int Id { get; set; }
-        public int StockId { get; set; }
+        public StockDto Stock { get; set; }
         public int WatchListId { get; set; }
         public double? EntryPrice { get; set; }
         public string? Note { get; set; }
@@ -19,16 +19,11 @@ namespace StockManager.DataContext.DTOs
     public class WatchListItemCreateDto
     {
         public int StockId { get; set; }
-        public int WatchListId { get; set; }
-        public double EntryPrice { get; set; }
-        public string? Note { get; set; }
     }
 
     public class WatchListItemUpdateDto
     {
-        public int StockId { get; set; }
-        public int WatchListId { get; set; }
-        public double EntryPrice { get; set; }
+        public double? EntryPrice { get; set; }
         public string? Note { get; set; }
     }
 }

@@ -8,10 +8,11 @@ namespace StockManager.Controllers
 {
     [ApiController]
     [Route("api/[controller]/[action]")]
-    [Authorize]
+    //[Authorize]
     public class PortfolioController(IPortfolioService portfolioService) : ControllerBase
     {
-        private int _userId => int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        //Visszaállítani!
+        private int _userId = 3; /*=> int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value)*/
 
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromBody] PortfolioCreateDto createDto)

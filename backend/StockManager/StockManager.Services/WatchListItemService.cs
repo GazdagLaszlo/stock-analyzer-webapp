@@ -13,26 +13,25 @@ namespace StockManager.Services
 {
     public interface IWatchListItemService
     {
-        Task CreateAsync(WatchListItemCreateDto watchListItemCreateDto);
+        Task CreateAsync(WatchListItemCreateDto watchListItemCreateDto, int userId);
         Task<WatchListItemDto> GetByIdAsync(int id);
         Task<WatchListItemDto> UpdateAsync(int id, WatchListItemUpdateDto updateDto);
         Task DeleteAsync(int id);
     }
     public class WatchListItemService(AppDbContext context, IMapper mapper) : IWatchListItemService
     {
-        public async Task CreateAsync(WatchListItemCreateDto watchListItemCreateDto)
-        {            
-            if(watchListItemCreateDto.WatchListId == null)
-            {
-                throw new KeyNotFoundException($"Watchlist with id - {watchListItemCreateDto.WatchListId} not found!");
-            }
-
+        public async Task CreateAsync(WatchListItemCreateDto watchListItemCreateDto, int userId)
+        {
             if (watchListItemCreateDto.StockId == null)
             {
                 throw new KeyNotFoundException($"Stock with id - {watchListItemCreateDto.StockId} not found!");
             }
 
+            var watchlist = await context.WatchLists
+                .FirstOrDefaultAsync(x => x.UserId == userId);
+
             var watchlistItem = mapper.Map<WatchListItem>(watchListItemCreateDto);
+            watchlistItem.WatchListId = watchlist.Id;
 
             await context.AddAsync(watchlistItem);
             await context.SaveChangesAsync();
@@ -52,7 +51,8 @@ namespace StockManager.Services
         }
 
         public async Task<WatchListItemDto> UpdateAsync(int id, WatchListItemUpdateDto updateDto)
-        {            
+        {     
+            /*
             if (updateDto.WatchListId == null)
             {
                 throw new KeyNotFoundException($"Watchlist with id - {updateDto.WatchListId} not found!");
@@ -62,6 +62,7 @@ namespace StockManager.Services
             {
                 throw new KeyNotFoundException($"Stock with id - {updateDto.StockId} not found!");
             }
+            */
 
             var watchListItem = await context.WatchListItems
                 .FirstOrDefaultAsync(x => x.Id == id);

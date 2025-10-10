@@ -1226,21 +1226,10 @@
         }
       }
     },
-    "/api/WatchList/GetById/{id}": {
+    "/api/WatchList/GetByUserId": {
       "get": {
         "tags": [
           "WatchList"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
         ],
         "responses": {
           "200": {
@@ -2046,18 +2035,6 @@
           "stockId": {
             "type": "integer",
             "format": "int32"
-          },
-          "watchListId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "entryPrice": {
-            "type": "number",
-            "format": "double"
-          },
-          "note": {
-            "type": "string",
-            "nullable": true
           }
         },
         "additionalProperties": false
@@ -2069,9 +2046,8 @@
             "type": "integer",
             "format": "int32"
           },
-          "stockId": {
-            "type": "integer",
-            "format": "int32"
+          "stock": {
+            "$ref": "#/components/schemas/StockDto"
           },
           "watchListId": {
             "type": "integer",

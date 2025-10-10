@@ -1,9 +1,8 @@
-import { use, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import './Portfolio.scss';
 import { TransactionType, type PortfolioCreateDto, type PortfolioDto, type PortfolioItemDto, type StockDto } from '../../generated-sources/openapi';
 import api from "../api/api";
 import PortfolioItemMenu from '../components/Portfolio/PortfolioItemMenu';
-import Stock from './Stock';
 
 const Portfolio = () => {
     const [portfolios, setPortfolios] = useState<PortfolioDto[]>([]);
@@ -72,7 +71,7 @@ const Portfolio = () => {
         setPortfolioValue(sum);
     }, [selectedPortfolio]);
 
-    const createTransaction = async () => {        
+    const createTransaction = async () => {
         const dto = {
             ...transactionCreateData,
             price: Number(transactionCreateData.price),
@@ -155,7 +154,7 @@ const Portfolio = () => {
         </button>
     ));
         
-    const portfolioItems = selectedPortfolio?.portfolioItems?.map((item, i) => (        
+    const portfolioItems = selectedPortfolio?.portfolioItems?.map((item, i) => (
         <tr key={i}>
             <td>{item.stock?.companyName}</td>
             <td>{item.stock?.symbol}</td>

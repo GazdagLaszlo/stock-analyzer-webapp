@@ -11,6 +11,6 @@ namespace StockManager.DataContext.DTOs
     {
         public int Id { get; set; }
         public int UserId { get; set; }
-        public List<WatchListItemDto> WatchListItems { get; set; }
+        public List<WatchListItemDto> WatchListItems { get; set; } = new List<WatchListItemDto>();
     }
 }

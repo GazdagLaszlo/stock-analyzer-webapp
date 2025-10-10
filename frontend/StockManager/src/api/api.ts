@@ -7,6 +7,7 @@ import {
     TransactionApi, 
     UserApi, 
     WatchListApi,
+    WatchListItemApi,
 } from "../../generated-sources/openapi";
 
 const User = new UserApi(new Configuration({basePath: ' '}), undefined, axiosInstance);
@@ -15,6 +16,7 @@ const Portfolio = new PortfolioApi(new Configuration({basePath: ' '}), undefined
 const Transaction = new TransactionApi(new Configuration({basePath: ' '}), undefined, axiosInstance);
 const WatchList = new WatchListApi(new Configuration({basePath: ' '}), undefined, axiosInstance);
 const PortfolioItem = new PortfolioItemApi(new Configuration({basePath: ' '}), undefined, axiosInstance);
+const WatchListItem = new WatchListItemApi(new Configuration({basePath: ' '}), undefined, axiosInstance);
 
 const api = {
     User,
@@ -23,6 +25,7 @@ const api = {
     Transaction,
     WatchList,
     PortfolioItem,
+    WatchListItem,
 };
 
 export default api;

@@ -10,7 +10,8 @@ namespace StockManager.Controllers
     //[Authorize]
     public class TransactionController(ITransactionService transactionService) : ControllerBase
     {
-        private int _userId => int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        //Visszairni
+        private int _userId = 3/*> int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value)*/;
 
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromBody] TransactionCreateDto createDto)

@@ -9,12 +9,15 @@ namespace StockManager.Controllers
     //[Authorize]
     public class WatchListController(IWatchListService watchListService) : ControllerBase
     {
-        [HttpGet("{id:int}")]
+        //Visszaállítani!
+        private int _userId = 3; /*=> int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value)*/
+
+        [HttpGet]
         //[Authorize(Roles = "")]
         [ProducesResponseType<WatchListDto>(StatusCodes.Status200OK)]
-        public async Task<ActionResult<WatchListDto>> GetByIdAsync(int id)
+        public async Task<ActionResult<WatchListDto>> GetByUserIdAsync()
         {
-            var result = await watchListService.GetByIdAsync(id);
+            var result = await watchListService.GetByUserIdAsync(_userId);
             return Ok(result);
         }
     }

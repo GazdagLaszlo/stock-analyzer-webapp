@@ -10,11 +10,13 @@ namespace StockManager.Controllers
     //[Authorize]
     public class WatchListItemController(IWatchListItemService watchListItemService) : ControllerBase
     {
+        //Visszaállítani!
+        private int _userId = 3; /*=> int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value)*/
 
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromBody] WatchListItemCreateDto createDto)
         {
-            await watchListItemService.CreateAsync(createDto);
+            await watchListItemService.CreateAsync(createDto, _userId);
             return Ok();
         }
 
