@@ -119,12 +119,20 @@ const Portfolio = () => {
     }
 
     const loadStocks = async () => {
-        api.Stock.apiStockGetAllGet().then(res => {
-            setStocks(res.data);
-        })
-        .catch(error => {
-            console.error("Error while loading stocks: ", error);
-        });       
+        if(transactionType == "Buy"){
+            api.Stock.apiStockGetAllGet().then(res => {
+                setStocks(res.data);
+            })
+            .catch(error => {
+                console.error("Error while loading stocks: ", error);
+            });
+        }
+        else if(transactionType == "Sell"){
+            const portfolioStocks = selectedPortfolio?.portfolioItems?.filter(item => item.stock !== undefined)
+                .map(item => item.stock as StockDto) ?? [];
+
+            setStocks(portfolioStocks);
+        }
     }
 
     const sortedStocks = [...stocks].sort((a, b) => (b.marketCap ?? 0) - (a.marketCap ?? 0));
@@ -135,7 +143,11 @@ const Portfolio = () => {
     );
 
     const rows = filteredStocks.map((stock, index) => (
-        <tr key={stock.id} className="table-row" onClick={() => {setSelectedStock(stock); setStockModalOpen(false)}}>
+        <tr key={stock.id} className="table-row" onClick={() => {
+                setSelectedStock(stock);
+                setStockModalOpen(false);
+                setTransactionCreateData({...transactionCreateData, price: selectedStock?.price?.toString() ?? "0"})
+            }}>
             <td>{index + 1}</td>
             <td>
                 <figure className='image is-24x24'>
@@ -229,7 +241,7 @@ const Portfolio = () => {
 
             {/*Transaction modal*/}
             <div className={`modal ${transactionModalOpen ? 'is-active' : ''}`}>
-                <div className="modal-background" onClick={() => setTransactionModalOpen(false)}></div>
+                <div className="modal-background" onClick={() => {setTransactionModalOpen(false); setSelectedStock({})}}></div>
                 <div className="modal-content">
                     <div className="card p-6">
                         <h1 className='title is-4 mb-6'>Add transaction</h1>
@@ -307,7 +319,7 @@ const Portfolio = () => {
                         </div>                                                
                     </div>
                 </div>
-                <button className="modal-close is-large" aria-label="close" onClick={() => setTransactionModalOpen(false)}></button>
+                <button className="modal-close is-large" aria-label="close" onClick={() => {setTransactionModalOpen(false); setSelectedStock({})} }></button>
             </div>
 
 

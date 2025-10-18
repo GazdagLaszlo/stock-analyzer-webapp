@@ -213,6 +213,7 @@ const Watchlist = () => {
                 <div className="modal-background" onClick={() => setEditModalOpen(false)}></div>
                 <div className="modal-content" style={{width: "60%"}}>
                     <div className="card p-6">
+                        <h1 className='title is-4 mb-6'>Edit selected item ({selectedWatchlistItem?.stock?.symbol})</h1>
                         <div className="field">
                             <label className="label">Entry price</label>
                             <div className="control">

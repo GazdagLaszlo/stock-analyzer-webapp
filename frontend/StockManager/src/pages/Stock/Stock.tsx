@@ -88,21 +88,23 @@ const Stock = () => {
                     */}
                 </div>
             </div>
-            <table className="table is-fullwidth mt-6"> 
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th>Symbol</th>
-                        <th>Company name</th>
-                        <th>Sector</th>
-                        <th>Price</th>
-                        <th>Market capitalization</th>
-                    </tr>                    
-                </thead>
-                <tbody>
-                    {rows}
-                </tbody>
-            </table>
+            <div className="table-div mt-6">
+                <table className="table is-fullwidth"> 
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Symbol</th>
+                            <th>Company name</th>
+                            <th>Sector</th>
+                            <th>Price</th>
+                            <th>Market capitalization</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {rows}
+                    </tbody>
+                </table>
+            </div>
         </div>
     );
 }

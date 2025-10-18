@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StockManager.DataContext.DTOs;
+using StockManager.DataContext.Entities;
 using StockManager.Services;
 
 namespace StockManager.Controllers
@@ -50,7 +51,14 @@ namespace StockManager.Controllers
         {
             if (priceService.Latest.TryGetValue(symbol.ToUpperInvariant(), out var price))
                 return Ok(new { symbol, price });
-            return NotFound(new { error = "Nincs adat erre a szimbólumra." });
+            return NotFound(new { error = "No data to the given symbol." });
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<StockQuote>> GetStockQuoteAsync(string symbol)
+        {
+            var result = await stockService.GetStockQuote(symbol);
+            return Ok(result);
         }
     }
 }

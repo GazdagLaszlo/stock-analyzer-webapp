@@ -7,3 +7,15 @@
 .table-row td{
     transition: .5s;
 }
+
+.table-div{
+    overflow-y: auto;
+    height: 50vh;
+    width: 100%;
+}
+
+.table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}

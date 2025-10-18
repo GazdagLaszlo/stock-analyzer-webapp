@@ -643,6 +643,44 @@
         }
       }
     },
+    "/api/Stock/GetStockQuote": {
+      "get": {
+        "tags": [
+          "Stock"
+        ],
+        "parameters": [
+          {
+            "name": "symbol",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/StockQuote"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StockQuote"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StockQuote"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/StockData/Create": {
       "post": {
         "tags": [
@@ -1780,6 +1818,28 @@
         },
         "additionalProperties": false
       },
+      "StockQuote": {
+        "type": "object",
+        "properties": {
+          "c": {
+            "type": "number",
+            "format": "double"
+          },
+          "d": {
+            "type": "number",
+            "format": "double"
+          },
+          "dp": {
+            "type": "number",
+            "format": "double"
+          },
+          "pc": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
       "StockUpdateDto": {
         "type": "object",
         "properties": {
@@ -2068,17 +2128,10 @@
       "WatchListItemUpdateDto": {
         "type": "object",
         "properties": {
-          "stockId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "watchListId": {
-            "type": "integer",
-            "format": "int32"
-          },
           "entryPrice": {
             "type": "number",
-            "format": "double"
+            "format": "double",
+            "nullable": true
           },
           "note": {
             "type": "string",

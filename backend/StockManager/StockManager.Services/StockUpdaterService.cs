@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using StockManager.DataContext.DTOs;
 using StockManager.DataContext.Entities;
 using StockManager.Services;
@@ -15,18 +16,19 @@ namespace StockManager.Services
 {    
     public class StockUpdaterService
     {
-        const string ninjaApiKey = "";
-        const string finnhubApiKey = "";
-
         private readonly HttpClient _httpClient;
-        private readonly IStockService _stockService;        
+        private readonly IStockService _stockService;
+        private readonly string _finnhubApiKey;
+        private readonly string _ninjaApiKey;
 
-        public StockUpdaterService(HttpClient httpClient, IStockService stockService)
+        public StockUpdaterService(HttpClient httpClient, IStockService stockService, IConfiguration configuration)
         {
             _httpClient = httpClient;
             _stockService = stockService;
+            _finnhubApiKey = configuration["FinnhubApiKey:ApiKey"];
+            _ninjaApiKey = configuration["NinjaApiKey:ApiKey"];
 
-            _httpClient.DefaultRequestHeaders.Add("X-Api-Key", ninjaApiKey);
+            _httpClient.DefaultRequestHeaders.Add("X-Api-Key", _ninjaApiKey);
         }
 
         public async Task GetStocks()
@@ -36,7 +38,10 @@ namespace StockManager.Services
             foreach (var company in companies)
             {
                 var data = await GetCompanyData(company.Symbol);
-                var price = await GetStockPriceAsync(company.Symbol);                
+
+                var quote = await _stockService.GetStockQuote(company.Symbol);
+                var price = quote.CurrentPrice;
+
                 var allStocks = await _stockService.GetAllAsync();
 
                 await SaveStock(data, price, allStocks);
@@ -51,7 +56,7 @@ namespace StockManager.Services
         }        
         public async Task<StockCreateDto> GetCompanyData(string symbol)
         {
-            var getData = $"https://finnhub.io/api/v1/stock/profile2?symbol={symbol}&token={finnhubApiKey}";
+            var getData = $"https://finnhub.io/api/v1/stock/profile2?symbol={symbol}&token={_finnhubApiKey}";
             var response = await _httpClient.GetAsync(getData);
             if (!response.IsSuccessStatusCode)
             {
@@ -116,7 +121,7 @@ namespace StockManager.Services
         }
         public async Task<bool> CheckMarketStatus()
         {
-            var getStatus = $"https://finnhub.io/api/v1/stock/market-status?exchange=US&token={finnhubApiKey}";
+            var getStatus = $"https://finnhub.io/api/v1/stock/market-status?exchange=US&token={_finnhubApiKey}";
             var response = await _httpClient.GetAsync(getStatus);
             if (!response.IsSuccessStatusCode)
             {
@@ -128,22 +133,6 @@ namespace StockManager.Services
             var isOpen = doc.RootElement.GetProperty("isOpen").GetBoolean();
 
             return isOpen;
-        }
-
-        public async Task<double> GetStockPriceAsync(string symbol)
-        {
-            var getPrice = $"https://finnhub.io/api/v1/quote?symbol={symbol}&token={finnhubApiKey}";
-            var response = await _httpClient.GetAsync(getPrice);
-            if (!response.IsSuccessStatusCode)
-            {
-                Console.WriteLine($"Nem sikerült lekérni az árfolyamot: {response.StatusCode}");
-            }
-            var responseString = await response.Content.ReadAsStringAsync();
-
-            using var doc = JsonDocument.Parse(responseString);
-            var price = doc.RootElement.GetProperty("c").GetDouble();
-
-            return price;
-        }
+        }        
     }
 }
