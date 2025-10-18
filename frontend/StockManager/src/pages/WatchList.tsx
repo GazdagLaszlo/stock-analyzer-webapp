@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { StockDto, WatchListDto, WatchListItemDto, WatchListItemUpdateDto } from "../../generated-sources/openapi";
 import api from "../api/api";
 import WatchlistItemMenu from "../components/Watchlist/WatchlistItemMenu";
+import { formatMoney } from "../utils/formatMoney";
 
 const Watchlist = () => {
     const [stocks, setStocks] = useState<StockDto[]>([]);
@@ -71,7 +72,7 @@ const Watchlist = () => {
             </td>
             <td>{item.stock?.companyName}</td>            
             <td>{item.stock?.symbol}</td>
-            <td>{item.stock?.price} USD</td>
+            <td>{formatMoney(item.stock?.price ?? 0)} USD</td>
             <td style={{borderLeft: "1px solid grey"}} className="pl-6">{item.entryPrice != null ? item.entryPrice + " USD" : "-"}</td>
             <td>{item.note ?? "-"}</td>
             <td className='is-narrow'>

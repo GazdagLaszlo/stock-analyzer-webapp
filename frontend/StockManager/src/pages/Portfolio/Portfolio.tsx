@@ -18,16 +18,16 @@ const Portfolio = () => {
 
     const [transactionCreateData, setTransactionCreateData] = useState({
         price: '',
-        quantity: '',
+        quantity: '1',
         date: new Date().toISOString().split("T")[0],
-        fee: '',
+        fee: '0',
         note: "",
     });
 
     const [transactionModalOpen, setTransactionModalOpen] = useState(false);
     const [stockModalOpen, setStockModalOpen] = useState(false);
     const [portfolioModalOpen, setPortfolioModalOpen] = useState(false);
-    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);    
 
     useEffect(() => {
         api.Portfolio.apiPortfolioGetAllGet().then(res => {
@@ -71,6 +71,19 @@ const Portfolio = () => {
         setPortfolioValue(sum);
     }, [selectedPortfolio]);
 
+    const clearTransactionData = () => {
+        setTransactionCreateData({
+            price: '',
+            quantity: '1',
+            date: new Date().toISOString().split("T")[0],
+            fee: '0',
+            note: "",
+        });
+        setSelectedStock({});
+
+        setTransactionType("Buy");
+    };
+
     const createTransaction = async () => {
         const dto = {
             ...transactionCreateData,
@@ -81,20 +94,22 @@ const Portfolio = () => {
             stockId: selectedStock?.id,
             portfolioId: selectedPortfolioId ?? -1
         };
+        
+        if(transactionType == "Sell"){
+            const portfolioItem = selectedPortfolio?.portfolioItems?.find(x => x.stock?.symbol === selectedStock?.symbol);
 
-        await api.Transaction.apiTransactionCreatePost(dto);
+            if(Number(transactionCreateData.quantity) > (portfolioItem?.quantity ?? 0)){
+                alert("You cannot sell more stock, than you have in your portfolio.");
+                return;
+            }
+
+            await api.Transaction.apiTransactionCreatePost(dto);
+        }
         
         const response = await api.Portfolio.apiPortfolioGetAllGet();
         setPortfolios(response.data);        
 
-        setTransactionCreateData({
-            price: '',
-            quantity: '',
-            date: new Date().toISOString().split("T")[0],
-            fee: '',
-            note: "",
-        });
-        setSelectedStock({});
+        clearTransactionData();
         
         setTransactionModalOpen(false);
     }
@@ -146,7 +161,7 @@ const Portfolio = () => {
         <tr key={stock.id} className="table-row" onClick={() => {
                 setSelectedStock(stock);
                 setStockModalOpen(false);
-                setTransactionCreateData({...transactionCreateData, price: selectedStock?.price?.toString() ?? "0"})
+                setTransactionCreateData({...transactionCreateData, price: stock?.price?.toString() ?? "0"})
             }}>
             <td>{index + 1}</td>
             <td>
@@ -176,8 +191,15 @@ const Portfolio = () => {
             <td>{(item.stock?.price && item.averagePurchasePrice) ? (((item.stock.price / item.averagePurchasePrice)-1)*100).toFixed(2) : "N/A"} %</td>        
             <td className='is-narrow'>
                 <PortfolioItemMenu
-                    onAddTransaction={() => {setSelectedStock(item.stock); setTransactionModalOpen(true);}}
-                    onDeleteItem={() => {  if (item.id != null) { setSelectedPortfolioItem(item); setDeleteModalOpen(true)} }}
+                    onAddTransaction={() => {
+                        setSelectedStock(item.stock);
+                        setTransactionModalOpen(true);
+                        setTransactionCreateData({...transactionCreateData, price: item.stock?.price?.toString() ?? "0"                            
+                    })}}
+                    onDeleteItem={() => {  if (item.id != null) { 
+                        setSelectedPortfolioItem(item);
+                        setDeleteModalOpen(true)}
+                    }}
                 />
             </td>
         </tr>
@@ -241,7 +263,7 @@ const Portfolio = () => {
 
             {/*Transaction modal*/}
             <div className={`modal ${transactionModalOpen ? 'is-active' : ''}`}>
-                <div className="modal-background" onClick={() => {setTransactionModalOpen(false); setSelectedStock({})}}></div>
+                <div className="modal-background" onClick={() => {setTransactionModalOpen(false); clearTransactionData()}}></div>
                 <div className="modal-content">
                     <div className="card p-6">
                         <h1 className='title is-4 mb-6'>Add transaction</h1>
@@ -280,7 +302,7 @@ const Portfolio = () => {
                             <div className="field column mb-0">
                                 <label className="label">Quantity</label>
                                 <div className="control">
-                                    <input className="input" type="number" min={1} value={transactionCreateData.quantity}
+                                    <input className="input" type="number" value={transactionCreateData.quantity}
                                     onChange={(e) => setTransactionCreateData({...transactionCreateData, quantity: e.target.value})}/>
                                 </div>
                             </div>                            
@@ -319,7 +341,7 @@ const Portfolio = () => {
                         </div>                                                
                     </div>
                 </div>
-                <button className="modal-close is-large" aria-label="close" onClick={() => {setTransactionModalOpen(false); setSelectedStock({})} }></button>
+                <button className="modal-close is-large" aria-label="close" onClick={() => {setTransactionModalOpen(false); clearTransactionData()} }></button>
             </div>
 
 
@@ -387,7 +409,7 @@ const Portfolio = () => {
                         <button className="delete" aria-label="close" onClick={() => setDeleteModalOpen(false)}></button>
                     </header>
                     <section className="modal-card-body">
-                        Are you sure you want to delete {selectedStock?.symbol}?
+                        Are you sure you want to delete {selectedPortfolioItem?.stock?.symbol}?
                         All transactions history will be lost.
                     </section>
                     <footer className="modal-card-foot is-justify-content-right">

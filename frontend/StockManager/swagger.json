@@ -1932,6 +1932,10 @@
             "type": "number",
             "format": "double"
           },
+          "quantity": {
+            "type": "number",
+            "format": "double"
+          },
           "date": {
             "type": "string",
             "format": "date-time"
@@ -1972,6 +1976,10 @@
           "date": {
             "type": "string",
             "format": "date-time"
+          },
+          "quantity": {
+            "type": "number",
+            "format": "double"
           },
           "transactionType": {
             "$ref": "#/components/schemas/TransactionType"

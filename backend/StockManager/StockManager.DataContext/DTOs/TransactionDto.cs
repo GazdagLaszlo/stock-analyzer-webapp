@@ -24,6 +24,7 @@ namespace StockManager.DataContext.DTOs
         public int UserId { get; set; }
         public StockDto Stock { get; set; }
         public double Price { get; set; }
+        public double Quantity { get; set; }
         public DateTime Date { get; set; }
         public TransactionType TransactionType { get; set; }
         public double Fee { get; set; }
@@ -35,6 +36,7 @@ namespace StockManager.DataContext.DTOs
         public int StockId { get; set; } 
         public double Price { get; set; } 
         public DateTime Date { get; set; }
+        public double Quantity { get; set; }
         public TransactionType TransactionType { get; set; }
         public double? Fee { get; set; } //Ha null, akkor 0
         public string? Note { get; set; } //Ha null, akkor üres string
