@@ -207,7 +207,7 @@ const Watchlist = () => {
                         </button>
                     </footer>
                 </div>
-            </div>    
+            </div>
 
             {/*Edit modal*/}
             <div className={`modal ${editModalOpen ? "is-active" : ""}`}>

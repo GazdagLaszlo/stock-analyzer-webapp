@@ -101,10 +101,9 @@ const Portfolio = () => {
             if(Number(transactionCreateData.quantity) > (portfolioItem?.quantity ?? 0)){
                 alert("You cannot sell more stock, than you have in your portfolio.");
                 return;
-            }
-
-            await api.Transaction.apiTransactionCreatePost(dto);
+            }            
         }
+        await api.Transaction.apiTransactionCreatePost(dto);
         
         const response = await api.Portfolio.apiPortfolioGetAllGet();
         setPortfolios(response.data);        

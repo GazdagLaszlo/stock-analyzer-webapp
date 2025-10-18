@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using StockManager.DataContext.Context;
 using StockManager.DataContext.DTOs;
@@ -136,11 +138,46 @@ namespace StockManager.Services
         public async Task DeleteAsync(int id)
         {
             var transaction = await context.Transactions
+                .Include(x => x.PortfolioItem)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if (transaction == null)
             {
                 throw new KeyNotFoundException($"Transaction with id - {id} not found!");
+            }
+
+            var portfolioItem = transaction.PortfolioItem;
+
+            if (transaction.TransactionType == TransactionType.Buy && portfolioItem.Quantity < transaction.Quantity)
+            {
+                throw new BadHttpRequestException(
+                    "Cannot delete this the transaction because some of the shares have already been sold."
+                );
+            }
+
+            if (transaction.TransactionType == TransactionType.Buy)
+            {
+                if (portfolioItem.Quantity - transaction.Quantity == 0)
+                {
+                    portfolioItem.AveragePurchasePrice = 0;
+                }
+                else
+                {
+                    portfolioItem.AveragePurchasePrice =
+                        ((portfolioItem.AveragePurchasePrice * portfolioItem.Quantity) -
+                        (transaction.Price * transaction.Quantity)) / (portfolioItem.Quantity - transaction.Quantity);
+                }
+
+                portfolioItem.Quantity -= transaction.Quantity;
+            }
+            else if (transaction.TransactionType == TransactionType.Sell)
+            {
+                portfolioItem.Quantity += transaction.Quantity;
+            }
+
+            if (portfolioItem.Quantity == 0)
+            {
+                context.PortfolioItems.Remove(portfolioItem);
             }
 
             context.Transactions.Remove(transaction);

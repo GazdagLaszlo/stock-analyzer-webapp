@@ -14,6 +14,7 @@
     "@fontsource/exo": "^5.2.6",
     "@fontsource/ibm-plex-sans": "^5.2.6",
     "@fontsource/sofia-sans-condensed": "^5.2.6",
+    "@fortawesome/fontawesome-free": "^7.1.0",
     "@microsoft/signalr": "^9.0.6",
     "axios": "^1.11.0",
     "bulma": "^1.0.4",
