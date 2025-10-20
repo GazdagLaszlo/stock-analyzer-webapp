@@ -5,6 +5,7 @@ import api from "../../api/api";
 import PortfolioItemMenu from '../../components/Portfolio/PortfolioItemMenu';
 import StockSelectModal from '../../components/Portfolio/StockSelectModal';
 import PortfolioItemDeleteModal from '../../components/Portfolio/PortfolioItemDeleteModal';
+import NewPortfolioModal from '../../components/Portfolio/NewPortfolioModal';
 
 const Portfolio = () => {
     const [portfolios, setPortfolios] = useState<PortfolioDto[]>([]);
@@ -13,8 +14,7 @@ const Portfolio = () => {
     const [itemProfits, setItemProfits] = useState<{[id: number]: number}>({});
     const [portfolioValue, setPortfolioValue] = useState<number | null>();
     const [transactionType, setTransactionType] = useState("Buy");
-    const [selectedStock, setSelectedStock] = useState<StockDto>();
-    const [newPortfolioName, setNewPortfolioName] = useState<PortfolioCreateDto>();
+    const [selectedStock, setSelectedStock] = useState<StockDto>();    
     const [selectedPortfolioItem, setSelectedPortfolioItem] = useState<PortfolioItemDto>();
 
     const [transactionCreateData, setTransactionCreateData] = useState({
@@ -114,14 +114,11 @@ const Portfolio = () => {
         setTransactionModalOpen(false);
     }
 
-    const createPortfolio = async () => {    
-        await api.Portfolio.apiPortfolioCreatePost(newPortfolioName);
+    const createPortfolio = async (createDto: PortfolioCreateDto) => {
+        await api.Portfolio.apiPortfolioCreatePost(createDto);
 
         const response = await api.Portfolio.apiPortfolioGetAllGet();
-        setPortfolios(response.data);    
-
-        setNewPortfolioName({});
-        setPortfolioModalOpen(false);
+        setPortfolios(response.data);
     }
 
     const deletePortfolioItem = async (id: number | undefined ) => {
@@ -337,28 +334,11 @@ const Portfolio = () => {
                 onDelete={deletePortfolioItem}
             />
 
-            {/*Add portfolio modal*/}
-            <div className={`modal ${portfolioModalOpen ? 'is-active' : ''}`}>
-                <div className="modal-background" onClick={() => setPortfolioModalOpen(false)}></div>
-                <div className="modal-content">
-                    <div className="card p-6">
-                        <h1 className='title is-4 mb-6'>Create portfolio</h1>
-                        <div className="field">
-                            <label className="label">Portfolio name</label>
-                            <div className="control">
-                                <input className="input" type="text"
-                                onChange={(e) => setNewPortfolioName({ ...newPortfolioName, name: e.target.value })}/>
-                            </div>
-                        </div>
-                        <div className='is-flex is-justify-content-center mt-6'>
-                            <button className='button is-dark' onClick={createPortfolio}>
-                                Create
-                            </button>
-                        </div>       
-                    </div>                    
-                </div>
-                <button className="modal-close is-large" aria-label="close" onClick={() => setPortfolioModalOpen(false)}></button>
-            </div>            
+            <NewPortfolioModal
+                open={portfolioModalOpen}
+                onClose={() => setPortfolioModalOpen(false)}
+                onCreate={createPortfolio}
+            />
         </div>
     );
 }
