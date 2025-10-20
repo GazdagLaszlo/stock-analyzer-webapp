@@ -4,6 +4,7 @@ import { TransactionType, type PortfolioCreateDto, type PortfolioDto, type Portf
 import api from "../../api/api";
 import PortfolioItemMenu from '../../components/Portfolio/PortfolioItemMenu';
 import StockSelectModal from '../../components/Portfolio/StockSelectModal';
+import PortfolioItemDeleteModal from '../../components/Portfolio/PortfolioItemDeleteModal';
 
 const Portfolio = () => {
     const [portfolios, setPortfolios] = useState<PortfolioDto[]>([]);
@@ -329,6 +330,13 @@ const Portfolio = () => {
                 }}
             />
 
+            <PortfolioItemDeleteModal
+                open={deleteModalOpen}
+                onClose={() => setDeleteModalOpen(false)}
+                portfolioItem={selectedPortfolioItem}
+                onDelete={deletePortfolioItem}
+            />
+
             {/*Add portfolio modal*/}
             <div className={`modal ${portfolioModalOpen ? 'is-active' : ''}`}>
                 <div className="modal-background" onClick={() => setPortfolioModalOpen(false)}></div>
@@ -350,30 +358,7 @@ const Portfolio = () => {
                     </div>                    
                 </div>
                 <button className="modal-close is-large" aria-label="close" onClick={() => setPortfolioModalOpen(false)}></button>
-            </div>
-
-            {/*Delete modal*/}
-            <div className={`modal ${deleteModalOpen ? "is-active" : ""}`}>
-                <div className="modal-background" onClick={() => setDeleteModalOpen(false)}></div>
-                <div className="modal-card">
-                    <header className="modal-card-head">
-                        <h1 className='modal-card-title'>Delete position</h1>
-                        <button className="delete" aria-label="close" onClick={() => setDeleteModalOpen(false)}></button>
-                    </header>
-                    <section className="modal-card-body">
-                        Are you sure you want to delete {selectedPortfolioItem?.stock?.symbol}?
-                        All transactions history will be lost.
-                    </section>
-                    <footer className="modal-card-foot is-justify-content-right">
-                        <button className="button mr-2" onClick={() => setDeleteModalOpen(false)}>
-                            Cancel
-                        </button>
-                        <button className="button is-danger" onClick={() => { deletePortfolioItem(selectedPortfolioItem?.id); setDeleteModalOpen(false) }}>
-                            Delete
-                        </button>
-                    </footer>
-                </div>
-            </div>
+            </div>            
         </div>
     );
 }
