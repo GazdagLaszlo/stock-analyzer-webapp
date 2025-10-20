@@ -3,6 +3,7 @@ import './Portfolio.scss';
 import { TransactionType, type PortfolioCreateDto, type PortfolioDto, type PortfolioItemDto, type StockDto } from '../../../generated-sources/openapi';
 import api from "../../api/api";
 import PortfolioItemMenu from '../../components/Portfolio/PortfolioItemMenu';
+import StockSelectModal from '../../components/Portfolio/StockSelectModal';
 
 const Portfolio = () => {
     const [portfolios, setPortfolios] = useState<PortfolioDto[]>([]);
@@ -14,7 +15,6 @@ const Portfolio = () => {
     const [selectedStock, setSelectedStock] = useState<StockDto>();
     const [newPortfolioName, setNewPortfolioName] = useState<PortfolioCreateDto>();
     const [selectedPortfolioItem, setSelectedPortfolioItem] = useState<PortfolioItemDto>();
-    const [searchInput, setSearchInput] = useState("");
 
     const [transactionCreateData, setTransactionCreateData] = useState({
         price: '',
@@ -147,32 +147,7 @@ const Portfolio = () => {
 
             setStocks(portfolioStocks);
         }
-    }
-
-    const sortedStocks = [...stocks].sort((a, b) => (b.marketCap ?? 0) - (a.marketCap ?? 0));
-
-    const filteredStocks = sortedStocks.filter(stock => 
-        stock.symbol?.toLowerCase().startsWith(searchInput.toLowerCase()) ||
-        stock.companyName?.toLowerCase().startsWith(searchInput.toLowerCase())
-    );
-
-    const rows = filteredStocks.map((stock, index) => (
-        <tr key={stock.id} className="table-row" onClick={() => {
-                setSelectedStock(stock);
-                setStockModalOpen(false);
-                setTransactionCreateData({...transactionCreateData, price: stock?.price?.toString() ?? "0"})
-            }}>
-            <td>{index + 1}</td>
-            <td>
-                <figure className='image is-24x24'>
-                    <img src={`https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${stock.symbol}.png`}/>
-                </figure>
-            </td>
-            <td>{stock.symbol}</td>
-            <td>{stock.companyName}</td>
-        </tr>
-    ));
-    
+    }    
 
     const portfolioButtons = portfolios.map((portfolio) => (
         <button key={portfolio.id} className={"button mr-2 " + (selectedPortfolioId == portfolio.id ? "is-dark" : "")} onClick={() => setSelectedPortfolioId(portfolio.id)}>
@@ -342,39 +317,17 @@ const Portfolio = () => {
                 </div>
                 <button className="modal-close is-large" aria-label="close" onClick={() => {setTransactionModalOpen(false); clearTransactionData()} }></button>
             </div>
-
-
-            {/*Stock select modal*/}
-            <div className={`modal ${stockModalOpen ? 'is-active' : ''}`}>
-                <div className="modal-background" onClick={() => setStockModalOpen(false)}></div>
-                <div className="modal-content" style={{width: "60%"}}>
-                    <div className="card p-6">
-                        <div className="field">
-                            <div className="control">
-                                <input type='text' className='input pl-5' placeholder='Keresés...'
-                                onChange={(e) => setSearchInput(e.target.value)}/>
-                                {/*
-                                <span className="icon">
-                                    <i className="fas fa-search has-background-dark"></i>
-                                </span>
-                                */}
-                            </div>
-                        </div>
-                        <div style={{ height: "500px", overflowY: "auto" }} className='mt-6'>
-                            <table className="table is-fullwidth">
-                                <thead>
-                                    <tr></tr>
-                                </thead>
-                                <tbody>
-                                    {rows}
-                                </tbody>
-                            </table>
-                        </div>                        
-                    </div>                    
-                </div>
-                <button className="modal-close is-large" aria-label="close" onClick={() => setStockModalOpen(false)}></button>
-            </div>
-
+            
+            <StockSelectModal
+                open={stockModalOpen}
+                onClose={() => setStockModalOpen(false)}
+                stocks={stocks}
+                onSelectStock={(stock) => {
+                    setSelectedStock(stock);
+                    setTransactionCreateData({ ...transactionCreateData, price: stock?.price?.toString() ?? "0" });
+                    setStockModalOpen(false);
+                }}
+            />
 
             {/*Add portfolio modal*/}
             <div className={`modal ${portfolioModalOpen ? 'is-active' : ''}`}>
