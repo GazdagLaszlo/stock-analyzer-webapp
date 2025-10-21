@@ -12,6 +12,6 @@ export function formatMoney(value: number): string {
     return (value / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
   } 
   else {
-    return value.toString();
+    return value.toFixed(2).toString();
   }
 }

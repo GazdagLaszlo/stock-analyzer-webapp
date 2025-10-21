@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { TransactionDto } from "../../generated-sources/openapi";
 import api from "../api/api";
 import { formatMoney } from "../utils/formatMoney";
+import TransactionDeleteModal from "../components/Transaction/TransactionDeleteModal";
 
 const Transaction = () => {
     const [transactions, setTransactions] = useState<TransactionDto[]>([]);
@@ -86,27 +87,12 @@ const Transaction = () => {
                 </table>
             </div>
 
-            {/*Delete modal*/}
-            <div className={`modal ${deleteModalOpen ? "is-active" : ""}`}>
-                <div className="modal-background" onClick={() => setDeleteModalOpen(false)}></div>
-                <div className="modal-card">
-                    <header className="modal-card-head">
-                        <h1 className='modal-card-title'>Delete transaction</h1>
-                        <button className="delete" aria-label="close" onClick={() => setDeleteModalOpen(false)}></button>
-                    </header>
-                    <section className="modal-card-body">
-                        Are you sure you want to delete the transaction?
-                    </section>
-                    <footer className="modal-card-foot is-justify-content-right">
-                        <button className="button mr-2" onClick={() => setDeleteModalOpen(false)}>
-                            Cancel
-                        </button>
-                        <button className="button is-danger" onClick={() => { deleteTransaction(selectedTransaction?.id); setDeleteModalOpen(false) }}>
-                            Delete
-                        </button>
-                    </footer>
-                </div>
-            </div>
+            <TransactionDeleteModal
+                open={deleteModalOpen}                
+                selectedTransactionId={selectedTransaction?.id}
+                onClose={() => setDeleteModalOpen(false)}
+                onDelete={deleteTransaction}
+            />
         </div>        
     );
 }
