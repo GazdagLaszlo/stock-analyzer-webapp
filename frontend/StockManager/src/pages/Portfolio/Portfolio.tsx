@@ -3,17 +3,15 @@ import './Portfolio.scss';
 import { TransactionType, type PortfolioCreateDto, type PortfolioDto, type PortfolioItemDto, type StockDto } from '../../../generated-sources/openapi';
 import api from "../../api/api";
 import PortfolioItemMenu from '../../components/Portfolio/PortfolioItemMenu';
-import StockSelectModal from '../../components/Portfolio/StockSelectModal';
 import PortfolioItemDeleteModal from '../../components/Portfolio/PortfolioItemDeleteModal';
 import NewPortfolioModal from '../../components/Portfolio/NewPortfolioModal';
+import TransactionModal from '../../components/Portfolio/TransactionModal';
 
 const Portfolio = () => {
-    const [portfolios, setPortfolios] = useState<PortfolioDto[]>([]);
-    const [stocks, setStocks] = useState<StockDto[]>([]);
+    const [portfolios, setPortfolios] = useState<PortfolioDto[]>([]);    
     const [selectedPortfolioId, setSelectedPortfolioId] = useState<number | null>();
     const [itemProfits, setItemProfits] = useState<{[id: number]: number}>({});
-    const [portfolioValue, setPortfolioValue] = useState<number | null>();
-    const [transactionType, setTransactionType] = useState("Buy");
+    const [portfolioValue, setPortfolioValue] = useState<number | null>();    
     const [selectedStock, setSelectedStock] = useState<StockDto>();    
     const [selectedPortfolioItem, setSelectedPortfolioItem] = useState<PortfolioItemDto>();
 
@@ -26,9 +24,8 @@ const Portfolio = () => {
     });
 
     const [transactionModalOpen, setTransactionModalOpen] = useState(false);
-    const [stockModalOpen, setStockModalOpen] = useState(false);
     const [portfolioModalOpen, setPortfolioModalOpen] = useState(false);
-    const [deleteModalOpen, setDeleteModalOpen] = useState(false);    
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
     useEffect(() => {
         api.Portfolio.apiPortfolioGetAllGet().then(res => {
@@ -72,34 +69,20 @@ const Portfolio = () => {
         setPortfolioValue(sum);
     }, [selectedPortfolio]);
 
-    const clearTransactionData = () => {
-        setTransactionCreateData({
-            price: '',
-            quantity: '1',
-            date: new Date().toISOString().split("T")[0],
-            fee: '0',
-            note: "",
-        });
-        setSelectedStock({});
+    const createTransaction = async (dto : {
+            price: number,
+            quantity: number,
+            fee: number,
+            transactionType: TransactionType,
+            stockId?: number,
+            portfolioId: number,
+            note: string,
+            date: string
+        }) => {         
+        if(dto.transactionType == TransactionType.NUMBER_1){
+            const portfolioItem = selectedPortfolio?.portfolioItems?.find(x => x.stock?.id === dto.stockId);
 
-        setTransactionType("Buy");
-    };
-
-    const createTransaction = async () => {
-        const dto = {
-            ...transactionCreateData,
-            price: Number(transactionCreateData.price),
-            quantity: Number(transactionCreateData.quantity),
-            fee: Number(transactionCreateData.fee),
-            transactionType: transactionType === "Buy" ? TransactionType.NUMBER_0 : TransactionType.NUMBER_1,
-            stockId: selectedStock?.id,
-            portfolioId: selectedPortfolioId ?? -1
-        };
-        
-        if(transactionType == "Sell"){
-            const portfolioItem = selectedPortfolio?.portfolioItems?.find(x => x.stock?.symbol === selectedStock?.symbol);
-
-            if(Number(transactionCreateData.quantity) > (portfolioItem?.quantity ?? 0)){
+            if(dto.quantity > (portfolioItem?.quantity ?? 0)){
                 alert("You cannot sell more stock, than you have in your portfolio.");
                 return;
             }            
@@ -107,9 +90,7 @@ const Portfolio = () => {
         await api.Transaction.apiTransactionCreatePost(dto);
         
         const response = await api.Portfolio.apiPortfolioGetAllGet();
-        setPortfolios(response.data);        
-
-        clearTransactionData();
+        setPortfolios(response.data);
         
         setTransactionModalOpen(false);
     }
@@ -129,23 +110,6 @@ const Portfolio = () => {
         const response = await api.Portfolio.apiPortfolioGetAllGet();
         setPortfolios(response.data);
     }
-
-    const loadStocks = async () => {
-        if(transactionType == "Buy"){
-            api.Stock.apiStockGetAllGet().then(res => {
-                setStocks(res.data);
-            })
-            .catch(error => {
-                console.error("Error while loading stocks: ", error);
-            });
-        }
-        else if(transactionType == "Sell"){
-            const portfolioStocks = selectedPortfolio?.portfolioItems?.filter(item => item.stock !== undefined)
-                .map(item => item.stock as StockDto) ?? [];
-
-            setStocks(portfolioStocks);
-        }
-    }    
 
     const portfolioButtons = portfolios.map((portfolio) => (
         <button key={portfolio.id} className={"button mr-2 " + (selectedPortfolioId == portfolio.id ? "is-dark" : "")} onClick={() => setSelectedPortfolioId(portfolio.id)}>
@@ -232,99 +196,15 @@ const Portfolio = () => {
                 </table>                
             </div>            
 
-
-            {/*Transaction modal*/}
-            <div className={`modal ${transactionModalOpen ? 'is-active' : ''}`}>
-                <div className="modal-background" onClick={() => {setTransactionModalOpen(false); clearTransactionData()}}></div>
-                <div className="modal-content">
-                    <div className="card p-6">
-                        <h1 className='title is-4 mb-6'>Add transaction</h1>
-                        <div className='mt-1 mx-0 columns'>
-                            <div className='column p-0 mr-3'>
-                                <button className={"button is-normal is-fullwidth has-text-weight-bold "
-                                     + (transactionType === "Buy" ? "is-success" : "is-light")}
-                                     onClick={() => setTransactionType("Buy")}>Buy</button>
-                            </div>
-                            <div className='column p-0'>
-                                <button className={"button is-normal is-fullwidth has-text-weight-bold "
-                                     + (transactionType === "Sell" ? "is-danger" : "is-light")}
-                                     onClick={() => setTransactionType("Sell")}>Sell</button>
-                            </div>                                            
-                        </div>                        
-
-                        <div className="field">
-                            <label className='label'>Symbol</label>
-                            <div className="select is-fullwidth" onClick={() => setStockModalOpen(true)} style={{ cursor: "pointer" }}>
-                                <button className="button is-fullwidth is-justify-content-start" onClick={loadStocks}>
-                                    <span>
-                                        {selectedStock?.symbol ?? "Select symbol"}
-                                    </span>                                    
-                                </button>
-                            </div>
-                        </div>                        
-
-                        <div className='columns mb-0'>
-                            <div className="field column mb-0">
-                                <label className="label">Price</label>
-                                <div className="control">
-                                    <input className="input" type="number" value={transactionCreateData.price}
-                                    onChange={(e) => setTransactionCreateData({...transactionCreateData, price: e.target.value})}/>
-                                </div>
-                            </div>
-                            <div className="field column mb-0">
-                                <label className="label">Quantity</label>
-                                <div className="control">
-                                    <input className="input" type="number" value={transactionCreateData.quantity}
-                                    onChange={(e) => setTransactionCreateData({...transactionCreateData, quantity: e.target.value})}/>
-                                </div>
-                            </div>                            
-                        </div>    
-
-                        <div className="columns mb-0">
-                            <div className="field column mb-0">
-                                <label className="label">Date</label>
-                                <div className="control">
-                                    <input className="input" type="date" value={transactionCreateData.date}
-                                    onChange={(e) => setTransactionCreateData({...transactionCreateData, date: e.target.value})}/>
-                                </div>
-                            </div>
-                            <div className="field column mb-0">
-                                <label className="label">Fee</label>
-                                <div className="control">
-                                    <input className="input" type="number" min={0} value={transactionCreateData.fee}
-                                    onChange={(e) => setTransactionCreateData({...transactionCreateData, fee: e.target.value})}/>
-                                </div>
-                            </div>
-                        </div>                         
-
-                        <div className="field">
-                            <label className="label">Notes</label>
-                            <div className="control">
-                                <textarea className="textarea" placeholder="Type notes..." value={transactionCreateData.note}
-                                onChange={(e) => setTransactionCreateData({...transactionCreateData, note: e.target.value})}
-                                style={{height: "100px", minHeight: "0px"}}></textarea>
-                            </div>
-                        </div>
-
-                        <div className='is-flex is-justify-content-center mt-5'>
-                            <button className='button is-dark' onClick={createTransaction}>
-                                Add transaction
-                            </button>
-                        </div>                                                
-                    </div>
-                </div>
-                <button className="modal-close is-large" aria-label="close" onClick={() => {setTransactionModalOpen(false); clearTransactionData()} }></button>
-            </div>
-            
-            <StockSelectModal
-                open={stockModalOpen}
-                onClose={() => setStockModalOpen(false)}
-                stocks={stocks}
-                onSelectStock={(stock) => {
-                    setSelectedStock(stock);
-                    setTransactionCreateData({ ...transactionCreateData, price: stock?.price?.toString() ?? "0" });
-                    setStockModalOpen(false);
+            <TransactionModal
+                open={transactionModalOpen}
+                onClose={() => {
+                    setTransactionModalOpen(false);
                 }}
+                onCreate={createTransaction}
+                portfolioId={selectedPortfolioId!}                
+                selectedStock={selectedStock}
+                portfolioItems={selectedPortfolio?.portfolioItems ?? []}
             />
 
             <PortfolioItemDeleteModal
