@@ -30,21 +30,21 @@ const Dashboard = () => {
             <br /><br />
             
             <div className="mt-6">
-                <p className="subtitle pb-3 box-header">News</p>
+                <p className="subtitle pb-3 box-header">News</p>                                 
                 <div className="columns is-multiline is-flex is-0 news-container">
-                    {stockNews.slice(0, 6).map((newsItem, index) => (                        
-                        <div key={index} className="column news-box p-3">
-                            <a href={newsItem.url ?? ""}>
-                            <figure className="image is-16by9">
-                                <img src={newsItem.image ?? ""}/>
-                            </figure>
-                            <p className="is-size-6 has-text-weight-bold py-3">{newsItem.headline}</p>
-                            <p style={{flex:'1'}}>{newsItem.summary}</p>
-                            <p className="has-text-right vertical-align-end is-italic mt-3">
-                                {new Date((newsItem.datetime ?? 0) * 1000).toLocaleString("hu-HU")}
-                            </p>
+                    {stockNews.slice(0, 6).map((newsItem, index) => (
+                        <div key={index} className="column news-box p-3">                            
+                            <a href={newsItem.url ?? ""} className="is-flex is-flex-direction-column">
+                                <figure className="image is-16by9">
+                                    <img src={newsItem.image ?? ""}/>
+                                </figure>
+                                <p className="is-size-6 has-text-weight-bold py-3">{newsItem.headline}</p>
+                                <p style={{flex:'1'}}>{newsItem.summary}</p>
+                                <p className="has-text-right vertical-align-end is-italic mt-3">
+                                    {new Date((newsItem.datetime ?? 0) * 1000).toLocaleString("hu-HU")}
+                                </p>
                             </a>
-                        </div>
+                        </div>                        
                     ))}
                 </div>
             </div>            

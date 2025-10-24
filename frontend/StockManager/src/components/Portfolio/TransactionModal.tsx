@@ -29,7 +29,7 @@ type TransactionCreateData = {
     note: string
 };
 
-const  TransactionModal = ({open, onClose, onCreate, portfolioId, portfolioItems} : Props) => {
+const  TransactionModal = ({open, onClose, onCreate, portfolioId, portfolioItems, selectedStock: selectedStockProp} : Props) => {
     const [transactionType, setTransactionType] = useState<'Buy' | 'Sell'>('Buy');
     const [selectedStock, setSelectedStock] = useState<StockDto>();
     const [transactionCreateData, setTransactionCreateData] = useState<TransactionCreateData>({
@@ -43,14 +43,14 @@ const  TransactionModal = ({open, onClose, onCreate, portfolioId, portfolioItems
     const [stockModalOpen, setStockModalOpen] = useState(false);
 
     useEffect(() => {
-        if (selectedStock) {
-            setSelectedStock(selectedStock);
+        if (selectedStockProp) {
+            setSelectedStock(selectedStockProp);
             setTransactionCreateData(prev => ({
                 ...prev,
-                price: selectedStock.price?.toString() ?? "0"
+                price: selectedStockProp.price?.toString() ?? "0"
             }));
         }
-    }, [selectedStock]);
+    }, [selectedStockProp]);
 
     useEffect(() => {        
         if (open) {

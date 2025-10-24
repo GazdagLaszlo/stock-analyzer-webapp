@@ -1,21 +1,21 @@
 body {
-  font-family: 'Sofia Sans Condensed', sans-serif;
+font-family: 'Sofia Sans Condensed', sans-serif;
 }
 
 body, .navbar, .table td, .table th{
-  background-color: white;
+background-color: white;
 }
 
 .panel-tabs>a, .title, .panel>p, .navbar-item, .table td, .table thead th, .title, .panel p, a, .subtitle, body, .navbar, span, .breadcrumb a{
-  color: black;
+color: black;
 }
 
 .subtitle{
-  font-weight: bold;
+font-weight: bold;
 }
 
 .navbar-item:hover{
-  background-color: rgb(241, 241, 241);
+background-color: rgb(241, 241, 241);
 }
 
 
@@ -32,6 +32,10 @@ body, .navbar, .table td, .table th{
         flex-direction: column;
         padding: 1rem;
         cursor: pointer;
+    }
+
+    .news-box a {
+        flex: 1;
     }
 
     .box-header{
