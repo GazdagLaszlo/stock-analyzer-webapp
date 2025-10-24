@@ -20,6 +20,8 @@ docs/StockDataCreateDto.md
 docs/StockDataDto.md
 docs/StockDataUpdateDto.md
 docs/StockDto.md
+docs/StockNews.md
+docs/StockNewsApi.md
 docs/StockQuote.md
 docs/StockUpdateDto.md
 docs/TransactionApi.md

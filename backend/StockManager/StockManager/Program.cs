@@ -14,6 +14,10 @@ builder.Services.AddHttpClient();
 
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlite("Filename=stockmanagerDB.db"));
 
+builder.Services.AddScoped<StockUpdaterService>();
+builder.Services.AddScoped<IStockService, StockService>();
+builder.Services.AddHostedService<StockUpdaterBackgroundService>();
+builder.Services.AddHttpClient<StockUpdaterService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IStockService, StockService>();
 builder.Services.AddScoped<IPortfolioService, PortfolioService>();
@@ -22,7 +26,10 @@ builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<IWatchListService, WatchListService>();
 builder.Services.AddScoped<IWatchListItemService, WatchListItemService>();
 builder.Services.AddScoped<IStockDataService, StockDataService>();
+builder.Services.AddScoped<IStockNewsService, StockNewsService>();
+
 builder.Services.AddHostedService<StockUpdaterBackgroundService>();
+builder.Services.AddHostedService<StockNewsBackgroundService>();
 
 builder.Services.AddScoped<StockUpdaterService>();
 builder.Services.AddHttpClient<StockUpdaterService>();

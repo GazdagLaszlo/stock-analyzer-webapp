@@ -18,3 +18,26 @@ body, .navbar, .table td, .table th{
   background-color: rgb(241, 241, 241);
 }
 
+
+.dashboard
+{
+    .news-box{
+        flex: 1 1 calc(33.333% - 20px);
+        max-width: calc(33.333% - 20px);
+        min-height: 10rem;
+        border: 1.5px solid rgb(194, 194, 194);
+        background-color: rgb(250, 250, 250);
+        border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+        padding: 1rem;
+    }
+
+    .box-header{
+        border-bottom: 1px solid black;
+    }
+
+    .news-container{
+        gap: 20px;
+    }
+}
