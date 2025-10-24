@@ -31,6 +31,7 @@ body, .navbar, .table td, .table th{
         display: flex;
         flex-direction: column;
         padding: 1rem;
+        cursor: pointer;
     }
 
     .box-header{
