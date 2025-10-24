@@ -13,10 +13,6 @@
         public double AveragePurchasePrice { get; set; } //Átlagos
         public double? TargetPrice { get; set; }
         public string? Note { get; set; }
-
-        //Nem biztos, hogy kelleni fog. Mindig dinamikusan számolandó.
-        //public double ProfitLoss { get; set; } //In dollar
-
         public List<Transaction> Transactions { get; set; } = new List<Transaction>();
     }
 }

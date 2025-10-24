@@ -34,6 +34,9 @@ namespace StockManager.Services
         public async Task GetStocks()
         {
             var companies = await GetSP500Companies();
+            Console.WriteLine(companies.Count());
+
+            var allStocks = await _stockService.GetAllAsync();
 
             foreach (var company in companies)
             {
@@ -41,10 +44,14 @@ namespace StockManager.Services
 
                 var quote = await _stockService.GetStockQuote(company.Symbol);
                 var price = quote.CurrentPrice;
-
-                var allStocks = await _stockService.GetAllAsync();
+                Console.WriteLine(company.Symbol+"-"+quote.CurrentPrice);                
 
                 await SaveStock(data, price, allStocks);
+
+                if (!allStocks.Any(x => x.Symbol == data.Symbol))
+                {
+                    allStocks.Add(new StockDto { Symbol = data.Symbol });
+                }
 
                 await Task.Delay(1200);
             }
@@ -66,25 +73,6 @@ namespace StockManager.Services
             var responseString = await response.Content.ReadAsStringAsync();
             return JsonSerializer.Deserialize<StockCreateDto>(responseString);
         }        
-        /*
-        private async Task<double?> GetMarketCapAsync(string symbol)
-        {
-            var getStock = $"https://finnhub.io/api/v1/stock/metric?symbol={symbol}&metric=all&token={finnhubApiKey}";
-            var response = await _httpClient.GetAsync(getStock);
-            if (!response.IsSuccessStatusCode)
-            {
-                Console.WriteLine($"Nem sikerült lekérni {symbol}, status: {response.StatusCode}");
-                return null;
-            }
-            var responseString = await response.Content.ReadAsStringAsync();
-
-            using var doc = JsonDocument.Parse(responseString);
-            var metric = doc.RootElement.GetProperty("metric");
-            var marketCap = metric.GetProperty("marketCapitalization").GetDouble();
-
-            return marketCap;
-        }
-        */
         private async Task SaveStock(StockCreateDto data, double price, IList<StockDto> allStocks)
         {
             var stockExists = allStocks.FirstOrDefault(x => x.Symbol == data.Symbol);

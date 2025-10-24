@@ -12,10 +12,10 @@ namespace StockManager.DataContext.Entities
         [JsonPropertyName("c")]
         public double CurrentPrice { get; set; }
         [JsonPropertyName("d")]
-        public double Change {  get; set; }
+        public double? Change {  get; set; }
         [JsonPropertyName("dp")]
-        public double PercentChange { get; set; }
+        public double? PercentChange { get; set; }
         [JsonPropertyName("pc")]
-        public double PreviousClosePrice { get; set; }
+        public double? PreviousClosePrice { get; set; }
     }
 }

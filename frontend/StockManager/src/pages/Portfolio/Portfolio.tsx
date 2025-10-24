@@ -8,11 +8,11 @@ import NewPortfolioModal from '../../components/Portfolio/NewPortfolioModal';
 import TransactionModal from '../../components/Portfolio/TransactionModal';
 
 const Portfolio = () => {
-    const [portfolios, setPortfolios] = useState<PortfolioDto[]>([]);    
+    const [portfolios, setPortfolios] = useState<PortfolioDto[]>([]);
     const [selectedPortfolioId, setSelectedPortfolioId] = useState<number | null>();
     const [itemProfits, setItemProfits] = useState<{[id: number]: number}>({});
-    const [portfolioValue, setPortfolioValue] = useState<number | null>();    
-    const [selectedStock, setSelectedStock] = useState<StockDto>();    
+    const [portfolioValue, setPortfolioValue] = useState<number | null>();
+    const [selectedStock, setSelectedStock] = useState<StockDto>();
     const [selectedPortfolioItem, setSelectedPortfolioItem] = useState<PortfolioItemDto>();
 
     const [transactionCreateData, setTransactionCreateData] = useState({
@@ -123,8 +123,21 @@ const Portfolio = () => {
             <td>{item.stock?.symbol}</td>
             <td>{item.stock?.price} USD</td>
             <td>{((item.quantity ?? 0)*(item.stock?.price ?? 0)).toFixed(2)} USD ({item.quantity?.toFixed(2)} {item.stock?.symbol})</td>
-            <td>{itemProfits[item.id!] !== undefined ? itemProfits[item.id!].toFixed(2) : 'N/A'} USD</td>
-            <td>{(item.stock?.price && item.averagePurchasePrice) ? (((item.stock.price / item.averagePurchasePrice)-1)*100).toFixed(2) : "N/A"} %</td>        
+            <td style={{color: 
+                    (itemProfits[item.id!] !== undefined)
+                        ? itemProfits[item.id!] > 0 ? 'green'
+                        : itemProfits[item.id!] < 0 ? 'red'
+                        : 'black' : 'black'}}>
+
+                {itemProfits[item.id!] !== undefined ? itemProfits[item.id!].toFixed(2) : 'N/A'} USD
+
+                <span className='ml-3 is-size-7' style={{color:"inherit"}}>
+
+                    {(item.averagePurchasePrice && item.quantity)
+                        ? ((itemProfits[item.id!] / (item.averagePurchasePrice * item.quantity)) * 100).toFixed(2) : "N/A"} %
+                </span>
+            </td>
+
             <td className='is-narrow'>
                 <PortfolioItemMenu
                     onAddTransaction={() => {
@@ -142,12 +155,34 @@ const Portfolio = () => {
     ));
 
     const getTotalProfit = (itemProfits: {[id: number]: number}) =>{
-        let sum = 0;
-        for (const profit of Object.values(itemProfits)) {
-            sum += profit;
+        if (!selectedPortfolio?.portfolioItems) {
+            return { profit: 0, profitDisplay: "0 ", isPositive: false, isNegative: false, percentDisplay: "" };
         }
-        return sum;
-    }    
+
+        let totalProfit = 0;
+        let totalInvested = 0;
+
+        for (const item of selectedPortfolio.portfolioItems) {
+            const profit = itemProfits[item.id!] ?? 0;
+            const invested = (item.averagePurchasePrice ?? 0) * (item.quantity ?? 0);
+
+            totalProfit += profit;
+            totalInvested += invested;
+        }
+        
+        const isPositive = totalProfit > 0;
+        const isNegative = totalProfit < 0;
+        let profitDisplay = `${isPositive ? '+' : '-'}${Math.abs(totalProfit).toFixed(2)} `;
+        const percentChange = totalProfit / totalInvested * 100;
+        let percentDisplay = `${percentChange > 0 ? '+' : '-'}${Math.abs(percentChange).toFixed(2)}%`
+
+        if(totalProfit == 0){
+            profitDisplay = "0 ";
+            percentDisplay = "";
+        }
+
+        return { profit: totalProfit, profitDisplay, isPositive, isNegative, percentDisplay};
+    }
 
     return (
         <div className='mt-5'>
@@ -162,7 +197,7 @@ const Portfolio = () => {
                     <button className='button is-dark' onClick={() => setTransactionModalOpen(true)}>
                         Add transaction
                     </button>
-                </div>
+                </div>                
             </div>
 
             <div className="columns mt-5 is-variable is-0 data-boxes">
@@ -172,7 +207,16 @@ const Portfolio = () => {
                 </div>
                 <div className="column is-one-quarter data-box is-flex is-flex-direction-column is-justify-content-center pl-5">
                     <p className="box-title">Total profit</p>
-                    <p className='subtitle mt-3 is-size-4'>{getTotalProfit(itemProfits).toFixed(2)} <span className="is-size-6">USD</span></p>
+                    <p className='subtitle mt-3 is-size-4' 
+                        style={{ color: getTotalProfit(itemProfits).isPositive ? 'green' : getTotalProfit(itemProfits).isNegative ? 'red' : 'black'}}>
+                            {getTotalProfit(itemProfits).profitDisplay}
+                            <span className="is-size-6" style={{color:"inherit"}}>
+                                USD
+                            </span>
+                            <span className='is-size-6 ml-3' style={{color:"inherit"}}>
+                                {getTotalProfit(itemProfits).percentDisplay}
+                            </span>
+                    </p>
                 </div>
             </div>
             <hr className='has-background-grey-light'/>
@@ -185,8 +229,7 @@ const Portfolio = () => {
                             <th>Symbol</th>
                             <th>Price</th>
                             <th>Holdings</th>
-                            <th>Profit (USD)</th>
-                            <th>Profit (%)</th>
+                            <th>Profit</th>
                             <th></th>
                         </tr>
                     </thead>

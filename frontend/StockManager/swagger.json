@@ -1895,15 +1895,18 @@
           },
           "d": {
             "type": "number",
-            "format": "double"
+            "format": "double",
+            "nullable": true
           },
           "dp": {
             "type": "number",
-            "format": "double"
+            "format": "double",
+            "nullable": true
           },
           "pc": {
             "type": "number",
-            "format": "double"
+            "format": "double",
+            "nullable": true
           }
         },
         "additionalProperties": false
