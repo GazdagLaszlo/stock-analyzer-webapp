@@ -32,7 +32,7 @@ namespace StockManager.Services
         public async Task<IList<PortfolioDto>> GetAllAsync(int userId)
         {
             var portfolios = await context.Portfolios
-                .Include(x => x.PortfolioItems)
+                .Include(x => x.PortfolioItems.Where(x => x.IsActive == true))
                     .ThenInclude(x => x.Stock)
                 .Include(x => x.PortfolioItems)
                     .ThenInclude(x => x.Transactions)

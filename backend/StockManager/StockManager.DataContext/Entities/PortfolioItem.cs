@@ -14,5 +14,6 @@
         public double? TargetPrice { get; set; }
         public string? Note { get; set; }
         public List<Transaction> Transactions { get; set; } = new List<Transaction>();
+        public bool IsActive { get; set; }
     }
 }

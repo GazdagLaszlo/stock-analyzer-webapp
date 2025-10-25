@@ -42,7 +42,7 @@ const Dashboard = () => {
                                 <p style={{flex:'1'}}>{newsItem.summary}</p>
                                 <p className="has-text-right vertical-align-end is-italic mt-3">
                                     {new Date((newsItem.datetime ?? 0) * 1000).toLocaleString("hu-HU")}
-                                </p>
+                                </p>                            
                             </a>
                         </div>                        
                     ))}

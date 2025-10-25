@@ -129,12 +129,12 @@ const Portfolio = () => {
                         : itemProfits[item.id!] < 0 ? 'red'
                         : 'black' : 'black'}}>
 
-                {itemProfits[item.id!] !== undefined ? itemProfits[item.id!].toFixed(2) : 'N/A'} USD
+                {itemProfits[item.id!] !== undefined ? itemProfits[item.id!].toFixed(2) : '0'} USD
 
                 <span className='ml-3 is-size-7' style={{color:"inherit"}}>
 
                     {(item.averagePurchasePrice && item.quantity)
-                        ? ((itemProfits[item.id!] / (item.averagePurchasePrice * item.quantity)) * 100).toFixed(2) : "N/A"} %
+                        ? ((itemProfits[item.id!] / (item.averagePurchasePrice * item.quantity)) * 100).toFixed(2)+' %' : ""}
                 </span>
             </td>
 

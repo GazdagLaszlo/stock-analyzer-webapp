@@ -60,6 +60,8 @@ namespace StockManager.Services
 
                 if(transactionCreateDto.TransactionType == TransactionType.Buy)
                 {
+                    portfolioItem.IsActive = true;
+
                     portfolioItem.AveragePurchasePrice =
                         (portfolioItem.AveragePurchasePrice * portfolioItem.Quantity + 
                         transactionCreateDto.Price * transactionCreateDto.Quantity) / (portfolioItem.Quantity + transactionCreateDto.Quantity);
@@ -68,11 +70,13 @@ namespace StockManager.Services
                 }
                 else if (transactionCreateDto.TransactionType == TransactionType.Sell)
                 {
+                    portfolioItem.IsActive = true;
+
                     if(portfolioItem.Quantity < transactionCreateDto.Quantity)
                     {
                         throw new InvalidOperationException("Not enough stock quantity to sell!");
                     }
-                    portfolioItem.Quantity -= transactionCreateDto.Quantity;
+                    portfolioItem.Quantity -= transactionCreateDto.Quantity;                    
                 }
             }
             else
@@ -84,6 +88,7 @@ namespace StockManager.Services
                     StockId = transactionCreateDto.StockId,
                     Quantity = transactionCreateDto.Quantity,
                     AveragePurchasePrice = transactionCreateDto.Price,
+                    IsActive = true,
                 };
 
                 await context.PortfolioItems.AddAsync(portfolioItem);
@@ -92,6 +97,14 @@ namespace StockManager.Services
             var transaction = mapper.Map<Transaction>(transactionCreateDto);
             transaction.UserId = userId;
             transaction.PortfolioItem = portfolioItem;
+            transaction.IsActive = true;
+
+            if (portfolioItem.Quantity == 0)
+            {
+                portfolioItem.IsActive = false;
+                portfolioItem.Transactions.ForEach(x => x.IsActive = false);
+                transaction.IsActive = false;
+            }
 
             await context.AddAsync(transaction);
             await context.SaveChangesAsync();
@@ -139,6 +152,7 @@ namespace StockManager.Services
         {
             var transaction = await context.Transactions
                 .Include(x => x.PortfolioItem)
+                    .ThenInclude(x => x.Transactions)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if (transaction == null)
@@ -160,6 +174,8 @@ namespace StockManager.Services
                 if (portfolioItem.Quantity - transaction.Quantity == 0)
                 {
                     portfolioItem.AveragePurchasePrice = 0;
+                    portfolioItem.IsActive = false;
+                    portfolioItem.Transactions.ForEach(x => x.IsActive = false);
                 }
                 else
                 {
@@ -173,11 +189,10 @@ namespace StockManager.Services
             else if (transaction.TransactionType == TransactionType.Sell)
             {
                 portfolioItem.Quantity += transaction.Quantity;
-            }
-
-            if (portfolioItem.Quantity == 0)
-            {
-                context.PortfolioItems.Remove(portfolioItem);
+                if (portfolioItem.Quantity > 0)
+                {
+                    portfolioItem.IsActive = true;
+                }                    
             }
 
             context.Transactions.Remove(transaction);

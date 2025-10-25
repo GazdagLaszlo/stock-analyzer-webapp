@@ -19,5 +19,6 @@
         public string? Note { get; set; }
         public int PortfolioItemId { get; set; }
         public PortfolioItem PortfolioItem { get; set; }
+        public bool IsActive { get; set; }
     }
 }
