@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { type StockDto } from "../../../generated-sources/openapi";
 
 type Props = {
@@ -10,6 +10,11 @@ type Props = {
 
 const StockSelectModal = ({ open, onClose, stocks, onSelectStock }: Props) => {
     const [searchInput, setSearchInput] = useState("");
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        inputRef.current?.focus();
+    }, [open]);
 
     const sortedStocks = [...stocks].sort((a, b) => (b.marketCap ?? 0) - (a.marketCap ?? 0));
 
@@ -25,7 +30,7 @@ const StockSelectModal = ({ open, onClose, stocks, onSelectStock }: Props) => {
                 <div className="card p-6">
                     <div className="field">
                         <div className="control">
-                            <input type='text' className='input pl-5' placeholder='Keresés...'
+                            <input type='text' className='input pl-5' placeholder='Keresés...' ref={inputRef}
                             onChange={(e) => setSearchInput(e.target.value)}/>
                             {/*
                             <span className="icon">

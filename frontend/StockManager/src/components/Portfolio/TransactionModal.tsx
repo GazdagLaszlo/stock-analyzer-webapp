@@ -16,7 +16,7 @@ type Props = {
         note: string,
         date: string
     }) => void,
-    portfolioId: number,
+    portfolioId: number | undefined,
     selectedStock?: StockDto
     portfolioItems: PortfolioItemDto[]
 }
@@ -94,6 +94,11 @@ const  TransactionModal = ({open, onClose, onCreate, portfolioId, portfolioItems
     const create = () => {
         if(!selectedStock){
             alert("Please select a stock.");
+            return;
+        }
+
+        if(portfolioId == null){
+            alert("Please select a portfolio.");
             return;
         }
 

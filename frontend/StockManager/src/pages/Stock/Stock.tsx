@@ -1,6 +1,6 @@
 import type { StockDto } from "../../../generated-sources/openapi";
 import api from "../../api/api";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import './Stock.scss';
 import { useNavigate } from "react-router-dom";
 import * as signalR from "@microsoft/signalr";
@@ -10,13 +10,18 @@ const Stock = () => {
     const [stocks, setStocks] = useState<StockDto[]>([]);
     const [connection, setConnection] = useState<signalR.HubConnection | null>(null);
     const [searchInput, setSearchInput] = useState("");
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        inputRef.current?.focus();
+    }, []);
 
     useEffect(() => {
         api.Stock.apiStockGetAllGet().then(res => {
             setStocks(res.data);
         }).catch(error => {
             console.error("Error while loading stocks: ", error);
-        });
+        });        
 
         const newConnection = new signalR.HubConnectionBuilder()
             .withUrl("https://localhost:5201/stockPriceHub")
@@ -79,7 +84,7 @@ const Stock = () => {
             <h1 className="title has-text-centered my-6">Stocks by market capitalization</h1>
             <div className="field" style={{width: "70%"}}>
                 <div className="control">
-                    <input type='text' className='input pl-5' placeholder='Keresés...'
+                    <input type='text' className='input pl-5' placeholder='Keresés...' ref={inputRef}
                     onChange={(e) => setSearchInput(e.target.value)}/>
                     {/*
                     <span className="icon">

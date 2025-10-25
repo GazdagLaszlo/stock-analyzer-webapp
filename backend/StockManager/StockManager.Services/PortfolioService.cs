@@ -13,7 +13,7 @@ namespace StockManager.Services
 {
     public interface IPortfolioService
     {
-        Task CreateAsync(PortfolioCreateDto portfolioCreateDto, int userId);
+        Task<int> CreateAsync(PortfolioCreateDto portfolioCreateDto, int userId);
         Task<IList<PortfolioDto>> GetAllAsync(int userId);
         Task<PortfolioDto> GetByIdAsync(int id);
         Task<PortfolioDto> UpdateAsync(int id, PortfolioUpdateDto updateDto);
@@ -21,13 +21,15 @@ namespace StockManager.Services
     }
     public class PortfolioService(AppDbContext context, IMapper mapper) : IPortfolioService
     {
-        public async Task CreateAsync(PortfolioCreateDto portfolioCreateDto, int userId)
+        public async Task<int> CreateAsync(PortfolioCreateDto portfolioCreateDto, int userId)
         {
             var portfolio = mapper.Map<Portfolio>(portfolioCreateDto);
             portfolio.UserId = userId;
 
             await context.AddAsync(portfolio);
             await context.SaveChangesAsync();
+
+            return portfolio.Id;
         }        
         public async Task<IList<PortfolioDto>> GetAllAsync(int userId)
         {

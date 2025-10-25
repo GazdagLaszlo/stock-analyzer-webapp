@@ -1,15 +1,18 @@
 import { useEffect, useState } from 'react';
 import './Portfolio.scss';
-import { TransactionType, type PortfolioCreateDto, type PortfolioDto, type PortfolioItemDto, type StockDto } from '../../../generated-sources/openapi';
+import { TransactionType, type PortfolioCreateDto, type PortfolioDto, type PortfolioItemDto, type PortfolioUpdateDto, type StockDto } from '../../../generated-sources/openapi';
 import api from "../../api/api";
 import PortfolioItemMenu from '../../components/Portfolio/PortfolioItemMenu';
 import PortfolioItemDeleteModal from '../../components/Portfolio/PortfolioItemDeleteModal';
 import NewPortfolioModal from '../../components/Portfolio/NewPortfolioModal';
 import TransactionModal from '../../components/Portfolio/TransactionModal';
+import PortfolioMenu from '../../components/Portfolio/PortfolioMenu';
+import PortfolioDeleteModal from '../../components/Portfolio/PortfolioDeleteModal';
+import RenamePortfolioModal from '../../components/Portfolio/RenamePortfolioModal';
 
 const Portfolio = () => {
     const [portfolios, setPortfolios] = useState<PortfolioDto[]>([]);
-    const [selectedPortfolioId, setSelectedPortfolioId] = useState<number | null>();
+    const [selectedPortfolio, setSelectedPortfolio] = useState<PortfolioDto | undefined>(undefined);
     const [itemProfits, setItemProfits] = useState<{[id: number]: number}>({});
     const [portfolioValue, setPortfolioValue] = useState<number | null>();
     const [selectedStock, setSelectedStock] = useState<StockDto>();
@@ -23,22 +26,22 @@ const Portfolio = () => {
         note: "",
     });
 
-    const [transactionModalOpen, setTransactionModalOpen] = useState(false);
-    const [portfolioModalOpen, setPortfolioModalOpen] = useState(false);
-    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-
+    const [transactionModalOpen, setTransactionModalOpen] = useState<true | false>(false);
+    const [portfolioAddModalOpen, setPortfolioAddModalOpen] = useState<true | false>(false);
+    const [portfolioItemDeleteModalOpen, setPortfolioItemDeleteModalOpen] = useState<true | false>(false);    
+    const [portfolioDeleteModalOpen, setPortfolioDeleteModalOpen] = useState<true | false>(false);
+    const [renamePortfolioModalOpen, setRenamePortfolioModalOpen] = useState<true | false>(false);
+    
     useEffect(() => {
         api.Portfolio.apiPortfolioGetAllGet().then(res => {
             setPortfolios(res.data);
             if (res.data.length > 0) {
-                setSelectedPortfolioId(res.data[0].id);
+                setSelectedPortfolio(res.data[0]);
             }            
         }).catch(error => {
             console.error("Error while loading portfolios: ", error);
         });
     }, []);
-
-    const selectedPortfolio = portfolios.find((p) => p.id === selectedPortfolioId);
     
     useEffect(() => {
         if (!selectedPortfolio?.portfolioItems) {
@@ -69,6 +72,18 @@ const Portfolio = () => {
         setPortfolioValue(sum);
     }, [selectedPortfolio]);
 
+    useEffect(() => {
+        if (selectedPortfolio) {
+            const updated = portfolios.find(p => p.id === selectedPortfolio.id);
+            if (updated){
+                setSelectedPortfolio(updated);
+            }
+            else{
+                setSelectedPortfolio(undefined);
+            }
+        }
+    }, [portfolios]);
+
     const createTransaction = async (dto : {
             price: number,
             quantity: number,
@@ -96,10 +111,14 @@ const Portfolio = () => {
     }
 
     const createPortfolio = async (createDto: PortfolioCreateDto) => {
-        await api.Portfolio.apiPortfolioCreatePost(createDto);
+        const createResponse = await api.Portfolio.apiPortfolioCreatePost(createDto);
+        const createdPortfolioId = createResponse.data;
 
         const response = await api.Portfolio.apiPortfolioGetAllGet();
         setPortfolios(response.data);
+
+        const newPortfolio = response.data.find(x => x.id === createdPortfolioId);
+        setSelectedPortfolio(newPortfolio);
     }
 
     const deletePortfolioItem = async (id: number | undefined ) => {
@@ -111,8 +130,28 @@ const Portfolio = () => {
         setPortfolios(response.data);
     }
 
+    const renamePortfolio = async (portfolio : PortfolioUpdateDto) => {        
+        if(portfolio.name && selectedPortfolio?.id){
+            await api.Portfolio.apiPortfolioUpdateIdPut(selectedPortfolio.id, portfolio)
+        }
+
+        const response = await api.Portfolio.apiPortfolioGetAllGet();
+        setPortfolios(response.data);
+    }    
+
+    const deletePortfolio = async () => {
+        if(selectedPortfolio?.id){
+            await api.Portfolio.apiPortfolioDeleteIdDelete(selectedPortfolio.id);
+        }
+
+        const response = await api.Portfolio.apiPortfolioGetAllGet();
+        setPortfolios(response.data);
+
+        setSelectedPortfolio(response.data[0])
+    }
+
     const portfolioButtons = portfolios.map((portfolio) => (
-        <button key={portfolio.id} className={"button mr-2 " + (selectedPortfolioId == portfolio.id ? "is-dark" : "")} onClick={() => setSelectedPortfolioId(portfolio.id)}>
+        <button key={portfolio.id} className={"button mr-2 " + (selectedPortfolio == portfolio ? "is-dark" : "")} onClick={() => setSelectedPortfolio(portfolio)}>
             {portfolio.name}
         </button>
     ));
@@ -145,9 +184,9 @@ const Portfolio = () => {
                         setTransactionModalOpen(true);
                         setTransactionCreateData({...transactionCreateData, price: item.stock?.price?.toString() ?? "0"                            
                     })}}
-                    onDeleteItem={() => {  if (item.id != null) { 
+                    onDeleteItem={() => {  if (item.id != null) {
                         setSelectedPortfolioItem(item);
-                        setDeleteModalOpen(true)}
+                        setPortfolioItemDeleteModalOpen(true)}
                     }}
                 />
             </td>
@@ -189,7 +228,7 @@ const Portfolio = () => {
             <div className='is-flex is-justify-content-space-between'>
                 <div>
                     {portfolioButtons}
-                    <button className='button' onClick={() => setPortfolioModalOpen(true)}>
+                    <button className='button' onClick={() => setPortfolioAddModalOpen(true)}>
                         +
                     </button>
                 </div>
@@ -197,6 +236,15 @@ const Portfolio = () => {
                     <button className='button is-dark' onClick={() => setTransactionModalOpen(true)}>
                         Add transaction
                     </button>
+
+                    <PortfolioMenu
+                        onRename={() => {
+                            setRenamePortfolioModalOpen(true)
+                        }}
+                        onDelete={() => {
+                            setPortfolioDeleteModalOpen(true)
+                        }}
+                    />
                 </div>                
             </div>
 
@@ -245,22 +293,36 @@ const Portfolio = () => {
                     setTransactionModalOpen(false);
                 }}
                 onCreate={createTransaction}
-                portfolioId={selectedPortfolioId!}                
+                portfolioId={selectedPortfolio?.id}
                 selectedStock={selectedStock}
                 portfolioItems={selectedPortfolio?.portfolioItems ?? []}
             />
 
             <PortfolioItemDeleteModal
-                open={deleteModalOpen}
-                onClose={() => setDeleteModalOpen(false)}
+                open={portfolioItemDeleteModalOpen}
+                onClose={() => setPortfolioItemDeleteModalOpen(false)}
                 portfolioItem={selectedPortfolioItem}
                 onDelete={deletePortfolioItem}
             />
 
             <NewPortfolioModal
-                open={portfolioModalOpen}
-                onClose={() => setPortfolioModalOpen(false)}
+                open={portfolioAddModalOpen}
+                onClose={() => setPortfolioAddModalOpen(false)}
                 onCreate={createPortfolio}
+            />
+
+            <PortfolioDeleteModal
+                open={portfolioDeleteModalOpen}
+                onClose={() => setPortfolioDeleteModalOpen(false)}
+                selectedPortfolio={selectedPortfolio!}
+                onDelete={deletePortfolio}
+            />
+
+            <RenamePortfolioModal
+                open={renamePortfolioModalOpen}
+                onClose={() => setRenamePortfolioModalOpen(false)} 
+                oldName={selectedPortfolio?.name}
+                onUpdate={renamePortfolio}
             />
         </div>
     );

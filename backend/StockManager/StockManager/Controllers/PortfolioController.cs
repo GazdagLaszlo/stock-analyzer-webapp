@@ -17,8 +17,8 @@ namespace StockManager.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromBody] PortfolioCreateDto createDto)
         {
-            await portfolioService.CreateAsync(createDto, _userId);
-            return Ok();
+            var result = await portfolioService.CreateAsync(createDto, _userId);
+            return Ok(result);
         }
 
         [HttpGet]
