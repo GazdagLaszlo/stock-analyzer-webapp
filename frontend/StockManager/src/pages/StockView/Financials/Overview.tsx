@@ -1,9 +1,24 @@
-import type { StockDto } from "../../../../generated-sources/openapi";
+import type { StockDataDto, StockDto } from "../../../../generated-sources/openapi";
 //import Dividend from "./Dividend";
 import '../StockView.scss';
 import { formatMoney } from "../../../utils/formatMoney";
+import { useEffect, useState } from "react";
+import api from "../../../api/api";
 
-const Summary = ({ stock }: { stock?: StockDto }) => (
+const Summary = ({ stock }: { stock?: StockDto }) => {
+    const [stockData, setStockData] = useState<StockDataDto>();
+
+    useEffect(() =>{
+        if(stock?.symbol){
+            api.StockData.apiStockDataGetBySymbolIdGet(stock?.symbol)
+                .then(res => {
+                    setStockData(res.data);
+                }).catch(error => {            
+                console.error("Error while loading stockData: ", error);
+            });
+        }        
+    }, [stock]);
+
     <div>        
         <div className="columns mt-5 is-variable is-0 data-boxes">
             <div className="column data-box is-flex is-flex-direction-column is-justify-content-center pl-5">
@@ -12,15 +27,15 @@ const Summary = ({ stock }: { stock?: StockDto }) => (
             </div>
             <div className="column data-box is-flex is-flex-direction-column is-justify-content-center pl-5">
                 <p className="box-title">EPS (TTM)</p>
-                <p className='subtitle mt-3 is-size-4'>6.61 <span className="is-size-6">USD</span></p>
+                <p className='subtitle mt-3 is-size-4'>{stockData?.epsTTM} <span className="is-size-6">USD</span></p>
             </div>  
             <div className="column data-box is-flex is-flex-direction-column is-justify-content-center pl-5">
                 <p className="box-title">P/E (TTM)</p>
-                <p className='subtitle mt-3 is-size-4'>36.53</p>
+                <p className='subtitle mt-3 is-size-4'>{stockData?.pettm}</p>
             </div>
             <div className="column data-box is-flex is-flex-direction-column is-justify-content-center pl-5">
                 <p className="box-title">P/E (TTM)</p>
-                <p className='subtitle mt-3 is-size-4'>36.53</p>
+                <p className='subtitle mt-3 is-size-4'></p>
             </div>
         </div>
 
@@ -68,6 +83,6 @@ const Summary = ({ stock }: { stock?: StockDto }) => (
         </div>     
     </div>         
 
-);
+};
 
 export default Summary;

@@ -20,9 +20,9 @@ namespace StockManager.Controllers
         [HttpGet("{id:int}")]
         //[Authorize(Roles = "")]
         [ProducesResponseType<StockDataDto>(StatusCodes.Status200OK)]
-        public async Task<ActionResult<StockDataDto>> GetByIdAsync(int id)
+        public async Task<ActionResult<StockDataDto>> GetBySymbolAsync(string symbol)
         {
-            var result = await stockDataService.GetByIdAsync(id);
+            var result = await stockDataService.GetBySymbolAsync(symbol);
             return Ok(result);
         }
 
