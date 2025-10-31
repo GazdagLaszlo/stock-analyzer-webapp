@@ -21,45 +21,79 @@ namespace StockManager.Services
         }
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            //Csak akkor kéri le, ha nyitva a piac
-            var symbols = new List<string> { "BINANCE:BTCUSDT" };
-
-            using var scope = _scopeFactory.CreateScope();
-
-            var wsService = scope.ServiceProvider.GetRequiredService<StockPriceUpdaterWebSocketService>();
-            var updaterService = scope.ServiceProvider.GetRequiredService<StockUpdaterService>();
-            bool isOpen = await updaterService.CheckMarketStatus();
-
-            //Ellenőrizni, hogy mikor fusson a websocket és mikor kérjünk le árfolyamot. Ne fusson le mind a 2
-            Task? wsTask = null;
-            if (isOpen)
-            {
-                wsTask = wsService.ConnectAndListenAsync(symbols, stoppingToken);
-            }
-
             while (!stoppingToken.IsCancellationRequested)
             {
-                try
+                //Csak akkor kéri le, ha nyitva a piac
+
+                using var scope = _scopeFactory.CreateScope();
+
+                var wsService = scope.ServiceProvider.GetRequiredService<StockPriceUpdaterWebSocketService>();
+                var updaterService = scope.ServiceProvider.GetRequiredService<StockUpdaterService>();
+                var stockService = scope.ServiceProvider.GetRequiredService<IStockService>();
+                var stockReportService = scope.ServiceProvider.GetRequiredService<IStockReportService>();
+                var stockDataService = scope.ServiceProvider.GetRequiredService<IStockDataService>();
+
+                bool isOpen = await updaterService.CheckMarketStatus();
+
+                //Ellenőrizni, hogy mikor fusson a websocket és mikor kérjünk le árfolyamot. Ne fusson le mind a 2
+                Task? wsTask = null;
+                var stocks = await stockService.GetAllAsync();
+                if (isOpen)
                 {                    
+                    var symbols = stocks.Select(s => s.Symbol).ToList();
+                    wsTask = wsService.ConnectAndListenAsync(symbols, stoppingToken);
+                }
+
+                try
+                {
                     await updaterService.GetStocks();
-                    await Task.Delay(TimeSpan.FromDays(1), stoppingToken);                         
+
+                    //StockData update
+                    //Finnhub Earnings Calendar végpontot felhasználni - Ritkítani a frissítést                    
+                    foreach (var stock in stocks)
+                    {
+                        try
+                        {
+                            await stockDataService.StockDataRefresh(stock);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Error while refreshing StockData to {stock.Symbol}: {ex.Message}");
+                        }
+                    }
+
+                    //Napi 1x ellenőrzi hogy van-e új report az adott részvényhez.
+                    foreach (var stock in stocks)
+                    {
+                        try
+                        {
+                            await stockReportService.GetStockReportsFromAPI(stock.Symbol);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Error while getting stockReport to {stock.Symbol}: {ex.Message}");
+                        }
+                    }
+
+                    await Task.Delay(TimeSpan.FromDays(1), stoppingToken);
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Hiba a háttérszolgáltatásban: {ex.Message}");
+                    Console.WriteLine($"Error in backgroundService: {ex.Message}");
                     await Task.Delay(5000, stoppingToken);
                 }
-            }
+            
 
-            if (wsTask != null)
-            {
-                try
+                if (wsTask != null)
                 {
-                    await wsTask;
-                }
-                catch (OperationCanceledException)
-                {
-                    
+                    try
+                    {
+                        await wsTask;
+                    }
+                    catch (OperationCanceledException)
+                    {
+
+                    }
                 }
             }
         }    

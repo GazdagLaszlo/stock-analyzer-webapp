@@ -1,4 +1,5 @@
-﻿using StockManager.DataContext.Entities;
+﻿using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using StockManager.DataContext.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +24,8 @@ namespace StockManager.DataContext.DTOs
         public string Exchange { get; set; }
         [JsonPropertyName("shareOutstanding")]
         public double ShareOutstanding { get; set; }
+        [JsonPropertyName("weburl")]
+        public string Website { get; set; }
     }
 
     public class StockUpdateDto {
@@ -34,6 +37,7 @@ namespace StockManager.DataContext.DTOs
         public double? Price { get; set; }
         public string Exchange { get; set; }
         public double ShareOutstanding { get; set; }
+        public string Website { get; set; }
     }
 
     public class StockDto
@@ -47,5 +51,6 @@ namespace StockManager.DataContext.DTOs
         public int StockDataId { get; set; }
         public string Exchange { get; set; }
         public double ShareOutstanding { get; set; }
+        public string Website { get; set; }
     }
 }

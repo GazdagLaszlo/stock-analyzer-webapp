@@ -9,6 +9,7 @@
         public StockData StockData { get; set; }
         public string? Exchange { get; set; }
         public double? ShareOutstanding { get; set; }
+        public string? Website { get; set; }
 
 
         //Záráskor 1x menteni

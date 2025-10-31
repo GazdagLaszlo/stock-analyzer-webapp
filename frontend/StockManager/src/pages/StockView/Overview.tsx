@@ -12,6 +12,7 @@ const Overview = ({ stock }: { stock?: StockDto }) => {
                 <p>CEO</p>
                 <p>Alkalmazottak száma</p>
                 <p>Alapítés éve</p>
+                <p>Website: <a href={stock?.website ?? ""} target="_blank">{stock?.website}</a></p>
             </div>
 
             <div className="data-box-2 p-5 mt-5">

@@ -43,6 +43,9 @@ namespace StockManager.Services
             CreateMap<StockData, StockDataDto>();
             CreateMap<StockDataCreateDto, StockData>();
             CreateMap<StockDataUpdateDto, StockData>();
+            CreateMap<StockReport, StockReportDto>();
+
+            CreateMap<StockReportItem, StockReportItemDto>();
         }
     }
 }

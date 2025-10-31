@@ -27,6 +27,7 @@ builder.Services.AddScoped<IWatchListService, WatchListService>();
 builder.Services.AddScoped<IWatchListItemService, WatchListItemService>();
 builder.Services.AddScoped<IStockDataService, StockDataService>();
 builder.Services.AddScoped<IStockNewsService, StockNewsService>();
+builder.Services.AddScoped<IStockReportService, StockReportService>();
 
 builder.Services.AddHostedService<StockUpdaterBackgroundService>();
 builder.Services.AddHostedService<StockNewsBackgroundService>();

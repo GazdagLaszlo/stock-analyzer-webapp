@@ -712,19 +712,25 @@
         }
       }
     },
-    "/api/StockData/GetById/{id}": {
+    "/api/StockData/GetBySymbol/{id}": {
       "get": {
         "tags": [
           "StockData"
         ],
         "parameters": [
           {
+            "name": "symbol",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
             "name": "id",
             "in": "path",
             "required": true,
             "schema": {
-              "type": "integer",
-              "format": "int32"
+              "type": "string"
             }
           }
         ],
@@ -841,6 +847,54 @@
                   "type": "array",
                   "items": {
                     "$ref": "#/components/schemas/StockNews"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/StockReport/GetStockReportsToSymbol/{symbol}": {
+      "get": {
+        "tags": [
+          "StockReport"
+        ],
+        "parameters": [
+          {
+            "name": "symbol",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StockReportDto"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StockReportDto"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StockReportDto"
                   }
                 }
               }
@@ -1692,6 +1746,10 @@
           "shareOutstanding": {
             "type": "number",
             "format": "double"
+          },
+          "weburl": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -1703,31 +1761,71 @@
             "type": "integer",
             "format": "int32"
           },
-          "date": {
+          "updatedDate": {
             "type": "string",
-            "format": "date-time"
+            "format": "date"
           },
-          "eps": {
+          "10DayAverageTradingVolume": {
             "type": "number",
             "format": "double",
             "nullable": true
           },
-          "priceToEarningsRatio": {
+          "3MonthAverageTradingVolume": {
             "type": "number",
             "format": "double",
             "nullable": true
           },
-          "priceToBookRatio": {
+          "52WeekHigh": {
             "type": "number",
             "format": "double",
             "nullable": true
           },
-          "debtToEquityRatio": {
+          "52WeekLow": {
             "type": "number",
             "format": "double",
             "nullable": true
           },
-          "dividendYield": {
+          "beta": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "cashFlowPerShareTTM": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "currentDividendYieldTTM": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "dividendPerShareTTM": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "epsTTM": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "longTermDebt/equityAnnual": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "pb": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "peTTM": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "psTTM": {
             "type": "number",
             "format": "double",
             "nullable": true
@@ -1746,30 +1844,57 @@
             "type": "integer",
             "format": "int32"
           },
-          "eps": {
+          "tenDayAverageTradingVolume": {
             "type": "number",
-            "format": "double",
-            "nullable": true
+            "format": "double"
           },
-          "priceToEarningsRatio": {
+          "threeMonthAverageTradingVolume": {
             "type": "number",
-            "format": "double",
-            "nullable": true
+            "format": "double"
           },
-          "priceToBookRatio": {
+          "yearHigh": {
             "type": "number",
-            "format": "double",
-            "nullable": true
+            "format": "double"
           },
-          "debtToEquityRatio": {
+          "yearLow": {
             "type": "number",
-            "format": "double",
-            "nullable": true
+            "format": "double"
           },
-          "dividendYield": {
+          "beta": {
             "type": "number",
-            "format": "double",
-            "nullable": true
+            "format": "double"
+          },
+          "cashFlowPerShareTTM": {
+            "type": "number",
+            "format": "double"
+          },
+          "currentDividendYieldTTM": {
+            "type": "number",
+            "format": "double"
+          },
+          "dividendPerShareTTM": {
+            "type": "number",
+            "format": "double"
+          },
+          "epsTTM": {
+            "type": "number",
+            "format": "double"
+          },
+          "longTermDebtToEquityAnnual": {
+            "type": "number",
+            "format": "double"
+          },
+          "priceToBookvalue": {
+            "type": "number",
+            "format": "double"
+          },
+          "pettm": {
+            "type": "number",
+            "format": "double"
+          },
+          "psttm": {
+            "type": "number",
+            "format": "double"
           }
         },
         "additionalProperties": false
@@ -1781,31 +1906,71 @@
             "type": "integer",
             "format": "int32"
           },
-          "date": {
+          "updatedDate": {
             "type": "string",
-            "format": "date-time"
+            "format": "date"
           },
-          "eps": {
+          "tenDayAverageTradingVolume": {
             "type": "number",
             "format": "double",
             "nullable": true
           },
-          "priceToEarningsRatio": {
+          "threeMonthAverageTradingVolume": {
             "type": "number",
             "format": "double",
             "nullable": true
           },
-          "priceToBookRatio": {
+          "yearHigh": {
             "type": "number",
             "format": "double",
             "nullable": true
           },
-          "debtToEquityRatio": {
+          "yearLow": {
             "type": "number",
             "format": "double",
             "nullable": true
           },
-          "dividendYield": {
+          "beta": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "cashFlowPerShareTTM": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "currentDividendYieldTTM": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "dividendPerShareTTM": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "epsTTM": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "longTermDebtToEquityAnnual": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "priceToBookvalue": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "pettm": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "psttm": {
             "type": "number",
             "format": "double",
             "nullable": true
@@ -1852,6 +2017,10 @@
           "shareOutstanding": {
             "type": "number",
             "format": "double"
+          },
+          "website": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -1911,6 +2080,84 @@
         },
         "additionalProperties": false
       },
+      "StockReportDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "stock": {
+            "$ref": "#/components/schemas/StockDto"
+          },
+          "accessNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "year": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "quarter": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "filedDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "acceptedDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "stockReportItems": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StockReportItemDto"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "StockReportItemDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "reportSection": {
+            "type": "string",
+            "nullable": true
+          },
+          "concept": {
+            "type": "string",
+            "nullable": true
+          },
+          "unit": {
+            "type": "string",
+            "nullable": true
+          },
+          "label": {
+            "type": "string",
+            "nullable": true
+          },
+          "value": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
       "StockUpdateDto": {
         "type": "object",
         "properties": {
@@ -1943,6 +2190,10 @@
           "shareOutstanding": {
             "type": "number",
             "format": "double"
+          },
+          "website": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false

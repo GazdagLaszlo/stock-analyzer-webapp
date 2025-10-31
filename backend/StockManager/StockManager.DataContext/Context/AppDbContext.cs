@@ -20,5 +20,7 @@ namespace StockManager.DataContext.Context
         public DbSet<User> Users { get; set; }        
         public DbSet<WatchList> WatchLists { get; set; }
         public DbSet<WatchListItem> WatchListItems { get; set; }
+        public DbSet<StockReport> StockReports { get; set; }
+        public DbSet<StockReportItem> StockReportItems { get; set; }
     }
 }

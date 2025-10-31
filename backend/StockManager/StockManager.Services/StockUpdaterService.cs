@@ -44,7 +44,7 @@ namespace StockManager.Services
 
                 var quote = await _stockService.GetStockQuote(company.Symbol);
                 var price = quote.CurrentPrice;
-                Console.WriteLine(company.Symbol+"-"+quote.CurrentPrice);                
+                Console.WriteLine(company.Symbol+"-"+quote.CurrentPrice);
 
                 await SaveStock(data, price, allStocks);
 
@@ -88,6 +88,7 @@ namespace StockManager.Services
                     Price = price,
                     Exchange = data.Exchange,
                     ShareOutstanding = data.ShareOutstanding,
+                    Website = data.Website,
                 };
                 await _stockService.CreateAsync(dto);
             }
@@ -102,6 +103,7 @@ namespace StockManager.Services
                     Price = price,
                     Exchange = data.Exchange,
                     ShareOutstanding = data.ShareOutstanding,
+                    Website = data.Website,
                 };
 
                 await _stockService.UpdateAsync(stockExists.Id, updateDto);

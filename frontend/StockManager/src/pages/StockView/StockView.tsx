@@ -1,7 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
 import { useState, useEffect } from "react";
 import api from "../../api/api";
-import type { StockDto } from "../../../generated-sources/openapi";
+import type { StockDto, StockQuote } from "../../../generated-sources/openapi";
 
 import Overview from "./Overview";
 import Technical from "./Technical";
@@ -9,7 +9,10 @@ import Financial from "./Financials/Financial";
 
 const StockView = () => {
     const { symbol, tab, subtab } = useParams<{ symbol: string; tab?: string; subtab?: string }>();
+
     const [stock, setStock] = useState<StockDto>();
+    const [stockQuote, setStockQuote] = useState<StockQuote>();
+
     /*
     const location = useLocation();
     const paths = location.pathname.split("/").filter((x) => x);
@@ -18,9 +21,22 @@ const StockView = () => {
     const activeTab = tab || "overview";
 
     useEffect(() => {
-        if (!symbol) return;
+        if (!symbol){
+            return;
+        }
+
         api.Stock.apiStockGetBySymbolSymbolGet(symbol)
             .then(res => setStock(res.data))
+            .catch(err => console.error(err));
+    }, [symbol]);
+
+    useEffect(() => {
+        if(!symbol){
+            return;
+        }
+
+        api.Stock.apiStockGetStockQuoteGet(symbol)
+            .then(res => setStockQuote(res.data))
             .catch(err => console.error(err));
     }, [symbol]);
 
@@ -47,7 +63,28 @@ const StockView = () => {
                         <p className='is-size-6'>{stock?.exchange}</p>
                     </div>
                 </div>
-                <p className='is-size-2'>${stock?.price}</p>
+                <div className='is-flex is-flex-direction-row is-align-items-center'>
+                    <p className='is-size-1'>${stock?.price}</p>
+                    <div className='ml-4'
+                        style={{color: (stockQuote?.d !== undefined && stockQuote?.d !== null)
+                            ? stockQuote.d > 0 ? "green"
+                            : stockQuote.d! < 0 ? 'red'
+                            : 'black' : 'black'
+                        }}>
+                        <p style={{color:"inherit"}}>
+                            {stockQuote?.d == null ? "-"
+                            : stockQuote.d > 0
+                            ? `+${stockQuote.d.toFixed(2)}`
+                            : `${stockQuote.d.toFixed(2)}`}
+                        </p>
+                        <p style={{color:"inherit"}}>
+                            {stockQuote?.dp == null ? "-"
+                            : stockQuote.dp > 0
+                            ? `+${stockQuote.dp.toFixed(2)}%`
+                            : `${stockQuote.dp.toFixed(2)}%`}
+                        </p>
+                    </div>
+                </div>                
             </div>
 
             <p className="panel-tabs is-justify-content-flex-start">
