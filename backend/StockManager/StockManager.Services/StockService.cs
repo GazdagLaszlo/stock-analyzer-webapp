@@ -9,6 +9,11 @@ using System.Text.Json;
 
 namespace StockManager.Services
 {
+    public class FinnhubEarningsResponse
+    {
+        public List<Earningscalendar> earningsCalendar { get; set; }
+    }
+
     public interface IStockService
     {
         Task<StockDto> CreateAsync(StockCreateDto stockCreateDto);
@@ -16,6 +21,7 @@ namespace StockManager.Services
         Task<StockDto> GetBySymbolAsync(string symbol);
         Task<StockDto> UpdateAsync(int id, StockUpdateDto updateDto);
         Task<StockQuote> GetStockQuote(string symbol);
+        Task<Earningscalendar> GetNextEarningsEvent(string symbol);
     }
     public class StockService : IStockService
     {
@@ -53,7 +59,7 @@ namespace StockManager.Services
             var stock = await _context.Stocks
                 .Where(x => x.Symbol == symbol)
                 .FirstOrDefaultAsync();
-            if(stock == null)
+            if (stock == null)
             {
                 throw new KeyNotFoundException($"Stock not found with symbol: {symbol}");
             }
@@ -63,15 +69,14 @@ namespace StockManager.Services
         public async Task<StockDto> UpdateAsync(int id, StockUpdateDto updateDto)
         {
             var stock = await _context.Stocks.FindAsync(id);
-            if(stock == null)
+            if (stock == null)
             {
                 throw new KeyNotFoundException($"Stock not found with id: {id}");
             }
 
             _mapper.Map(updateDto, stock);
 
-            await _context.SaveChangesAsync();
-
+            await _context.SaveChangesAsync();            
             return _mapper.Map<StockDto>(stock);
         }
 
@@ -89,5 +94,29 @@ namespace StockManager.Services
 
             return quote;
         }
+
+        public async Task<Earningscalendar> GetNextEarningsEvent(string symbol)
+        {
+            List<Earningscalendar> earningsCalendar = new List<Earningscalendar>();
+
+            DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);
+            string from = today.ToString("yyyy-MM-dd");
+
+            DateOnly toDate = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(1));
+            string to = toDate.ToString("yyyy-MM-dd");
+
+            var getData = $"https://finnhub.io/api/v1/calendar/earnings?from={from}&to={to}&symbol={symbol}&token={_finnhubApiKey}";
+            var response = await _httpClient.GetAsync(getData);
+            if (!response.IsSuccessStatusCode)
+            {
+                Console.WriteLine($"Error: {response.StatusCode}");
+            }
+            var responseString = await response.Content.ReadAsStringAsync();
+
+            var events = JsonSerializer.Deserialize<FinnhubEarningsResponse>(responseString);
+
+            return events.earningsCalendar.LastOrDefault(x => x.symbol == symbol);
+        }
+
     }
 }

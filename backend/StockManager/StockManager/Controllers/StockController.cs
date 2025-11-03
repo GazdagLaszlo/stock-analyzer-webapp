@@ -60,5 +60,12 @@ namespace StockManager.Controllers
             var result = await stockService.GetStockQuote(symbol);
             return Ok(result);
         }
+
+        [HttpGet]
+        public async Task<ActionResult<Earningscalendar>> GetNextEarningsEvent(string symbol)
+        {
+            var result = await stockService.GetNextEarningsEvent(symbol);
+            return Ok(result);
+        }
     }
 }

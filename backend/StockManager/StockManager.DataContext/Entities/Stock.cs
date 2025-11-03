@@ -5,7 +5,7 @@
         public int Id { get; set; }
         public string? Symbol { get; set; }
         public string? CompanyName { get; set; }
-        public string? Sector { get; set; }
+        public string? Sector { get; set; } 
         public StockData StockData { get; set; }
         public string? Exchange { get; set; }
         public double? ShareOutstanding { get; set; }

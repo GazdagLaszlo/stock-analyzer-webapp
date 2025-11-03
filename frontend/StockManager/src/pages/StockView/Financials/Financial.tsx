@@ -16,7 +16,7 @@ const Financial = ({ stock, activeSubTab }: { stock?: StockDto, activeSubTab?: s
                 <Link to={`/stocks/${stock?.symbol}/financials/dividend`} className={`button ${subTab === "dividend" ? "is-dark" : "is-light"}`}>Dividend</Link>
             </p>
 
-            <div className="p-5">
+            <div>
                 {subTab === "overview" && <Overview stock={stock} />}
                 {subTab === "statements" && <Statements stock={stock} />}
                 {subTab === "dividend" && <Dividend stock={stock} />}

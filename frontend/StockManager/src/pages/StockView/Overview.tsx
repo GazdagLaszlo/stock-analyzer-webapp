@@ -1,29 +1,43 @@
-import type { StockDto } from "../../../generated-sources/openapi";
+import type { Earningscalendar, StockDto } from "../../../generated-sources/openapi";
 import './StockView.scss';
+import { formatMoney } from "../../utils/formatMoney";
+import { useEffect, useState } from "react";
+import api from "../../api/api";
 
 const Overview = ({ stock }: { stock?: StockDto }) => {
+    const [earnings, setEarnings] = useState<Earningscalendar>({});
+
+    useEffect(() => {
+        if(stock?.symbol){
+            api.Stock.apiStockGetNextEarningsEventGet(stock?.symbol)
+            .then(res => {
+                setEarnings(res.data);                
+            }).catch(error => {            
+                console.error("Error while loading earnings: ", error);
+            });
+        }        
+    }, [stock])
+
     return (
         <div>
             <div className="data-box-2 p-5">
                 <p className='title is-5'>Overview</p>
-                <p>Piaci kapitalizáció: {stock?.marketCap} USD</p>
-                <p>Szektor: {stock?.sector}</p>
-                <p>Részvények száma: {stock?.shareOutstanding}</p>
-                <p>CEO</p>
-                <p>Alkalmazottak száma</p>
-                <p>Alapítés éve</p>
+                <p>Market capitalization: {formatMoney(stock?.marketCap ?? 0)} USD</p>
+                <p>Sector: {stock?.sector}</p>
+                <p>Sharesoutstanding: {stock?.shareOutstanding}</p>
                 <p>Website: <a href={stock?.website ?? ""} target="_blank">{stock?.website}</a></p>
             </div>
 
             <div className="data-box-2 p-5 mt-5">
-                <p className='title is-5'>Teljesítmény</p>
+                <p className='title is-5'>Performance</p>
                 <p>Napi, Heti, Havi, Éves árfolyammozgás</p>
             </div>
 
             <div className="data-box-2 p-5 mt-5">
-                <p className='title is-5'>Események</p>
-                <p>Next report date - period</p>
-                <p>Dividend payment date</p>
+                <p className='title is-5'>Upcoming events</p>                
+                <p>Period - Q{earnings.quarter} {earnings.year}</p>
+                <p>Report date: {earnings.date}</p>
+                <p>EPS estimate: {earnings.epsEstimate} USD</p>
             </div>
         </div>
     );

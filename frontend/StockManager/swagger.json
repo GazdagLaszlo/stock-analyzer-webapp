@@ -681,6 +681,44 @@
         }
       }
     },
+    "/api/Stock/GetNextEarningsEvent": {
+      "get": {
+        "tags": [
+          "Stock"
+        ],
+        "parameters": [
+          {
+            "name": "symbol",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Earningscalendar"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Earningscalendar"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Earningscalendar"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/StockData/Create": {
       "post": {
         "tags": [
@@ -1558,6 +1596,33 @@
   },
   "components": {
     "schemas": {
+      "Earningscalendar": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "nullable": true
+          },
+          "epsEstimate": {
+            "type": "number",
+            "format": "float",
+            "nullable": true
+          },
+          "quarter": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "symbol": {
+            "type": "string",
+            "nullable": true
+          },
+          "year": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
       "LoginResponse": {
         "type": "object",
         "properties": {

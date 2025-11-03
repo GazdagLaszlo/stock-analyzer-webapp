@@ -4,6 +4,7 @@ api.ts
 base.ts
 common.ts
 configuration.ts
+docs/Earningscalendar.md
 docs/LoginResponse.md
 docs/PortfolioApi.md
 docs/PortfolioCreateDto.md

@@ -93,7 +93,7 @@ const StockView = () => {
                 <Link to={`/stocks/${symbol}/technical`} className={activeTab === "technical" ? "is-active" : ""}>Technicals</Link>
             </p>
 
-            <div className="main-box mt-5">
+            <div className="main-box p-5">
                 {activeTab === "overview" && <Overview stock={stock} />}
                 {activeTab === "financials" && <Financial stock={stock} activeSubTab={subtab} />}
                 {activeTab === "technical" && <Technical stock={stock} />}
