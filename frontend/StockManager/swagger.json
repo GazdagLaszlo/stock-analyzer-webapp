@@ -750,7 +750,7 @@
         }
       }
     },
-    "/api/StockData/GetBySymbol/{id}": {
+    "/api/StockData/GetBySymbol": {
       "get": {
         "tags": [
           "StockData"
@@ -759,14 +759,6 @@
           {
             "name": "symbol",
             "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
             "schema": {
               "type": "string"
             }

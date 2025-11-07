@@ -7,7 +7,7 @@ namespace StockManager.Controllers
 {
     [ApiController]
     [Route("api/[controller]/[action]")]
-    [Authorize]
+    //[Authorize]
     public class StockDataController(IStockDataService stockDataService) : ControllerBase
     {
         [HttpPost]
@@ -17,7 +17,7 @@ namespace StockManager.Controllers
             return Ok();
         }
 
-        [HttpGet("{id:int}")]
+        [HttpGet]
         //[Authorize(Roles = "")]
         [ProducesResponseType<StockDataDto>(StatusCodes.Status200OK)]
         public async Task<ActionResult<StockDataDto>> GetBySymbolAsync(string symbol)

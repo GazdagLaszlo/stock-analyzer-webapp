@@ -56,7 +56,9 @@ namespace StockManager.Services
         public async Task<StockDataDto> GetBySymbolAsync(string symbol)
         {
             var stockData = await _context.StockData
+                .Include(x => x.Stock)
                 .FirstOrDefaultAsync(x => x.Stock.Symbol == symbol);
+            Console.WriteLine(stockData.PSTTM);
 
             if (stockData == null)
             {

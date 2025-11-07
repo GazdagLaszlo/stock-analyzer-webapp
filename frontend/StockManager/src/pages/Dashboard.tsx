@@ -1,16 +1,10 @@
 import { useEffect, useState } from "react";
-import type { StockNews, StockQuote } from "../../generated-sources/openapi";
+import type { PortfolioDto, StockNews } from "../../generated-sources/openapi";
 import api from "../api/api";
 
 const Dashboard = () => {
-    const [stockQuote, setStockQuote] = useState<StockQuote>();
     const [stockNews, setStockNews] = useState<StockNews[]>([]);
-
-    useEffect(() => {
-        api.Stock.apiStockGetStockQuoteGet("AAPL").then(res => {
-            setStockQuote(res.data);
-        })
-    }, []);
+    const [portfolios, setPortfolios] = useState<PortfolioDto[]>([]);
 
     useEffect(() => {
         api.StockNews.apiStockNewsGetNewsGet().then(res => {
@@ -20,14 +14,58 @@ const Dashboard = () => {
         });
     }, []);
 
+    useEffect(() => {
+        api.Portfolio.apiPortfolioGetAllGet().then(res => {
+            setPortfolios(res.data);
+        }).catch(error => {
+            console.error("Error while loading portfolios: ", error);
+        });
+    }, []);
+
     return (
         <div className="dashboard">
-            <b>AAPL</b> <br />
-            Current Price:  {stockQuote?.c} <br />
-            Change: {stockQuote?.d} <br />
-            Percent Change: {stockQuote?.dp}% <br />
-            Previous close: {stockQuote?.pc}
-            <br /><br />
+            <p className="subtitle mt-6">Portfolios</p>
+            <div className="columns mt-5 is-variable is-0 data-boxes">
+                {portfolios.map((portfolio) => {
+                    const value = portfolio.portfolioItems?.reduce((sum, item) => {
+                        return sum + ((item.quantity ?? 0) * (item.stock?.price ?? 0));
+                    }, 0);
+
+                    const profit = portfolio.portfolioItems?.reduce((sum, item) => {
+                        const itemProfit = ((item.stock?.price ?? 0) - (item.averagePurchasePrice ?? 0)) * (item.quantity ?? 0);
+                        return sum + itemProfit;
+                    }, 0)
+
+                    const invested = portfolio.portfolioItems?.reduce((sum, item) => {                        
+                        return sum + ((item.averagePurchasePrice ?? 0) * (item.quantity ?? 0));
+                    }, 0)
+
+                    const changePercent = (profit ?? 0) / (invested ?? 1) * 100;
+
+                    return <>
+                        <div className="data-box is-flex is-flex-direction-column is-justify-content-space-between p-5" style={{height:"23vh"}}>
+                            <p className="is-size-5 mb-4">{portfolio.name}</p>
+                            <div className="is-flex flex-direction-row is-justify-content-space-between">
+                                <div className="mr-6">
+                                    <p className="box-title">Total value</p>
+                                    <span className='subtitle mt- is-size-4'>{value?.toFixed(2)} <span className="is-size-6">USD</span></span>
+                                </div>
+                                <div>
+                                    <p className="box-title">Unrealized profit</p>
+                                    <span className='subtitle mt- is-size-4'
+                                        style={{ color: (profit ?? 0) > 0 ? 'green' : (profit ?? 0) < 0 ? 'red' : 'black'}}>
+                                        {(profit ?? 0) > 0 ? `+${profit?.toFixed(2)}` : profit?.toFixed(2)}
+                                        <span className="is-size-6" style={{color:"inherit"}}> USD</span>
+                                        <span style={{color:"inherit"}} className="ml-4 is-size-6">
+                                            {(changePercent ?? 0) > 0 ? `+${changePercent.toFixed(2)}` : changePercent.toFixed(2)}%    
+                                        </span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>  
+                    </>
+                })}                            
+            </div>
             
             <div className="mt-6">
                 <p className="subtitle pb-3 box-header">News</p>                                 

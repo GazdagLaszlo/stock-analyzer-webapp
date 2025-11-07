@@ -277,7 +277,7 @@ const Portfolio = () => {
                             <th>Symbol</th>
                             <th>Price</th>
                             <th>Holdings</th>
-                            <th>Profit</th>
+                            <th>Unrealized profit</th>
                             <th></th>
                         </tr>
                     </thead>

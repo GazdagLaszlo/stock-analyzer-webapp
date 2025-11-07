@@ -21,7 +21,7 @@ const Overview = ({ stock }: { stock?: StockDto }) => {
     return (
         <div>
             <div className="data-box-2 p-5">
-                <p className='title is-5'>Overview</p>
+                <p className='title is-5'>Company data</p>
                 <p>Market capitalization: {formatMoney(stock?.marketCap ?? 0)} USD</p>
                 <p>Sector: {stock?.sector}</p>
                 <p>Sharesoutstanding: {stock?.shareOutstanding}</p>
@@ -29,12 +29,7 @@ const Overview = ({ stock }: { stock?: StockDto }) => {
             </div>
 
             <div className="data-box-2 p-5 mt-5">
-                <p className='title is-5'>Performance</p>
-                <p>Napi, Heti, Havi, Éves árfolyammozgás</p>
-            </div>
-
-            <div className="data-box-2 p-5 mt-5">
-                <p className='title is-5'>Upcoming events</p>                
+                <p className='title is-5'>Upcoming earnings report</p>
                 <p>Period - Q{earnings.quarter} {earnings.year}</p>
                 <p>Report date: {earnings.date}</p>
                 <p>EPS estimate: {earnings.epsEstimate} USD</p>

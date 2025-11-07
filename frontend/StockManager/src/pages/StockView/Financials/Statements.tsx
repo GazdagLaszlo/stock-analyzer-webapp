@@ -41,7 +41,7 @@ const Statements = ({ stock }: { stock?: StockDto }) => {
             "us-gaap_Revenues",
             "us-gaap_IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest"
         ];
-        const concepts2 = [            
+        const concepts2 = [
             "NetIncomeLoss",
             "Revenues"
         ];
@@ -78,7 +78,7 @@ const Statements = ({ stock }: { stock?: StockDto }) => {
                                 <td className="sticky-col" style={{minWidth: "250px"}}>{label}</td>
                                 {reports.map(report => {
                                     const item = report.stockReportItems?.find(x => x.reportSection === "ic" && (x.concept === concept1 || x.concept === concept2));
-                                        return <td key={report.year} style={{minWidth:"100px"}}>{formatMoney(item?.value ?? 0) ?? "-"}</td>;                                        
+                                        return <td key={report.year} style={{minWidth:"100px"}}>{item?.value != undefined ? formatMoney(item.value) : "-"}</td>;
                                 })}
                             </tr>
                         ))

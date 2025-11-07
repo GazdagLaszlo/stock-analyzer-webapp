@@ -122,30 +122,8 @@ namespace StockManager.Services
             {
                 return 0;
             }
-
-            double sumValue = 0;
-            double sumQuantity = 0;
-
-            foreach ( var transaction in portfolioItem.Transactions.OrderBy(x => x.Date))
-            {
-                if(transaction.TransactionType == TransactionType.Buy)
-                {
-                    sumValue += transaction.Price * transaction.Quantity;
-                    sumQuantity += transaction.Quantity;
-                }
-                else if(transaction.TransactionType == TransactionType.Sell)
-                {
-                    //Átlagos vételi árhoz viszonyítjuk az eladást, nem a jelenlegi eladási árhoz
-                    double averagePrice = sumValue / sumQuantity;
-                    sumValue -= averagePrice * transaction.Quantity;
-                    sumQuantity -= transaction.Quantity;
-                }
-            }
-
-            double averageBuyPrice = sumQuantity == 0 ? 0 : sumValue / sumQuantity;
-            double currentValue = portfolioItem.Stock.Price * portfolioItem.Quantity;
-
-            double profit = currentValue - averageBuyPrice * portfolioItem.Quantity;
+            
+            double profit = (portfolioItem.Stock.Price - portfolioItem.AveragePurchasePrice) * portfolioItem.Quantity;
 
             return profit;
         }
