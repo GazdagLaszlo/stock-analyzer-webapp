@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import type { PortfolioDto, StockNews } from "../../generated-sources/openapi";
 import api from "../api/api";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
     const [stockNews, setStockNews] = useState<StockNews[]>([]);
     const [portfolios, setPortfolios] = useState<PortfolioDto[]>([]);
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         api.StockNews.apiStockNewsGetNewsGet().then(res => {
@@ -43,7 +46,8 @@ const Dashboard = () => {
                     const changePercent = (profit ?? 0) / (invested ?? 1) * 100;
 
                     return <>
-                        <div className="data-box is-flex is-flex-direction-column is-justify-content-space-between p-5" style={{height:"23vh"}}>
+                        <div className="data-box is-flex is-flex-direction-column is-justify-content-space-between p-5" style={{height:"23vh", cursor:"pointer"}}
+                            onClick={() => navigate(`/portfolio/${portfolio.id}`)}>
                             <p className="is-size-5 mb-4">{portfolio.name}</p>
                             <div className="is-flex flex-direction-row is-justify-content-space-between">
                                 <div className="mr-6">
@@ -64,7 +68,7 @@ const Dashboard = () => {
                             </div>
                         </div>  
                     </>
-                })}                            
+                })}
             </div>
             
             <div className="mt-6">

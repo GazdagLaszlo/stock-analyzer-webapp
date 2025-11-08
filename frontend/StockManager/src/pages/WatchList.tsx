@@ -6,8 +6,10 @@ import { formatMoney } from "../utils/formatMoney";
 import StockSelectModal from "../components/Portfolio/StockSelectModal";
 import WatchlistItemDeleteModal from "../components/Watchlist/WatchListItemDeleteModal";
 import WatchlistItemEditModal from "../components/Watchlist/WatchlistItemEditModal";
+import { useNavigate } from "react-router-dom";
 
 const Watchlist = () => {
+    const navigate = useNavigate();
     const [stocks, setStocks] = useState<StockDto[]>([]);
     const [watchlist, setWatchlist] = useState<WatchListDto>();
     const [selectedWatchlistItem, setSelectedWatchlistItem] = useState<WatchListItemDto>(); 
@@ -42,7 +44,7 @@ const Watchlist = () => {
     }, []);
 
     const rows = watchlist?.watchListItems?.map((item) => (
-        <tr key={item.id} className="table-row" onClick={() => {}}>
+        <tr key={item.id} className="table-row" onClick={() => navigate(`/stocks/${item.stock?.symbol}`)}>
             <td style={{width: "70px"}}>
                 <figure className='image is-24x24'>
                     <img src={`https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${item.stock?.symbol}.png`}/>

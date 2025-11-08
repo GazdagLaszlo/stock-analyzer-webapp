@@ -23,6 +23,11 @@ export const routes = [
         isPrivate: false
     },
     {
+        path: "portfolio/:portfolioId",
+        component: <Portfolio/>,
+        isPrivate: false
+    },
+    {
         path: "watchlist",
         component: <Watchlist/>,
         isPrivate: false

@@ -9,14 +9,19 @@ import TransactionModal from '../../components/Portfolio/TransactionModal';
 import PortfolioMenu from '../../components/Portfolio/PortfolioMenu';
 import PortfolioDeleteModal from '../../components/Portfolio/PortfolioDeleteModal';
 import RenamePortfolioModal from '../../components/Portfolio/RenamePortfolioModal';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const Portfolio = () => {
+    const { portfolioId } = useParams<{ portfolioId?: string }>();
+
     const [portfolios, setPortfolios] = useState<PortfolioDto[]>([]);
     const [selectedPortfolio, setSelectedPortfolio] = useState<PortfolioDto | undefined>(undefined);
     const [itemProfits, setItemProfits] = useState<{[id: number]: number}>({});
     const [portfolioValue, setPortfolioValue] = useState<number | null>();
     const [selectedStock, setSelectedStock] = useState<StockDto>();
     const [selectedPortfolioItem, setSelectedPortfolioItem] = useState<PortfolioItemDto>();
+
+    const navigate = useNavigate();
 
     const [transactionCreateData, setTransactionCreateData] = useState({
         price: '',
@@ -36,7 +41,13 @@ const Portfolio = () => {
         api.Portfolio.apiPortfolioGetAllGet().then(res => {
             setPortfolios(res.data);
             if (res.data.length > 0) {
-                setSelectedPortfolio(res.data[0]);
+                if(portfolioId != null){
+                    const id = res.data.find(p => p.id === parseInt(portfolioId));
+                    setSelectedPortfolio(id);
+                }
+                else{
+                    setSelectedPortfolio(res.data[0]);
+                }                
             }            
         }).catch(error => {
             console.error("Error while loading portfolios: ", error);
@@ -157,7 +168,7 @@ const Portfolio = () => {
     ));
         
     const portfolioItems = selectedPortfolio?.portfolioItems?.map((item, i) => (
-        <tr key={i}>
+        <tr key={i} onClick={() => navigate(`/stocks/${item.stock?.symbol}`)} className='table-row'>
             <td>{item.stock?.companyName}</td>
             <td>{item.stock?.symbol}</td>
             <td>{item.stock?.price} USD</td>

@@ -44,7 +44,7 @@ const StockView = () => {
         <nav className="breadcrumb mt-6" aria-label="breadcrumbs">
             <ul>
                 <li>
-                    <Link to="/stocks">Részvények</Link>
+                    <Link to="/stocks">Stocks</Link>
                 </li>
                 <li className="is-active">
                     <Link to="#" aria-current="page">{stock?.symbol}</Link>
