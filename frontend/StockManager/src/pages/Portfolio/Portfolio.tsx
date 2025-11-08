@@ -46,6 +46,7 @@ const Portfolio = () => {
                     setSelectedPortfolio(id);
                 }
                 else{
+                    navigate(`/portfolio/${res.data[0].id}`, { replace: true });
                     setSelectedPortfolio(res.data[0]);
                 }                
             }            
@@ -162,7 +163,7 @@ const Portfolio = () => {
     }
 
     const portfolioButtons = portfolios.map((portfolio) => (
-        <button key={portfolio.id} className={"button mr-2 " + (selectedPortfolio == portfolio ? "is-dark" : "")} onClick={() => setSelectedPortfolio(portfolio)}>
+        <button key={portfolio.id} className={"button mr-2 " + (selectedPortfolio == portfolio ? "is-dark" : "")} onClick={() => {navigate(`/portfolio/${portfolio.id}`); setSelectedPortfolio(portfolio)}}>
             {portfolio.name}
         </button>
     ));
