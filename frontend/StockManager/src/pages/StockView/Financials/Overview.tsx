@@ -1,6 +1,5 @@
 import type { StockDataDto, StockDto } from "../../../../generated-sources/openapi";
 //import Dividend from "./Dividend";
-import '../StockView.scss';
 import { formatMoney } from "../../../utils/formatMoney";
 import { useEffect, useState } from "react";
 import api from "../../../api/api";
@@ -20,7 +19,7 @@ const Summary = ({ stock }: { stock?: StockDto }) => {
     }, [stock]);
 
     return (
-        <div> 
+        <div className="stockview"> 
             <div className="columns mt-5 is-variable is-0 data-boxes">
                 <div className="column data-box is-flex is-flex-direction-column is-justify-content-center pl-5">
                     <p className="box-title">Market Capitalization</p>

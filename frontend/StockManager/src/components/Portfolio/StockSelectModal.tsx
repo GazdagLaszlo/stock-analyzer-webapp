@@ -50,7 +50,7 @@ const StockSelectModal = ({ open, onClose, stocks, onSelectStock }: Props) => {
                                         <td>{index + 1}</td>
                                         <td>
                                             <figure className='image is-24x24'>
-                                                <img src={`https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${stock.symbol}.png`}/>
+                                                <img className="border-radius-5" src={`https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${stock.symbol}.png`}/>
                                             </figure>
                                         </td>
                                         <td>{stock.symbol}</td>

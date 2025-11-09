@@ -35,10 +35,10 @@ const Transaction = () => {
     };
 
     const rows = transactions.map((transaction) => (
-        <tr key={transaction.id} className="table-row">    
+        <tr key={transaction.id} className="table-row">
             <td>
                 <figure className='image is-24x24'>
-                    <img src={`https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${transaction.stock?.symbol}.png`}/>
+                    <img className="border-radius-5" src={`https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${transaction.stock?.symbol}.png`}/>
                 </figure>
             </td>
             <td>{transaction.stock?.symbol}</td>
@@ -61,7 +61,7 @@ const Transaction = () => {
     ));
 
     return (
-        <div className=" is-flex is-flex-direction-column is-align-items-center">                        
+        <div className="transaction is-flex is-flex-direction-column is-align-items-center">
             <h1 className="title has-text-centered my-6">Transactions</h1>
             
             <div className="table-div mt-6">

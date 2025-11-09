@@ -28,7 +28,7 @@ const Dashboard = () => {
     return (
         <div className="dashboard">
             <p className="subtitle mt-6">Portfolios</p>
-            <div className="columns mt-5 is-variable is-0 data-boxes">
+            <div className="columns mt-5 is-variable is-0 data-boxes" style={{overflowX: "auto"}}>
                 {portfolios.map((portfolio) => {
                     const value = portfolio.portfolioItems?.reduce((sum, item) => {
                         return sum + ((item.quantity ?? 0) * (item.stock?.price ?? 0));
@@ -45,7 +45,7 @@ const Dashboard = () => {
 
                     const changePercent = (profit ?? 0) / (invested ?? 1) * 100;
 
-                    return <>
+                    return <>                        
                         <div className="data-box is-flex is-flex-direction-column is-justify-content-space-between p-5" style={{height:"23vh", cursor:"pointer"}}
                             onClick={() => navigate(`/portfolio/${portfolio.id}`)}>
                             <p className="is-size-5 mb-4">{portfolio.name}</p>
@@ -66,7 +66,7 @@ const Dashboard = () => {
                                     </span>
                                 </div>
                             </div>
-                        </div>  
+                        </div>
                     </>
                 })}
             </div>

@@ -1,11 +1,11 @@
-import React from 'react';
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
 const Header = () => {
+
     return <>
-        <header style={{borderBottom: "1px solid black"}} className='pb-4'>
+        <header className='py-3 px-6'>
             <nav className='navbar'>
-                <div className='navbar-brand mt-5'>
+                <div className='navbar-brand'>
                     <Link to="/">
                         <p className='is-size-4 has-text-weight-bold'>StockManager</p>
                         <p>Stock analyst and Portfolio Manager</p>
@@ -21,12 +21,12 @@ const Header = () => {
 
                 <div className='navbar-menu'>
                     <div className='navbar-end'>
-                        <Link className='navbar-item' to="/dashboard">Dashboard</Link>
-                        <Link className='navbar-item' to="/stocks">Stocks</Link>
-                        <Link className='navbar-item' to="/portfolio">Portfolio</Link>
-                        <Link className='navbar-item' to="/watchlist">Watchlist</Link>
-                        <Link className='navbar-item' to="/transactions">Transactions</Link>
-                        <Link className='navbar-item' to="/results">Trade summary</Link>
+                        <NavLink className={({ isActive }) => "navbar-item" + (isActive ? " active" : "")} to="/dashboard">Dashboard</NavLink>
+                        <NavLink className={({ isActive }) => "navbar-item" + (isActive ? " active" : "")} to="/stocks">Stocks</NavLink>
+                        <NavLink className={({ isActive }) => "navbar-item" + (isActive ? " active" : "")} to="/portfolio">Portfolio</NavLink>
+                        <NavLink className={({ isActive }) => "navbar-item" + (isActive ? " active" : "")} to="/watchlist">Watchlist</NavLink>
+                        <NavLink className={({ isActive }) => "navbar-item" + (isActive ? " active" : "")} to="/transactions">Transactions</NavLink>
+                        <NavLink className={({ isActive }) => "navbar-item" + (isActive ? " active" : "")} to="/results">Trade statistics</NavLink>
                     </div>                    
                 </div>
             </nav>            

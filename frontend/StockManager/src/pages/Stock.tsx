@@ -1,7 +1,6 @@
-import type { StockDto } from "../../../generated-sources/openapi";
-import api from "../../api/api";
+import type { StockDto } from "../../generated-sources/openapi";
+import api from "../api/api";
 import { useState, useEffect, useRef } from "react";
-import './Stock.scss';
 import { useNavigate } from "react-router-dom";
 import * as signalR from "@microsoft/signalr";
 
@@ -65,9 +64,9 @@ const Stock = () => {
 
     const rows = filteredStocks.map((stock) => (
         <tr key={stock.id} className="table-row" onClick={() => navigate(`${stock.symbol}`, { state: { stockId: stock.id } })}>            
-            <td>
+            <td className="is-narrow">
                 <figure className='image is-24x24'>
-                    <img src={`https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${stock.symbol}.png`}/>
+                    <img className="border-radius-5" src={`https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${stock.symbol}.png`}/>
                 </figure>
             </td>
             <td>{stock.symbol}</td>
@@ -80,7 +79,7 @@ const Stock = () => {
     
 
     return (
-        <div className=" is-flex is-flex-direction-column is-align-items-center">
+        <div className="stocks is-flex is-flex-direction-column is-align-items-center">
             <h1 className="title has-text-centered my-6">Stocks by market capitalization</h1>
             <div className="field" style={{width: "70%"}}>
                 <div className="control">

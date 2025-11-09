@@ -1,5 +1,4 @@
 import type { Earningscalendar, StockDto } from "../../../generated-sources/openapi";
-import './StockView.scss';
 import { formatMoney } from "../../utils/formatMoney";
 import { useEffect, useState } from "react";
 import api from "../../api/api";
@@ -19,7 +18,7 @@ const Overview = ({ stock }: { stock?: StockDto }) => {
     }, [stock])
 
     return (
-        <div>
+        <div className="stockview">
             <div className="data-box-2 p-5">
                 <p className='title is-5'>Company data</p>
                 <p>Market capitalization: {formatMoney(stock?.marketCap ?? 0)} USD</p>

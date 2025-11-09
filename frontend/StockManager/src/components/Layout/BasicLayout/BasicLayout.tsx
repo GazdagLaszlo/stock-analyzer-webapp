@@ -5,15 +5,15 @@ import {Outlet} from "react-router-dom";
 const BasicLayout = () => {
 
     return(
-        <div className="container is-flex is-flex-direction-column" style={{minHeight: "100vh"}}>
+        <div className="container is-fluid is-flex is-flex-direction-column p-0" style={{minHeight: "100vh"}}>
             <Header/>
 
-            <main className="is-flex-grow-1 mt-4">
+            <main className="is-flex-grow-1 mt-4 px-6">
                 <Outlet/>
             </main>
 
             <Footer/>
-        </div>        
+        </div>
     )    
 }
 

@@ -10,7 +10,7 @@ const Financial = ({ stock, activeSubTab }: { stock?: StockDto, activeSubTab?: s
 
     return (
         <div>
-            <p className="buttons mt-3 pl-5">
+            <p className="buttons mt-3">
                 <Link to={`/stocks/${stock?.symbol}/financials/overview`} className={`button ${subTab === "overview" ? "is-dark" : "is-light"}`}>Overview</Link>
                 <Link to={`/stocks/${stock?.symbol}/financials/statements`} className={`button ${subTab === "statements" ? "is-dark" : "is-light"}`}>Statements</Link>
                 <Link to={`/stocks/${stock?.symbol}/financials/dividend`} className={`button ${subTab === "dividend" ? "is-dark" : "is-light"}`}>Dividend</Link>

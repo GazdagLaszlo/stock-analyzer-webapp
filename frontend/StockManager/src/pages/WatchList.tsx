@@ -47,11 +47,11 @@ const Watchlist = () => {
         <tr key={item.id} className="table-row" onClick={() => navigate(`/stocks/${item.stock?.symbol}`)}>
             <td style={{width: "70px"}}>
                 <figure className='image is-24x24'>
-                    <img src={`https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${item.stock?.symbol}.png`}/>
+                    <img className="border-radius-5" src={`https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${item.stock?.symbol}.png`}/>
                 </figure>
             </td>
-            <td>{item.stock?.companyName}</td>
             <td>{item.stock?.symbol}</td>
+            <td>{item.stock?.companyName}</td>            
             <td>{formatMoney(item.stock?.price ?? 0)} USD</td>
             <td style={{borderLeft: "1px solid grey"}} className="pl-6">{item.entryPrice != null ? item.entryPrice + " USD" : "-"}</td>
             <td>{item.note ?? "-"}</td>
@@ -111,7 +111,8 @@ const Watchlist = () => {
 
     return (
         <div>
-            <div className="is-flex is-justify-content-right my-5">
+            <h1 className="title has-text-centered my-6">My Watchlist</h1>
+            <div className="is-flex is-justify-content-right my-5">                                
                 <button className="button is-dark" onClick={() => setStockModalOpen(true)}>
                     Add stocks
                 </button>
@@ -122,8 +123,8 @@ const Watchlist = () => {
                     <thead>
                         <tr>
                             <th></th>
-                            <th>Company</th>
                             <th>Symbol</th>
+                            <th>Company</th>                            
                             <th style={{borderRight: "1px solid grey"}}>Price</th>
                             <th className="pl-6">Entry Price</th>
                             <th>Note</th>

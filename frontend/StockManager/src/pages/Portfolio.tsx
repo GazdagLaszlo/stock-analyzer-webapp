@@ -1,14 +1,13 @@
 import { useEffect, useState } from 'react';
-import './Portfolio.scss';
-import { TransactionType, type PortfolioCreateDto, type PortfolioDto, type PortfolioItemDto, type PortfolioUpdateDto, type StockDto } from '../../../generated-sources/openapi';
-import api from "../../api/api";
-import PortfolioItemMenu from '../../components/Portfolio/PortfolioItemMenu';
-import PortfolioItemDeleteModal from '../../components/Portfolio/PortfolioItemDeleteModal';
-import NewPortfolioModal from '../../components/Portfolio/NewPortfolioModal';
-import TransactionModal from '../../components/Portfolio/TransactionModal';
-import PortfolioMenu from '../../components/Portfolio/PortfolioMenu';
-import PortfolioDeleteModal from '../../components/Portfolio/PortfolioDeleteModal';
-import RenamePortfolioModal from '../../components/Portfolio/RenamePortfolioModal';
+import { TransactionType, type PortfolioCreateDto, type PortfolioDto, type PortfolioItemDto, type PortfolioUpdateDto, type StockDto } from '../../generated-sources/openapi';
+import api from "../api/api";
+import PortfolioItemMenu from '../components/Portfolio/PortfolioItemMenu';
+import PortfolioItemDeleteModal from '../components/Portfolio/PortfolioItemDeleteModal';
+import NewPortfolioModal from '../components/Portfolio/NewPortfolioModal';
+import TransactionModal from '../components/Portfolio/TransactionModal';
+import PortfolioMenu from '../components/Portfolio/PortfolioMenu';
+import PortfolioDeleteModal from '../components/Portfolio/PortfolioDeleteModal';
+import RenamePortfolioModal from '../components/Portfolio/RenamePortfolioModal';
 import { useNavigate, useParams } from 'react-router-dom';
 
 const Portfolio = () => {
@@ -131,6 +130,7 @@ const Portfolio = () => {
 
         const newPortfolio = response.data.find(x => x.id === createdPortfolioId);
         setSelectedPortfolio(newPortfolio);
+        navigate(`/portfolio/${createdPortfolioId}`);
     }
 
     const deletePortfolioItem = async (id: number | undefined ) => {
@@ -170,8 +170,13 @@ const Portfolio = () => {
         
     const portfolioItems = selectedPortfolio?.portfolioItems?.map((item, i) => (
         <tr key={i} onClick={() => navigate(`/stocks/${item.stock?.symbol}`)} className='table-row'>
-            <td>{item.stock?.companyName}</td>
+            <td className='is-narrow'>
+                <figure className='image is-24x24'>
+                    <img className='border-radius-5' src={`https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${item.stock?.symbol}.png`}/>
+                </figure>
+            </td>
             <td>{item.stock?.symbol}</td>
+            <td>{item.stock?.companyName}</td>            
             <td>{item.stock?.price} USD</td>
             <td>{((item.quantity ?? 0)*(item.stock?.price ?? 0)).toFixed(2)} USD ({item.quantity?.toFixed(2)} {item.stock?.symbol})</td>
             <td style={{color: 
@@ -236,7 +241,7 @@ const Portfolio = () => {
     }
 
     return (
-        <div className='mt-5'>
+        <div className='portfolio mt-5'>
             <div className='is-flex is-justify-content-space-between'>
                 <div>
                     {portfolioButtons}
@@ -266,7 +271,7 @@ const Portfolio = () => {
                     <span className='subtitle mt-3 is-size-4'>{portfolioValue?.toFixed(2)} <span className="is-size-6">USD</span></span>
                 </div>
                 <div className="column is-one-quarter data-box is-flex is-flex-direction-column is-justify-content-center pl-5">
-                    <p className="box-title">Total profit</p>
+                    <p className="box-title">Unrealized profit</p>
                     <p className='subtitle mt-3 is-size-4' 
                         style={{ color: getTotalProfit(itemProfits).isPositive ? 'green' : getTotalProfit(itemProfits).isNegative ? 'red' : 'black'}}>
                             {getTotalProfit(itemProfits).profitDisplay}
@@ -285,8 +290,9 @@ const Portfolio = () => {
                 <table className='table'>
                     <thead>
                         <tr>
-                            <th>Company</th>
+                            <th></th>
                             <th>Symbol</th>
+                            <th>Company</th>                            
                             <th>Price</th>
                             <th>Holdings</th>
                             <th>Unrealized profit</th>
