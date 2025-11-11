@@ -167,8 +167,42 @@ const Portfolio = () => {
             {portfolio.name}
         </button>
     ));
+
+    const getTotalInvested = () => 
+        selectedPortfolio?.portfolioItems?.
+            reduce((total, item) => total + ((item.averagePurchasePrice ?? 0) * (item.quantity ?? 0)), 0) ?? 0;
+    const getProfit = () => 
+        selectedPortfolio?.portfolioItems?.
+            reduce((total, item) => total + (itemProfits[item.id!] ?? 0), 0) ?? 0;
+
+    const getTotalProfit = () =>{
+        if (!selectedPortfolio?.portfolioItems) {
+            return { profit: 0, profitDisplay: "0 ", isPositive: false, isNegative: false, percentDisplay: "" };
+        }
+
+        const totalProfit = getProfit();
+        const totalInvested = getTotalInvested();
         
-    const portfolioItems = selectedPortfolio?.portfolioItems?.map((item, i) => (
+        const isPositive = totalProfit > 0;
+        const isNegative = totalProfit < 0;
+        let profitDisplay = `${isPositive ? '+' : '-'}${Math.abs(totalProfit).toFixed(2)} `;
+        const percentChange = totalProfit / totalInvested * 100;
+        let percentDisplay = `${percentChange > 0 ? '+' : '-'}${Math.abs(percentChange).toFixed(2)}%`
+
+        if(totalProfit == 0){
+            profitDisplay = "0 ";
+            percentDisplay = "";
+        }
+
+        return { profit: totalProfit, profitDisplay, isPositive, isNegative, percentDisplay};
+    }
+
+    const sortedItems = selectedPortfolio?.portfolioItems
+        ?.slice()
+        .sort((a, b) => ((b.stock?.price ?? 0) * (b.quantity ?? 0)) - ((a.stock?.price ?? 0) * (a.quantity ?? 0))
+    );
+        
+    const portfolioItems = sortedItems?.map((item, i) => (
         <tr key={i} onClick={() => navigate(`/stocks/${item.stock?.symbol}`)} className='table-row'>
             <td className='is-narrow'>
                 <figure className='image is-24x24'>
@@ -176,9 +210,11 @@ const Portfolio = () => {
                 </figure>
             </td>
             <td>{item.stock?.symbol}</td>
-            <td>{item.stock?.companyName}</td>            
-            <td>{item.stock?.price} USD</td>
+            <td>{item.stock?.companyName}</td> 
+            <td>{((((item.quantity ?? 0)*(item.stock?.price ?? 0)) / (portfolioValue ?? 1)) * 100).toFixed(2)}%</td>
+            <td>{item.averagePurchasePrice?.toFixed(2)} USD</td>
             <td>{((item.quantity ?? 0)*(item.stock?.price ?? 0)).toFixed(2)} USD ({item.quantity?.toFixed(2)} {item.stock?.symbol})</td>
+            <td>{((item.averagePurchasePrice ?? 0) * (item.quantity ?? 0)).toFixed(2)} USD</td>
             <td style={{color: 
                     (itemProfits[item.id!] !== undefined)
                         ? itemProfits[item.id!] > 0 ? 'green'
@@ -208,37 +244,7 @@ const Portfolio = () => {
                 />
             </td>
         </tr>
-    ));
-
-    const getTotalProfit = (itemProfits: {[id: number]: number}) =>{
-        if (!selectedPortfolio?.portfolioItems) {
-            return { profit: 0, profitDisplay: "0 ", isPositive: false, isNegative: false, percentDisplay: "" };
-        }
-
-        let totalProfit = 0;
-        let totalInvested = 0;
-
-        for (const item of selectedPortfolio.portfolioItems) {
-            const profit = itemProfits[item.id!] ?? 0;
-            const invested = (item.averagePurchasePrice ?? 0) * (item.quantity ?? 0);
-
-            totalProfit += profit;
-            totalInvested += invested;
-        }
-        
-        const isPositive = totalProfit > 0;
-        const isNegative = totalProfit < 0;
-        let profitDisplay = `${isPositive ? '+' : '-'}${Math.abs(totalProfit).toFixed(2)} `;
-        const percentChange = totalProfit / totalInvested * 100;
-        let percentDisplay = `${percentChange > 0 ? '+' : '-'}${Math.abs(percentChange).toFixed(2)}%`
-
-        if(totalProfit == 0){
-            profitDisplay = "0 ";
-            percentDisplay = "";
-        }
-
-        return { profit: totalProfit, profitDisplay, isPositive, isNegative, percentDisplay};
-    }
+    ));    
 
     return (
         <div className='portfolio mt-5'>
@@ -273,13 +279,13 @@ const Portfolio = () => {
                 <div className="column is-one-quarter data-box is-flex is-flex-direction-column is-justify-content-center pl-5">
                     <p className="box-title">Unrealized profit</p>
                     <p className='subtitle mt-3 is-size-4' 
-                        style={{ color: getTotalProfit(itemProfits).isPositive ? 'green' : getTotalProfit(itemProfits).isNegative ? 'red' : 'black'}}>
-                            {getTotalProfit(itemProfits).profitDisplay}
+                        style={{ color: getTotalProfit().isPositive ? 'green' : getTotalProfit().isNegative ? 'red' : 'black'}}>
+                            {getTotalProfit().profitDisplay}
                             <span className="is-size-6" style={{color:"inherit"}}>
                                 USD
                             </span>
                             <span className='is-size-6 ml-3' style={{color:"inherit"}}>
-                                {getTotalProfit(itemProfits).percentDisplay}
+                                {getTotalProfit().percentDisplay}
                             </span>
                     </p>
                 </div>
@@ -292,9 +298,11 @@ const Portfolio = () => {
                         <tr>
                             <th></th>
                             <th>Symbol</th>
-                            <th>Company</th>                            
-                            <th>Price</th>
+                            <th>Company</th>
+                            <th>Allocation</th>
+                            <th>Avg price</th>
                             <th>Holdings</th>
+                            <th>Invested</th>
                             <th>Unrealized profit</th>
                             <th></th>
                         </tr>
