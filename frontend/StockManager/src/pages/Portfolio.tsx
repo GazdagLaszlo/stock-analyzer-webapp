@@ -163,7 +163,7 @@ const Portfolio = () => {
     }
 
     const portfolioButtons = portfolios.map((portfolio) => (
-        <button key={portfolio.id} className={"button mr-2 " + (selectedPortfolio == portfolio ? "is-dark" : "")} onClick={() => {navigate(`/portfolio/${portfolio.id}`); setSelectedPortfolio(portfolio)}}>
+        <button key={portfolio.id} className={"button mr-2 " + (selectedPortfolio == portfolio ? "button-navy" : "")} onClick={() => {navigate(`/portfolio/${portfolio.id}`); setSelectedPortfolio(portfolio)}}>
             {portfolio.name}
         </button>
     ));
@@ -250,7 +250,7 @@ const Portfolio = () => {
                     </button>
                 </div>
                 <div>
-                    <button className='button is-dark' onClick={() => setTransactionModalOpen(true)}>
+                    <button className='button button-navy' onClick={() => setTransactionModalOpen(true)}>
                         Add transaction
                     </button>
 

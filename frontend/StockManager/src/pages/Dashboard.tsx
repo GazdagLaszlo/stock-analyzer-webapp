@@ -27,7 +27,9 @@ const Dashboard = () => {
 
     return (
         <div className="dashboard">
-            <p className="subtitle mt-6">Portfolios</p>
+            <p>Itt kellene egy rövid bemutató a fő funkciókról, kiemelendő elemekről. (Miért a StockManager?)</p>
+
+            <p className="subtitle mt-6 pb-3 box-header">Portfolios</p>
             <div className="columns mt-5 is-variable is-0 data-boxes" style={{overflowX: "auto"}}>
                 {portfolios.map((portfolio) => {
                     const value = portfolio.portfolioItems?.reduce((sum, item) => {
@@ -45,7 +47,7 @@ const Dashboard = () => {
 
                     const changePercent = (profit ?? 0) / (invested ?? 1) * 100;
 
-                    return <>                        
+                    return <>
                         <div className="data-box is-flex is-flex-direction-column is-justify-content-space-between p-5" style={{height:"23vh", cursor:"pointer"}}
                             onClick={() => navigate(`/portfolio/${portfolio.id}`)}>
                             <p className="is-size-5 mb-4">{portfolio.name}</p>
@@ -76,17 +78,17 @@ const Dashboard = () => {
                 <div className="columns is-multiline is-flex is-0 news-container">
                     {stockNews.slice(0, 6).map((newsItem, index) => (
                         <div key={index} className="column news-box p-3">                            
-                            <a href={newsItem.url ?? ""} className="is-flex is-flex-direction-column">
+                            <a href={newsItem.url ?? ""} className="is-flex is-flex-direction-column" target="_blank">
                                 <figure className="image is-16by9">
-                                    <img src={newsItem.image ?? ""}/>
+                                    <img className="border-radius-5" src={newsItem.image ?? ""}/>
                                 </figure>
                                 <p className="is-size-6 has-text-weight-bold py-3">{newsItem.headline}</p>
                                 <p style={{flex:'1'}}>{newsItem.summary}</p>
                                 <p className="has-text-right vertical-align-end is-italic mt-3">
                                     {new Date((newsItem.datetime ?? 0) * 1000).toLocaleString("hu-HU")}
-                                </p>                            
+                                </p>
                             </a>
-                        </div>                        
+                        </div>
                     ))}
                 </div>
             </div>            

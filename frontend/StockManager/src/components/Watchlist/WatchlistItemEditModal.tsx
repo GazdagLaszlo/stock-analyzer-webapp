@@ -40,7 +40,7 @@ const WatchlistItemEditModal = ({open, onClose, selectedItem, onEdit} : Props) =
                     </div>
 
                     <div className='is-flex is-justify-content-center mt-5'>
-                        <button className='button is-dark' onClick={() => {onEdit(selectedItem?.id, watchlistItem); onClose()}}>
+                        <button className='button button-navy' onClick={() => {onEdit(selectedItem?.id, watchlistItem); onClose()}}>
                             Edit
                         </button>
                     </div>

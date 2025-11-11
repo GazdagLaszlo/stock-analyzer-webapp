@@ -29,7 +29,7 @@ const NewPortfolioModal = ({open, onClose, onCreate} : Props) => {
                         </div>
                     </div>
                     <div className='is-flex is-justify-content-center mt-6'>
-                        <button className='button is-dark' onClick={()=>{onCreate(newPortfolio); setNewPortfolio({}); onClose()}}>
+                        <button className='button button-navy' onClick={()=>{onCreate(newPortfolio); setNewPortfolio({}); onClose()}}>
                             Create
                         </button>
                     </div>

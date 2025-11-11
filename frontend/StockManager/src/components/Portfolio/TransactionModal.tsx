@@ -191,7 +191,7 @@ const  TransactionModal = ({open, onClose, onCreate, portfolioId, portfolioItems
                     </div>
 
                     <div className='is-flex is-justify-content-center mt-5'>
-                        <button className='button is-dark' onClick={create}>
+                        <button className='button button-navy' onClick={create}>
                             Add transaction
                         </button>
                     </div>                                                

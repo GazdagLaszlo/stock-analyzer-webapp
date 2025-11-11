@@ -25,10 +25,10 @@ const PortfolioItemMenu = ({ onAddTransaction, onDeleteItem }: Props) => {
             </div>
             <div className="dropdown-menu" id="dropdown-menu" role="menu" style={{ left: "auto", right: 0 }}>
                 <div className="dropdown-content">
-                    <a className="dropdown-item" onClick={() => {onAddTransaction(); setOpen(false);}}>
+                    <a className="dropdown-item" onClick={(e) => {e.stopPropagation(); onAddTransaction(); setOpen(false);}}>
                         Add transaction
                     </a>
-                    <a className="dropdown-item has-text-danger" onClick={() => {onDeleteItem(); setOpen(false);}}>
+                    <a className="dropdown-item has-text-danger" onClick={(e) => {e.stopPropagation(); onDeleteItem(); setOpen(false);}}>
                         Delete
                     </a>
                 </div>

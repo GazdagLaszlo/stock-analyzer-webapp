@@ -28,7 +28,7 @@ const PortfolioMenu = (({onRename, onDelete}: Props ) => {
                     <a className="dropdown-item" onClick={() => {onRename(); setOpen(false)}}>
                         Rename Portfolio
                     </a>
-                    <a className="dropdown-item has-text-danger" onClick={() => {onDelete(); setOpen(false)}}>
+                    <a className="dropdown-item has-text-danger" onClick={() => { onDelete(); setOpen(false)}}>
                         Delete Portfolio
                     </a>
                 </div>

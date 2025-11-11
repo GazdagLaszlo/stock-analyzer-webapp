@@ -52,7 +52,7 @@ const Watchlist = () => {
             </td>
             <td>{item.stock?.symbol}</td>
             <td>{item.stock?.companyName}</td>            
-            <td>{formatMoney(item.stock?.price ?? 0)} USD</td>
+            <td>{item.stock?.price} USD</td>
             <td style={{borderLeft: "1px solid grey"}} className="pl-6">{item.entryPrice != null ? item.entryPrice + " USD" : "-"}</td>
             <td>{item.note ?? "-"}</td>
             <td className='is-narrow'>
@@ -113,7 +113,7 @@ const Watchlist = () => {
         <div>
             <h1 className="title has-text-centered my-6">My Watchlist</h1>
             <div className="is-flex is-justify-content-right my-5">                                
-                <button className="button is-dark" onClick={() => setStockModalOpen(true)}>
+                <button className="button button-navy is-dark" onClick={() => setStockModalOpen(true)}>
                     Add stocks
                 </button>
             </div>            

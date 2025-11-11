@@ -19,7 +19,7 @@ body, .navbar, .table td, .table th{
 }
 
 header, .navbar {
-    background-color: rgb(250, 250, 250);    
+    background-color: rgb(250, 250, 250);
 }
 
 header{
@@ -48,6 +48,10 @@ header .navbar-item{
     background-color: rgb(241, 241, 241);    
 }
 
+.button-navy{
+    background-color: rgb(11, 39, 71);
+    color: rgb(231, 231, 231);
+}
 
 .dashboard
 {
@@ -98,7 +102,7 @@ header .navbar-item{
     border: 1.5px solid rgb(194, 194, 194);
     background-color: rgb(250, 250, 250);
     border-radius: 10px;
-    min-height: 20vh;
+    min-height: 20vh;    
 }
 
 .data-box-2{        

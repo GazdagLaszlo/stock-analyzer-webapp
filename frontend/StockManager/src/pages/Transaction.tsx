@@ -44,7 +44,7 @@ const Transaction = () => {
             <td>{transaction.stock?.symbol}</td>
             <td>{transaction.stock?.companyName}</td>
             <td>{new Date(transaction.date == undefined ? "-" : transaction.date).toLocaleDateString()}</td>
-            <td>{formatMoney(transaction.price ?? 0)} USD</td>
+            <td>{transaction.price} USD</td>
             <td>{transaction.quantity}</td>
             <td>{formatMoney(transaction.fee ?? 0)} USD</td>
             <td>{formatMoney((transaction.price ?? 0)*(transaction.quantity ?? 0) + (transaction.fee ?? 0))} USD</td>
