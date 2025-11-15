@@ -110,25 +110,39 @@ header .navbar-item{
 }
 
 .stocks, .transaction{
-    .table-row:hover td{
+    .table-row:hover div, .table-row:hover td{
         background-color: rgb(234, 234, 234);    
         transition: .5s;
         cursor: pointer;
     }
 
-    .table-row td{
+    .table-row div, .table-row td{
         transition: .5s;
+        border-bottom: 0.5px solid grey;
     }
 
-    .table-div{
-        overflow-y: auto;
+    .table-div{        
         height: 50vh;
         width: 100%;
     }
 
+    .table-header{
+        width: 100%;
+        border-bottom: 2px solid lightgrey;
+        padding-right: 15px;
+    }
+
+    .cell{
+        flex: 2;
+        display: flex;
+        align-items: center;
+    }
+
+    /*
     .table thead th {
         position: sticky;
         top: 0;
         z-index: 1;
     }
+    */
 }

@@ -76,7 +76,7 @@ namespace StockManager.Services
                     {
                         throw new InvalidOperationException("Not enough stock quantity to sell!");
                     }
-                    portfolioItem.Quantity -= transactionCreateDto.Quantity;                    
+                    portfolioItem.Quantity -= transactionCreateDto.Quantity;
                 }
             }
             else

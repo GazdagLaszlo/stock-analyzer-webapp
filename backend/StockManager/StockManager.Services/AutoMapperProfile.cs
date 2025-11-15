@@ -16,6 +16,7 @@ namespace StockManager.Services
             CreateMap<Stock, StockDto>()
                 .ForMember(dest => dest.StockDataId, opt => opt.MapFrom(src => src.StockData.Id));
             CreateMap<StockUpdateDto, Stock>()
+                .ForMember(dest => dest.MarketCap, opt => opt.MapFrom(src => src.MarketCap))
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
             CreateMap<Portfolio, PortfolioDto>();

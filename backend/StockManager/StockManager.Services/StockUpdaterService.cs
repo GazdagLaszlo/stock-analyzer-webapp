@@ -34,13 +34,13 @@ namespace StockManager.Services
         public async Task GetStocks()
         {
             var companies = await GetSP500Companies();
-            Console.WriteLine(companies.Count());
 
             var allStocks = await _stockService.GetAllAsync();
 
             foreach (var company in companies)
             {
                 var data = await GetCompanyData(company.Symbol);
+                data.MarketCap *= 1000000;
 
                 var quote = await _stockService.GetStockQuote(company.Symbol);
                 var price = quote.CurrentPrice;
@@ -70,7 +70,7 @@ namespace StockManager.Services
                 Console.WriteLine($"Nem sikerült lekérni {symbol}, status: {response.StatusCode}");
                 return null;
             }
-            var responseString = await response.Content.ReadAsStringAsync();
+            var responseString = await response.Content.ReadAsStringAsync();            
             return JsonSerializer.Deserialize<StockCreateDto>(responseString);
         }        
         private async Task SaveStock(StockCreateDto data, double price, IList<StockDto> allStocks)
@@ -95,9 +95,9 @@ namespace StockManager.Services
             else
             {
                 var updateDto = new StockUpdateDto
-                {                    
+                {
                     Symbol = data.Symbol,
-                    MarketCapitalization = data.MarketCap,
+                    MarketCap = data.MarketCap,
                     CompanyName = data.CompanyName,
                     Sector = data.Sector,
                     Price = price,

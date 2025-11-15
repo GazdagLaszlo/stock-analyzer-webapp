@@ -53,12 +53,5 @@ namespace StockManager.Controllers
             await portfolioItemService.DeleteAsync(id);
             return Ok();
         }
-
-        [HttpGet("{portfolioItemId:int}")]
-        public async Task<IActionResult> GetPortfolioItemProfitAsync(int portfolioItemId)
-        {
-            var result = await portfolioItemService.GetPortfolioItemProfitAsync(portfolioItemId);
-            return Ok(result);
-        }
     }
 }

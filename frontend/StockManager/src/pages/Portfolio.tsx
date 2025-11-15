@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { TransactionType, type PortfolioCreateDto, type PortfolioDto, type PortfolioItemDto, type PortfolioUpdateDto, type StockDto } from '../../generated-sources/openapi';
 import api from "../api/api";
 import PortfolioItemMenu from '../components/Portfolio/PortfolioItemMenu';
@@ -9,13 +9,13 @@ import PortfolioMenu from '../components/Portfolio/PortfolioMenu';
 import PortfolioDeleteModal from '../components/Portfolio/PortfolioDeleteModal';
 import RenamePortfolioModal from '../components/Portfolio/RenamePortfolioModal';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useStockHub } from '../hooks/useStockHub';
 
-const Portfolio = () => {
+const Portfolio = () => {    
     const { portfolioId } = useParams<{ portfolioId?: string }>();
 
     const [portfolios, setPortfolios] = useState<PortfolioDto[]>([]);
     const [selectedPortfolio, setSelectedPortfolio] = useState<PortfolioDto | undefined>(undefined);
-    const [itemProfits, setItemProfits] = useState<{[id: number]: number}>({});
     const [portfolioValue, setPortfolioValue] = useState<number | null>();
     const [selectedStock, setSelectedStock] = useState<StockDto>();
     const [selectedPortfolioItem, setSelectedPortfolioItem] = useState<PortfolioItemDto>();
@@ -52,26 +52,7 @@ const Portfolio = () => {
         }).catch(error => {
             console.error("Error while loading portfolios: ", error);
         });
-    }, []);
-    
-    useEffect(() => {
-        if (!selectedPortfolio?.portfolioItems) {
-             return;
-        }
-
-        setItemProfits({});
-
-        selectedPortfolio.portfolioItems.forEach(async (item) => {
-            try {
-                api.PortfolioItem.apiPortfolioItemGetPortfolioItemProfitPortfolioItemIdGet(item.id!).then(res => {
-                    setItemProfits(prev => ({ ...prev, [item.id!.toString()]: res.data }));
-                })
-            } catch (err) {
-                console.error(`Error loading profit for item ${item.id!.toString()}:`, err);
-                setItemProfits(prev => ({ ...prev, [item.id!]: 0 }));
-            }
-        });
-    }, [selectedPortfolio]);
+    }, []);    
 
     useEffect(() => {
         if (!selectedPortfolio?.portfolioItems) return;
@@ -162,95 +143,97 @@ const Portfolio = () => {
         setSelectedPortfolio(response.data[0])
     }
 
-    const portfolioButtons = portfolios.map((portfolio) => (
-        <button key={portfolio.id} className={"button mr-2 " + (selectedPortfolio == portfolio ? "button-navy" : "")} onClick={() => {navigate(`/portfolio/${portfolio.id}`); setSelectedPortfolio(portfolio)}}>
-            {portfolio.name}
-        </button>
-    ));
+    const symbols = useMemo(
+        () => selectedPortfolio?.portfolioItems?.map(item => item.stock?.symbol ?? "") ?? [],
+        [selectedPortfolio]
+    );        
+    const liveStocks = useStockHub(symbols);
+
+    const getItemProfit = (item: PortfolioItemDto, currentPrice: number) => {
+        if (!item.averagePurchasePrice || !item.quantity || currentPrice == 0){
+            return 0;
+        }
+        return (currentPrice - item.averagePurchasePrice) * item.quantity;
+    };
+
+    const getLivePrice = (symbol : string) => {
+        if(symbol != ""){
+            const stock = liveStocks.find(s => s.symbol === symbol);
+            return stock ? (stock.price ?? 0) : 0;
+        }
+        else return 0;
+    }
 
     const getTotalInvested = () => 
         selectedPortfolio?.portfolioItems?.
-            reduce((total, item) => total + ((item.averagePurchasePrice ?? 0) * (item.quantity ?? 0)), 0) ?? 0;
-    const getProfit = () => 
-        selectedPortfolio?.portfolioItems?.
-            reduce((total, item) => total + (itemProfits[item.id!] ?? 0), 0) ?? 0;
+            reduce((total, item) => total + ((item.averagePurchasePrice ?? 0) * (item.quantity ?? 0)), 0) ?? 0;    
 
-    const getTotalProfit = () =>{
-        if (!selectedPortfolio?.portfolioItems) {
-            return { profit: 0, profitDisplay: "0 ", isPositive: false, isNegative: false, percentDisplay: "" };
-        }
-
-        const totalProfit = getProfit();
-        const totalInvested = getTotalInvested();
-        
-        const isPositive = totalProfit > 0;
-        const isNegative = totalProfit < 0;
-        let profitDisplay = `${isPositive ? '+' : '-'}${Math.abs(totalProfit).toFixed(2)} `;
-        const percentChange = totalProfit / totalInvested * 100;
-        let percentDisplay = `${percentChange > 0 ? '+' : '-'}${Math.abs(percentChange).toFixed(2)}%`
-
-        if(totalProfit == 0){
-            profitDisplay = "0 ";
-            percentDisplay = "";
-        }
-
-        return { profit: totalProfit, profitDisplay, isPositive, isNegative, percentDisplay};
-    }
+    const getTotalProfit = () => {
+        return selectedPortfolio?.portfolioItems?.reduce((sum, item) => {
+            const livePrice = getLivePrice(item.stock?.symbol ?? "") || (item.stock?.price ?? 0);
+            const profit = getItemProfit(item, livePrice);
+            return sum + profit;
+        }, 0) ?? 0;
+    };
 
     const sortedItems = selectedPortfolio?.portfolioItems
         ?.slice()
         .sort((a, b) => ((b.stock?.price ?? 0) * (b.quantity ?? 0)) - ((a.stock?.price ?? 0) * (a.quantity ?? 0))
     );
         
-    const portfolioItems = sortedItems?.map((item, i) => (
-        <tr key={i} onClick={() => navigate(`/stocks/${item.stock?.symbol}`)} className='table-row'>
-            <td className='is-narrow'>
-                <figure className='image is-24x24'>
-                    <img className='border-radius-5' src={`https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${item.stock?.symbol}.png`}/>
-                </figure>
-            </td>
-            <td>{item.stock?.symbol}</td>
-            <td>{item.stock?.companyName}</td> 
-            <td>{((((item.quantity ?? 0)*(item.stock?.price ?? 0)) / (portfolioValue ?? 1)) * 100).toFixed(2)}%</td>
-            <td>{item.averagePurchasePrice?.toFixed(2)} USD</td>
-            <td>{((item.quantity ?? 0)*(item.stock?.price ?? 0)).toFixed(2)} USD ({item.quantity?.toFixed(2)} {item.stock?.symbol})</td>
-            <td>{((item.averagePurchasePrice ?? 0) * (item.quantity ?? 0)).toFixed(2)} USD</td>
-            <td style={{color: 
-                    (itemProfits[item.id!] !== undefined)
-                        ? itemProfits[item.id!] > 0 ? 'green'
-                        : itemProfits[item.id!] < 0 ? 'red'
-                        : 'black' : 'black'}}>
+    const portfolioItems = sortedItems?.map((item, i) => {        
+        const livePrice = getLivePrice(item.stock?.symbol ?? "") || (item.stock?.price ?? 0);
+        const profit = getItemProfit(item, livePrice);
+        const percentage = profit / ((item.averagePurchasePrice ?? 0) * (item.quantity ?? 0))*100;        
 
-                {itemProfits[item.id!] !== undefined ? itemProfits[item.id!].toFixed(2) : '0'} USD
+        return (
+            <tr key={i} onClick={() => navigate(`/stocks/${item.stock?.symbol}`)} className='table-row'>
+                <td className='is-narrow'>
+                    <figure className='image is-24x24'>
+                        <img className='border-radius-5' src={`https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${item.stock?.symbol}.png`}/>
+                    </figure>
+                </td>
+                <td>{item.stock?.symbol}</td>
+                <td>{item.stock?.companyName}</td> 
+                <td>{((((item.quantity ?? 0)*(livePrice ?? 0)) / (portfolioValue ?? 1)) * 100).toFixed(2)}%</td>
+                <td>{item.averagePurchasePrice?.toFixed(2)} USD</td>
+                <td>{((item.quantity ?? 0)*(livePrice ?? 0)).toFixed(2)} USD ({item.quantity?.toFixed(2)} {item.stock?.symbol})</td>
+                <td>{((item.averagePurchasePrice ?? 0) * (item.quantity ?? 0)).toFixed(2)} USD</td>
+                <td style={{color: profit > 0 ? 'green' : profit < 0 ? 'red' : 'black'}}>
 
-                <span className='ml-3 is-size-7' style={{color:"inherit"}}>
+                    {profit.toFixed(2)} USD
 
-                    {(item.averagePurchasePrice && item.quantity)
-                        ? ((itemProfits[item.id!] / (item.averagePurchasePrice * item.quantity)) * 100).toFixed(2)+' %' : ""}
-                </span>
-            </td>
+                    <span className='ml-3 is-size-7' style={{color:"inherit"}}>
+                        {percentage.toFixed(2)+" %"}
+                    </span>
+                </td>
 
-            <td className='is-narrow'>
-                <PortfolioItemMenu
-                    onAddTransaction={() => {
-                        setSelectedStock(item.stock);
-                        setTransactionModalOpen(true);
-                        setTransactionCreateData({...transactionCreateData, price: item.stock?.price?.toString() ?? "0"                            
-                    })}}
-                    onDeleteItem={() => {  if (item.id != null) {
-                        setSelectedPortfolioItem(item);
-                        setPortfolioItemDeleteModalOpen(true)}
-                    }}
-                />
-            </td>
-        </tr>
-    ));    
+                <td className='is-narrow'>
+                    <PortfolioItemMenu
+                        onAddTransaction={() => {
+                            setSelectedStock(item.stock);
+                            setTransactionModalOpen(true);
+                            setTransactionCreateData({...transactionCreateData, price: livePrice.toString() ?? "0"
+                        })}}
+                        onDeleteItem={() => {  if (item.id != null) {
+                            setSelectedPortfolioItem(item);
+                            setPortfolioItemDeleteModalOpen(true)}
+                        }}
+                    />
+                </td>
+            </tr>
+        )
+    });    
 
     return (
         <div className='portfolio mt-5'>
             <div className='is-flex is-justify-content-space-between'>
                 <div>
-                    {portfolioButtons}
+                    {portfolios.map((portfolio) => (
+                        <button key={portfolio.id} className={"button mr-2 " + (selectedPortfolio?.id == portfolio.id ? "button-navy" : "")} 
+                            onClick={() => {navigate(`/portfolio/${portfolio.id}`); setSelectedPortfolio(portfolio)}}>
+                                {portfolio.name}
+                        </button>))}
                     <button className='button' onClick={() => setPortfolioAddModalOpen(true)}>
                         +
                     </button>
@@ -279,13 +262,13 @@ const Portfolio = () => {
                 <div className="column is-one-quarter data-box is-flex is-flex-direction-column is-justify-content-center pl-5">
                     <p className="box-title">Unrealized profit</p>
                     <p className='subtitle mt-3 is-size-4' 
-                        style={{ color: getTotalProfit().isPositive ? 'green' : getTotalProfit().isNegative ? 'red' : 'black'}}>
-                            {getTotalProfit().profitDisplay}
+                        style={{ color: getTotalProfit() > 0 ? 'green' : getTotalProfit() < 0 ? 'red' : 'black'}}>
+                            {getTotalProfit().toFixed(2) + " "}
                             <span className="is-size-6" style={{color:"inherit"}}>
                                 USD
                             </span>
                             <span className='is-size-6 ml-3' style={{color:"inherit"}}>
-                                {getTotalProfit().percentDisplay}
+                                {((getTotalProfit() / getTotalInvested()) * 100).toFixed(2)} %
                             </span>
                     </p>
                 </div>

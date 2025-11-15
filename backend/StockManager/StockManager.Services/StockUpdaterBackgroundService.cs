@@ -35,14 +35,8 @@ namespace StockManager.Services
 
                 bool isOpen = await updaterService.CheckMarketStatus();
 
-                //Ellenőrizni, hogy mikor fusson a websocket és mikor kérjünk le árfolyamot. Ne fusson le mind a 2
-                Task? wsTask = null;
                 var stocks = await stockService.GetAllAsync();
-                if (isOpen)
-                {                    
-                    var symbols = stocks.Select(s => s.Symbol).ToList();
-                    wsTask = wsService.ConnectAndListenAsync(symbols, stoppingToken);
-                }
+                //Ellenőrizni, hogy mikor fusson a websocket és mikor kérjünk le árfolyamot. Ne fusson le mind a 2
 
                 try
                 {
@@ -81,20 +75,7 @@ namespace StockManager.Services
                 {
                     Console.WriteLine($"Error in backgroundService: {ex.Message}");
                     await Task.Delay(5000, stoppingToken);
-                }
-            
-
-                if (wsTask != null)
-                {
-                    try
-                    {
-                        await wsTask;
-                    }
-                    catch (OperationCanceledException)
-                    {
-
-                    }
-                }
+                }                            
             }
         }    
     }

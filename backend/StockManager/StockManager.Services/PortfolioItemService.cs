@@ -18,7 +18,6 @@ namespace StockManager.Services
         Task<PortfolioItemDto> GetByIdAsync(int portfolioItemid);
         Task<PortfolioItemDto> UpdateAsync(int id, PortfolioItemUpdateDto updateDto);
         Task DeleteAsync(int portfolioItemId);
-        Task<double> GetPortfolioItemProfitAsync(int portfolioItemId);
     }
     public class PortfolioItemService(AppDbContext context, IMapper mapper) : IPortfolioItemService
     {
@@ -105,27 +104,6 @@ namespace StockManager.Services
 
             context.PortfolioItems.Remove(portfolioItem);
             await context.SaveChangesAsync();
-        }
-        
-        public async Task<double> GetPortfolioItemProfitAsync(int portfolioItemId)
-        {
-            var portfolioItem = await context.PortfolioItems
-                .Include(x => x.Stock)
-                .Include(x => x.Transactions)
-                .FirstOrDefaultAsync(x => x.Id == portfolioItemId);
-            if (portfolioItem == null)
-            {
-                throw new KeyNotFoundException($"PortfolioItem with id - {portfolioItemId} not found!");
-            }
-
-            if(!portfolioItem.Transactions.Any())
-            {
-                return 0;
-            }
-            
-            double profit = (portfolioItem.Stock.Price - portfolioItem.AveragePurchasePrice) * portfolioItem.Quantity;
-
-            return profit;
         }
     }
 }

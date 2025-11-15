@@ -6,6 +6,7 @@ using StockManager.Services;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
+using StockManager.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +19,8 @@ builder.Services.AddScoped<StockUpdaterService>();
 builder.Services.AddScoped<IStockService, StockService>();
 builder.Services.AddHostedService<StockUpdaterBackgroundService>();
 builder.Services.AddHttpClient<StockUpdaterService>();
+
+
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IStockService, StockService>();
 builder.Services.AddScoped<IPortfolioService, PortfolioService>();
@@ -35,8 +38,11 @@ builder.Services.AddHostedService<StockNewsBackgroundService>();
 builder.Services.AddScoped<StockUpdaterService>();
 builder.Services.AddHttpClient<StockUpdaterService>();
 
-builder.Services.AddHttpClient<StockPriceUpdaterWebSocketService>();
+builder.Services.AddSignalR();
+builder.Services.AddSingleton<IPriceBroadcaster, PriceBroadcaster>();
 builder.Services.AddSingleton<StockPriceUpdaterWebSocketService>();
+//builder.Services.AddHttpClient<StockPriceUpdaterWebSocketService>();
+
 
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 
@@ -70,6 +76,13 @@ builder.Services.AddCors(options =>
         {
             policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
         });
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
 });
 
 // Swagger configuration
@@ -115,6 +128,12 @@ var webSocketOptions = new WebSocketOptions
 };
 //webSocketOptions.AllowedOrigins.Add("http://localhost:5173");
 app.UseWebSockets(webSocketOptions);
+
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
+app.UseCors("AllowFrontend");
+app.MapHub<StockPriceHub>("/stockPriceHub");
 
 app.UseHttpsRedirection();
 

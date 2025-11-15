@@ -31,13 +31,13 @@ namespace StockManager.DataContext.DTOs
     public class StockUpdateDto {
 
         public string? Symbol { get; set; }
-        public double? MarketCapitalization { get; set; }
+        public double? MarketCap { get; set; }
         public string? CompanyName { get; set; }
         public string? Sector { get; set; }
         public double? Price { get; set; }
-        public string Exchange { get; set; }
-        public double ShareOutstanding { get; set; }
-        public string Website { get; set; }
+        public string? Exchange { get; set; }
+        public double? ShareOutstanding { get; set; }
+        public string? Website { get; set; }
     }
 
     public class StockDto

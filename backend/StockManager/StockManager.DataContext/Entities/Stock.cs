@@ -10,9 +10,6 @@
         public string? Exchange { get; set; }
         public double? ShareOutstanding { get; set; }
         public string? Website { get; set; }
-
-
-        //Záráskor 1x menteni
         public double Price { get; set; }
         public double? MarketCap { get; set; }
     }
