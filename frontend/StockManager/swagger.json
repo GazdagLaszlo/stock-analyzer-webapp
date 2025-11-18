@@ -432,29 +432,6 @@
         }
       }
     },
-    "/api/PortfolioItem/GetPortfolioItemProfit/{portfolioItemId}": {
-      "get": {
-        "tags": [
-          "PortfolioItem"
-        ],
-        "parameters": [
-          {
-            "name": "portfolioItemId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
     "/api/Stock/Create": {
       "post": {
         "tags": [
@@ -1625,6 +1602,14 @@
         },
         "additionalProperties": false
       },
+      "PeriodType": {
+        "enum": [
+          0,
+          1
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
       "PortfolioCreateDto": {
         "type": "object",
         "properties": {
@@ -1772,6 +1757,53 @@
         },
         "additionalProperties": false
       },
+      "Stock": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "symbol": {
+            "type": "string",
+            "nullable": true
+          },
+          "companyName": {
+            "type": "string",
+            "nullable": true
+          },
+          "sector": {
+            "type": "string",
+            "nullable": true
+          },
+          "stockData": {
+            "$ref": "#/components/schemas/StockData"
+          },
+          "exchange": {
+            "type": "string",
+            "nullable": true
+          },
+          "shareOutstanding": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "website": {
+            "type": "string",
+            "nullable": true
+          },
+          "price": {
+            "type": "number",
+            "format": "double"
+          },
+          "marketCap": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "StockCreateDto": {
         "type": "object",
         "properties": {
@@ -1806,6 +1838,86 @@
           },
           "weburl": {
             "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "StockData": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "stockId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "stock": {
+            "$ref": "#/components/schemas/Stock"
+          },
+          "updatedDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "tenDayAverageTradingVolume": {
+            "type": "number",
+            "format": "double"
+          },
+          "threeMonthAverageTradingVolume": {
+            "type": "number",
+            "format": "double"
+          },
+          "yearHigh": {
+            "type": "number",
+            "format": "double"
+          },
+          "yearLow": {
+            "type": "number",
+            "format": "double"
+          },
+          "beta": {
+            "type": "number",
+            "format": "double"
+          },
+          "cashFlowPerShareTTM": {
+            "type": "number",
+            "format": "double"
+          },
+          "currentDividendYieldTTM": {
+            "type": "number",
+            "format": "double"
+          },
+          "dividendPerShareTTM": {
+            "type": "number",
+            "format": "double"
+          },
+          "epsTTM": {
+            "type": "number",
+            "format": "double"
+          },
+          "longTermDebtToEquityAnnual": {
+            "type": "number",
+            "format": "double"
+          },
+          "priceToBookvalue": {
+            "type": "number",
+            "format": "double"
+          },
+          "pettm": {
+            "type": "number",
+            "format": "double"
+          },
+          "psttm": {
+            "type": "number",
+            "format": "double"
+          },
+          "stockDataItems": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StockDataItem"
+            },
             "nullable": true
           }
         },
@@ -1886,6 +1998,13 @@
             "type": "number",
             "format": "double",
             "nullable": true
+          },
+          "stockDataItems": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StockDataItem"
+            },
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -1952,6 +2071,47 @@
           "psttm": {
             "type": "number",
             "format": "double"
+          },
+          "stockDataItems": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StockDataItem"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "StockDataItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "period": {
+            "type": "string",
+            "format": "date",
+            "nullable": true
+          },
+          "periodType": {
+            "$ref": "#/components/schemas/PeriodType"
+          },
+          "v": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "metricName": {
+            "type": "string",
+            "nullable": true
+          },
+          "stockDataId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "stockData": {
+            "$ref": "#/components/schemas/StockData"
           }
         },
         "additionalProperties": false
@@ -2030,6 +2190,13 @@
           "psttm": {
             "type": "number",
             "format": "double",
+            "nullable": true
+          },
+          "stockDataItems": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StockDataItem"
+            },
             "nullable": true
           }
         },
@@ -2222,7 +2389,7 @@
             "type": "string",
             "nullable": true
           },
-          "marketCapitalization": {
+          "marketCap": {
             "type": "number",
             "format": "double",
             "nullable": true
@@ -2246,7 +2413,8 @@
           },
           "shareOutstanding": {
             "type": "number",
-            "format": "double"
+            "format": "double",
+            "nullable": true
           },
           "website": {
             "type": "string",

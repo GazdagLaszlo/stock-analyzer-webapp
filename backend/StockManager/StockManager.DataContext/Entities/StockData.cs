@@ -19,5 +19,6 @@
         public double PriceToBookvalue { get; set; }
         public double PETTM { get; set; }
         public double PSTTM { get; set; }
+        public List<StockDataItem> StockDataItems { get; set; }
     }
 }

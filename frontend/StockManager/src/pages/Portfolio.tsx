@@ -194,7 +194,7 @@ const Portfolio = () => {
                     </figure>
                 </td>
                 <td>{item.stock?.symbol}</td>
-                <td>{item.stock?.companyName}</td> 
+                <td>{item.stock?.companyName}</td>
                 <td>{((((item.quantity ?? 0)*(livePrice ?? 0)) / (portfolioValue ?? 1)) * 100).toFixed(2)}%</td>
                 <td>{item.averagePurchasePrice?.toFixed(2)} USD</td>
                 <td>{((item.quantity ?? 0)*(livePrice ?? 0)).toFixed(2)} USD ({item.quantity?.toFixed(2)} {item.stock?.symbol})</td>

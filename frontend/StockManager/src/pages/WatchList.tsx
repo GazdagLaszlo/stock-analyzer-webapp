@@ -53,7 +53,7 @@ const Watchlist = () => {
             <td>{item.stock?.symbol}</td>
             <td>{item.stock?.companyName}</td>            
             <td>{item.stock?.price} USD</td>
-            <td style={{borderLeft: "1px solid grey"}} className="pl-6">{item.entryPrice != null ? item.entryPrice + " USD" : "-"}</td>
+            <td className="pl-6">{item.entryPrice != null ? item.entryPrice + " USD" : "-"}</td>
             <td>{item.note ?? "-"}</td>
             <td className='is-narrow'>
                 <WatchlistItemMenu
@@ -125,7 +125,7 @@ const Watchlist = () => {
                             <th></th>
                             <th>Symbol</th>
                             <th>Company</th>                            
-                            <th style={{borderRight: "1px solid grey"}}>Price</th>
+                            <th>Price</th>
                             <th className="pl-6">Entry Price</th>
                             <th>Note</th>
                             <th></th>

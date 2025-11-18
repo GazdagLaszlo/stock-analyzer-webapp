@@ -20,7 +20,7 @@ namespace StockManager.Services
         Task CreateAsync(StockDataCreateDto stockDataCreateDto);
         Task<StockDataDto> GetBySymbolAsync(string symbol);
         Task<StockDataDto> UpdateAsync(int id, StockDataUpdateDto updateDto);
-        Task<StockDataCreateDto> GetStockFinancials(string symbol);
+        Task<StockDataDeserializer> GetStockFinancials(string symbol);
         Task StockDataRefresh(StockDto stock);
     }
     public class StockDataService : IStockDataService
@@ -50,6 +50,22 @@ namespace StockManager.Services
             }
 
             await _context.AddAsync(stockData);
+            await _context.SaveChangesAsync();            
+
+            if (stockDataCreateDto.StockDataItems != null)
+            {
+                foreach (var item in stockDataCreateDto.StockDataItems)
+                {
+                    _context.StockDataItems.Add(new StockDataItem
+                    {
+                        MetricName = item.MetricName,
+                        PeriodType = item.PeriodType,
+                        StockDataId = stockData.Id,
+                        Period = item.Period,
+                        V = item.V
+                    });
+                }
+            }
             await _context.SaveChangesAsync();
         }
 
@@ -57,6 +73,7 @@ namespace StockManager.Services
         {
             var stockData = await _context.StockData
                 .Include(x => x.Stock)
+                .Include(x => x.StockDataItems)
                 .FirstOrDefaultAsync(x => x.Stock.Symbol == symbol);
             Console.WriteLine(stockData.PSTTM);
 
@@ -84,10 +101,9 @@ namespace StockManager.Services
             return _mapper.Map<StockDataDto>(stockData);
         }
 
-        public async Task<StockDataCreateDto> GetStockFinancials(string symbol)
+        public async Task<StockDataDeserializer> GetStockFinancials(string symbol)
         {
             var getData = $"https://finnhub.io/api/v1/stock/metric?symbol={symbol}&metric=all&token={_finnhubApiKey}";
-            //StockDataDeserializer data = null;
 
             while (true)
             {
@@ -111,7 +127,7 @@ namespace StockManager.Services
                 try
                 {
                     var data = JsonSerializer.Deserialize<StockDataDeserializer>(responseString);
-                    return data?.metric;
+                    return data;
                 }
                 catch (Exception ex)
                 {
@@ -121,31 +137,88 @@ namespace StockManager.Services
             }
         }
 
-        public Task<bool> CheckExistance(string symbol)
+        public async Task<StockData> CheckExistance(string symbol)
         {
-            return _context.StockData.AnyAsync(x => x.Stock.Symbol == symbol);
+            var data = await _context.StockData
+                .Include(x => x.StockDataItems)
+                .FirstOrDefaultAsync(x => x.Stock.Symbol == symbol);
+            return data;
         }
 
         public async Task StockDataRefresh(StockDto stockDto)
         {
-            var createDto = await GetStockFinancials(stockDto.Symbol);
-            createDto.StockId = stockDto.Id;
-            createDto.UpdatedDate = DateOnly.FromDateTime(DateTime.Now);
+            var data = await GetStockFinancials(stockDto.Symbol);
 
-            var exists = await CheckExistance(stockDto.Symbol);
+            var dto = data.metric;
+            dto.StockId = stockDto.Id;
+            dto.UpdatedDate = DateOnly.FromDateTime(DateTime.Now);
 
-            if (!exists)
+            //dto.StockDataItems = new List<StockDataItem>();
+            var newItems = new List<StockDataItem>();
+
+            foreach (var annualItem in data.series.annual)
             {
-                await CreateAsync(createDto);
+                var metricName = annualItem.Key;
+
+                foreach (var item in annualItem.Value)
+                {
+                    newItems.Add(new StockDataItem
+                    {
+                        Period = DateOnly.Parse(item.period),
+                        PeriodType = PeriodType.Annual,
+                        V = item.v,
+                        MetricName = metricName,
+                    });
+                }
+            }
+
+            foreach (var quarterlyItem in data.series.quarterly)
+            {
+                var metricName = quarterlyItem.Key;
+
+                foreach (var item in quarterlyItem.Value)
+                {
+                    newItems.Add(new StockDataItem
+                    {
+                        Period = DateOnly.Parse(item.period),
+                        PeriodType = PeriodType.Quarterly,
+                        V = item.v,
+                        MetricName = metricName,
+                    });
+                }
+            }
+
+            var stockExists = await CheckExistance(stockDto.Symbol);
+
+            if (stockExists == null)
+            {
+                dto.StockDataItems = newItems;
+                await CreateAsync(dto);
             }
             else
             {
-                var stockData = await _context.StockData.FirstOrDefaultAsync(x => x.Stock.Id == stockDto.Id);
+                foreach (var item in newItems)
+                {
+                    bool exists = stockExists.StockDataItems
+                       .Any(e =>
+                           e.MetricName == item.MetricName &&
+                           e.PeriodType == item.PeriodType &&
+                           e.Period == item.Period &&
+                           e.V == item.V);
 
-                var dto = _mapper.Map<StockDataUpdateDto>(createDto);
-                await UpdateAsync(stockData.Id, dto);
+                    if (!exists)
+                    {
+                        item.StockDataId = stockExists.Id;
+                        _context.StockDataItems.Add(item);
+                    }
+                }                
+
+                await _context.SaveChangesAsync();
             }
 
+            var mainData = data.metric;
+            var updateDto = _mapper.Map<StockDataUpdateDto>(mainData);
+            await UpdateAsync(stockExists.Id, updateDto);
         }
     }
 }

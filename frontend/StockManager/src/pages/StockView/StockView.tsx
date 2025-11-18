@@ -6,6 +6,7 @@ import type { StockDto, StockQuote, WatchListItemCreateDto } from "../../../gene
 import Overview from "./Overview";
 import Technical from "./Technical";
 import Financial from "./Financials/Financial";
+import { useStockHub } from '../../hooks/useStockHub';
 
 const StockView = () => {
     const { symbol, tab, subtab } = useParams<{ symbol: string; tab?: string; subtab?: string }>();
@@ -92,7 +93,19 @@ const StockView = () => {
         }
     };
 
-    return <>
+    const liveStocks = useStockHub([symbol!]);
+    
+    const getLivePrice = (symbol : string) => {
+        if(symbol != ""){
+            const stock = liveStocks.find(x => x.symbol === symbol);
+            return stock ? (stock.price ?? 0) : 0;
+        }
+        else return 0;
+    }
+
+    const livePrice = symbol ? (getLivePrice(symbol) || (stock?.price ?? 0)) : (stock?.price ?? 0);    
+
+    return (
         <div className='stockview'>
             <nav className="breadcrumb mt-6" aria-label="breadcrumbs">
                 <ul>
@@ -135,7 +148,7 @@ const StockView = () => {
                             )}                                                        
                         </div>
                         <div className='is-flex is-flex-direction-row is-align-items-center'>
-                            <p className='is-size-1'>${stock?.price}</p>
+                            <p className='is-size-1'>${livePrice.toFixed(2)}</p>
                             <div className='ml-4'
                                 style={{color: (stockQuote?.d !== undefined && stockQuote?.d !== null)
                                     ? stockQuote.d > 0 ? "green"
@@ -172,7 +185,7 @@ const StockView = () => {
                 </div>
             </nav>
         </div>        
-    </>
+    )
 };
 
 export default StockView;

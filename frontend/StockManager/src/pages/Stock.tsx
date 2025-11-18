@@ -60,7 +60,7 @@ const Stock = () => {
                     </figure>
                 </div>
                 <div className="cell">{stock.symbol}</div>
-                <div style={{flex:"3"}}>{stock.companyName}</div>
+                <div style={{flex: "3"}} className="cell">{stock.companyName}</div>
                 <div className="cell">{stock.sector}</div>
                 <div className="cell">${price.toFixed(2)}</div>
                 <div className="cell">{formatMoney(stock.marketCap ?? 0)}</div>
@@ -84,7 +84,7 @@ const Stock = () => {
                 <div className="table-header is-flex has-text-weight-bold py-3 mt-6 pl-2">
                     <div style={{flex: "1"}}></div>
                     <div className="cell">Symbol</div>
-                    <div style={{flex:"3"}}>Company name</div>
+                    <div style={{flex: "3"}}>Company name</div>
                     <div className="cell">Sector</div>
                     <div className="cell">Price</div>
                     <div className="cell">Market Cap</div>

@@ -43,8 +43,10 @@ namespace StockManager.Services
 
             CreateMap<StockData, StockDataDto>();
             CreateMap<StockDataCreateDto, StockData>();
-            CreateMap<StockDataUpdateDto, StockData>();
-            CreateMap<StockDataCreateDto, StockDataUpdateDto>();
+            CreateMap<StockDataUpdateDto, StockData>()
+                .ForMember(dest => dest.StockDataItems, opt => opt.Ignore());
+            CreateMap<StockDataCreateDto, StockDataUpdateDto>()
+                .ForMember(dest => dest.StockDataItems, opt => opt.Ignore());
 
             CreateMap<StockReport, StockReportDto>();
 

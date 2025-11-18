@@ -26,11 +26,24 @@ namespace StockManager.DataContext.DTOs
         public double PriceToBookvalue { get; set; }
         public double PETTM { get; set; }
         public double PSTTM { get; set; }
+        public List<StockDataItem> StockDataItems { get; set; }
     }
 
     public class StockDataDeserializer
     {
         public StockDataCreateDto metric { get; set; }
+        public Series series { get; set; }
+    }
+    
+    public class Series
+    {
+        public Dictionary<string, List<StockDataSeriesItem>> annual { get; set; }
+        public Dictionary<string, List<StockDataSeriesItem>> quarterly { get; set; }
+    }
+    public class StockDataSeriesItem
+    {
+        public string period { get; set; }
+        public decimal? v { get; set; }
     }
     public class StockDataCreateDto
     {
@@ -63,7 +76,8 @@ namespace StockManager.DataContext.DTOs
         [JsonPropertyName("peTTM")]
         public double? PETTM { get; set; }
         [JsonPropertyName("psTTM")]
-        public double? PSTTM { get; set; }        
+        public double? PSTTM { get; set; }
+        public List<StockDataItem> StockDataItems { get; set; }
     }
 
     public class StockDataUpdateDto
@@ -83,5 +97,6 @@ namespace StockManager.DataContext.DTOs
         public double? PriceToBookvalue { get; set; }
         public double? PETTM { get; set; }        
         public double? PSTTM { get; set; }
+        public List<StockDataItem> StockDataItems { get; set; }
     }
 }

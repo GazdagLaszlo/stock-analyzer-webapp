@@ -2,12 +2,13 @@ import { useEffect, useState } from "react";
 import type { PortfolioDto, StockNews } from "../../generated-sources/openapi";
 import api from "../api/api";
 import { useNavigate } from "react-router-dom";
+import { useStockHub } from "../hooks/useStockHub";
 
 const Dashboard = () => {
     const [stockNews, setStockNews] = useState<StockNews[]>([]);
     const [portfolios, setPortfolios] = useState<PortfolioDto[]>([]);
 
-    const navigate = useNavigate();
+    const navigate = useNavigate();    
 
     useEffect(() => {
         api.StockNews.apiStockNewsGetNewsGet().then(res => {
@@ -25,6 +26,17 @@ const Dashboard = () => {
         });
     }, []);
 
+    const symbols = portfolios.flatMap(p => p.portfolioItems?.map(i => i.stock?.symbol ?? "") ?? []);
+    const liveStocks = useStockHub(symbols);
+    
+    const getLivePrice = (symbol : string) => {
+        if(symbol != ""){
+            const stock = liveStocks.find(s => s.symbol === symbol);
+            return stock ? (stock.price ?? 0) : 0;
+        }
+        else return 0;
+    }
+
     return (
         <div className="dashboard">
             <p>Itt kellene egy rövid bemutató a fő funkciókról, kiemelendő elemekről. (Miért a StockManager?)</p>
@@ -33,11 +45,11 @@ const Dashboard = () => {
             <div className="columns mt-5 is-variable is-0 data-boxes" style={{overflowX: "auto"}}>
                 {portfolios.map((portfolio) => {
                     const value = portfolio.portfolioItems?.reduce((sum, item) => {
-                        return sum + ((item.quantity ?? 0) * (item.stock?.price ?? 0));
+                        return sum + ((item.quantity ?? 0) * (getLivePrice(item.stock?.symbol ?? "") || (item.stock?.price ?? 0)));
                     }, 0);
 
                     const profit = portfolio.portfolioItems?.reduce((sum, item) => {
-                        const itemProfit = ((item.stock?.price ?? 0) - (item.averagePurchasePrice ?? 0)) * (item.quantity ?? 0);
+                        const itemProfit = ((getLivePrice(item.stock?.symbol ?? "") || (item.stock?.price ?? 0)) - (item.averagePurchasePrice ?? 0)) * (item.quantity ?? 0);
                         return sum + itemProfit;
                     }, 0)
 
