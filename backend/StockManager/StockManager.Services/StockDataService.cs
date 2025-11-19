@@ -50,22 +50,6 @@ namespace StockManager.Services
             }
 
             await _context.AddAsync(stockData);
-            await _context.SaveChangesAsync();            
-
-            if (stockDataCreateDto.StockDataItems != null)
-            {
-                foreach (var item in stockDataCreateDto.StockDataItems)
-                {
-                    _context.StockDataItems.Add(new StockDataItem
-                    {
-                        MetricName = item.MetricName,
-                        PeriodType = item.PeriodType,
-                        StockDataId = stockData.Id,
-                        Period = item.Period,
-                        V = item.V
-                    });
-                }
-            }
             await _context.SaveChangesAsync();
         }
 
@@ -75,11 +59,10 @@ namespace StockManager.Services
                 .Include(x => x.Stock)
                 .Include(x => x.StockDataItems)
                 .FirstOrDefaultAsync(x => x.Stock.Symbol == symbol);
-            Console.WriteLine(stockData.PSTTM);
 
             if (stockData == null)
             {
-                throw new KeyNotFoundException($"StockData with stock symbol - {symbol} not found!");
+                return null;
             }
 
             return _mapper.Map<StockDataDto>(stockData);
@@ -153,8 +136,8 @@ namespace StockManager.Services
             dto.StockId = stockDto.Id;
             dto.UpdatedDate = DateOnly.FromDateTime(DateTime.Now);
 
-            //dto.StockDataItems = new List<StockDataItem>();
-            var newItems = new List<StockDataItem>();
+            //dto.StockDataItems = new List<StockDataItemDto>();
+            var newItems = new List<StockDataItemDto>();
 
             foreach (var annualItem in data.series.annual)
             {
@@ -162,7 +145,7 @@ namespace StockManager.Services
 
                 foreach (var item in annualItem.Value)
                 {
-                    newItems.Add(new StockDataItem
+                    newItems.Add(new StockDataItemDto
                     {
                         Period = DateOnly.Parse(item.period),
                         PeriodType = PeriodType.Annual,
@@ -178,7 +161,7 @@ namespace StockManager.Services
 
                 foreach (var item in quarterlyItem.Value)
                 {
-                    newItems.Add(new StockDataItem
+                    newItems.Add(new StockDataItemDto
                     {
                         Period = DateOnly.Parse(item.period),
                         PeriodType = PeriodType.Quarterly,
@@ -194,7 +177,7 @@ namespace StockManager.Services
             {
                 dto.StockDataItems = newItems;
                 await CreateAsync(dto);
-            }
+            }/*
             else
             {
                 foreach (var item in newItems)
@@ -219,6 +202,7 @@ namespace StockManager.Services
             var mainData = data.metric;
             var updateDto = _mapper.Map<StockDataUpdateDto>(mainData);
             await UpdateAsync(stockExists.Id, updateDto);
+            */
         }
     }
 }

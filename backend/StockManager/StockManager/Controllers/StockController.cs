@@ -67,5 +67,12 @@ namespace StockManager.Controllers
             var result = await stockService.GetNextEarningsEvent(symbol);
             return Ok(result);
         }
+
+        [HttpGet]
+        public async Task<ActionResult<List<string>>> GetCompanyPeers(string symbol)
+        {
+            var result = await stockService.GetCompanyPeers(symbol);
+            return Ok(result);
+        }
     }
 }

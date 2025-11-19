@@ -22,6 +22,7 @@ namespace StockManager.Services
         Task<StockDto> UpdateAsync(int id, StockUpdateDto updateDto);
         Task<StockQuote> GetStockQuote(string symbol);
         Task<Earningscalendar> GetNextEarningsEvent(string symbol);
+        Task<List<string>> GetCompanyPeers(string symbol);
     }
     public class StockService : IStockService
     {
@@ -116,6 +117,20 @@ namespace StockManager.Services
             var events = JsonSerializer.Deserialize<FinnhubEarningsResponse>(responseString);
 
             return events.earningsCalendar.LastOrDefault(x => x.symbol == symbol);
+        }
+
+        public async Task<List<string>> GetCompanyPeers(string symbol)
+        {
+            var getData = $"https://finnhub.io/api/v1/stock/peers?symbol={symbol}&grouping=sector&token={_finnhubApiKey}";
+            var response = await _httpClient.GetAsync(getData);
+            if (!response.IsSuccessStatusCode)
+            {
+                Console.WriteLine($"Error: {response.StatusCode}");
+            }
+            var responseString = await response.Content.ReadAsStringAsync();
+
+            List<string>? peers = JsonSerializer.Deserialize<List<string>>(responseString);
+            return peers ?? new List<string>();
         }
 
     }

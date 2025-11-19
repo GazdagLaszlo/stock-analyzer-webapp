@@ -696,6 +696,53 @@
         }
       }
     },
+    "/api/Stock/GetCompanyPeers": {
+      "get": {
+        "tags": [
+          "Stock"
+        ],
+        "parameters": [
+          {
+            "name": "symbol",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/StockData/Create": {
       "post": {
         "tags": [
@@ -1757,53 +1804,6 @@
         },
         "additionalProperties": false
       },
-      "Stock": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "symbol": {
-            "type": "string",
-            "nullable": true
-          },
-          "companyName": {
-            "type": "string",
-            "nullable": true
-          },
-          "sector": {
-            "type": "string",
-            "nullable": true
-          },
-          "stockData": {
-            "$ref": "#/components/schemas/StockData"
-          },
-          "exchange": {
-            "type": "string",
-            "nullable": true
-          },
-          "shareOutstanding": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "website": {
-            "type": "string",
-            "nullable": true
-          },
-          "price": {
-            "type": "number",
-            "format": "double"
-          },
-          "marketCap": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
       "StockCreateDto": {
         "type": "object",
         "properties": {
@@ -1838,86 +1838,6 @@
           },
           "weburl": {
             "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "StockData": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "stockId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "stock": {
-            "$ref": "#/components/schemas/Stock"
-          },
-          "updatedDate": {
-            "type": "string",
-            "format": "date"
-          },
-          "tenDayAverageTradingVolume": {
-            "type": "number",
-            "format": "double"
-          },
-          "threeMonthAverageTradingVolume": {
-            "type": "number",
-            "format": "double"
-          },
-          "yearHigh": {
-            "type": "number",
-            "format": "double"
-          },
-          "yearLow": {
-            "type": "number",
-            "format": "double"
-          },
-          "beta": {
-            "type": "number",
-            "format": "double"
-          },
-          "cashFlowPerShareTTM": {
-            "type": "number",
-            "format": "double"
-          },
-          "currentDividendYieldTTM": {
-            "type": "number",
-            "format": "double"
-          },
-          "dividendPerShareTTM": {
-            "type": "number",
-            "format": "double"
-          },
-          "epsTTM": {
-            "type": "number",
-            "format": "double"
-          },
-          "longTermDebtToEquityAnnual": {
-            "type": "number",
-            "format": "double"
-          },
-          "priceToBookvalue": {
-            "type": "number",
-            "format": "double"
-          },
-          "pettm": {
-            "type": "number",
-            "format": "double"
-          },
-          "psttm": {
-            "type": "number",
-            "format": "double"
-          },
-          "stockDataItems": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/StockDataItem"
-            },
             "nullable": true
           }
         },
@@ -2002,7 +1922,7 @@
           "stockDataItems": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/StockDataItem"
+              "$ref": "#/components/schemas/StockDataItemDto"
             },
             "nullable": true
           }
@@ -2044,11 +1964,11 @@
             "type": "number",
             "format": "double"
           },
-          "currentDividendYieldTTM": {
+          "dividendPerShareTTM": {
             "type": "number",
             "format": "double"
           },
-          "dividendPerShareTTM": {
+          "currentDividendYieldTTM": {
             "type": "number",
             "format": "double"
           },
@@ -2075,14 +1995,14 @@
           "stockDataItems": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/StockDataItem"
+              "$ref": "#/components/schemas/StockDataItemDto"
             },
             "nullable": true
           }
         },
         "additionalProperties": false
       },
-      "StockDataItem": {
+      "StockDataItemDto": {
         "type": "object",
         "properties": {
           "id": {
@@ -2109,9 +2029,6 @@
           "stockDataId": {
             "type": "integer",
             "format": "int32"
-          },
-          "stockData": {
-            "$ref": "#/components/schemas/StockData"
           }
         },
         "additionalProperties": false
@@ -2195,7 +2112,7 @@
           "stockDataItems": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/StockDataItem"
+              "$ref": "#/components/schemas/StockDataItemDto"
             },
             "nullable": true
           }

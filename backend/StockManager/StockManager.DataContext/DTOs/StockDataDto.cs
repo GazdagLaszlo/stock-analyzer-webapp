@@ -19,14 +19,14 @@ namespace StockManager.DataContext.DTOs
         public double YearLow { get; set; }
         public double Beta { get; set; }
         public double CashFlowPerShareTTM { get; set; }
-        public double CurrentDividendYieldTTM { get; set; }
         public double DividendPerShareTTM { get; set; }
+        public double CurrentDividendYieldTTM { get; set; }
         public double EpsTTM { get; set; }
         public double longTermDebtToEquityAnnual { get; set; }
         public double PriceToBookvalue { get; set; }
         public double PETTM { get; set; }
         public double PSTTM { get; set; }
-        public List<StockDataItem> StockDataItems { get; set; }
+        public List<StockDataItemDto> StockDataItems { get; set; } = new List<StockDataItemDto>();
     }
 
     public class StockDataDeserializer
@@ -77,7 +77,7 @@ namespace StockManager.DataContext.DTOs
         public double? PETTM { get; set; }
         [JsonPropertyName("psTTM")]
         public double? PSTTM { get; set; }
-        public List<StockDataItem> StockDataItems { get; set; }
+        public List<StockDataItemDto> StockDataItems { get; set; } = new List<StockDataItemDto>();
     }
 
     public class StockDataUpdateDto
@@ -97,6 +97,6 @@ namespace StockManager.DataContext.DTOs
         public double? PriceToBookvalue { get; set; }
         public double? PETTM { get; set; }        
         public double? PSTTM { get; set; }
-        public List<StockDataItem> StockDataItems { get; set; }
+        public List<StockDataItemDto> StockDataItems { get; set; } = new List<StockDataItemDto>();
     }
 }

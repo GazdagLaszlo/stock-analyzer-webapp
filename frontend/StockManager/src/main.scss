@@ -102,7 +102,7 @@ header .navbar-item{
     border: 1.5px solid rgb(194, 194, 194);
     background-color: rgb(250, 250, 250);
     border-radius: 10px;
-    min-height: 20vh;    
+    min-height: 20vh;
 }
 
 .data-box-2{        
@@ -170,5 +170,44 @@ header .navbar-item{
         position: sticky;
         top: 0;
         z-index: 1;
+    }
+}
+
+.stockview{
+    .range-box{
+        position: relative;
+        height: 3vh;
+    }
+
+    .range{
+        height: 2px;
+        background-color: black;
+        width: 30vw;
+    }
+
+    .current-position-marker{
+        position: absolute;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: .5vw;
+        height: 2vh;
+        background-color: black;
+    }
+
+    .current-value{
+        position: absolute;
+        top: -50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .financials-table{        
+        td{
+            background-color: rgb(250, 250, 250);
+        }        
+
+        tr td:last-child{
+            display: flex;
+            justify-content: end;
+        }
     }
 }
