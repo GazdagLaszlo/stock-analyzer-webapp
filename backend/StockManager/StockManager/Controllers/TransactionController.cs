@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using StockManager.DataContext.DTOs;
 using StockManager.Services;
 using System.Security.Claims;
@@ -7,11 +8,10 @@ namespace StockManager.Controllers
 {
     [ApiController]
     [Route("api/[controller]/[action]")]
-    //[Authorize]
+    [Authorize]
     public class TransactionController(ITransactionService transactionService) : ControllerBase
     {
-        //Visszairni
-        private int _userId = 3/*> int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value)*/;
+        private int _userId => int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromBody] TransactionCreateDto createDto)

@@ -57,8 +57,8 @@ builder.Services
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = "https://localhost:5201",
-            ValidAudience = "https://localhost:5201",
+            ValidIssuer = "https://localhost:7024",
+            ValidAudience = "https://localhost:7024",
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("randomSztring12345_x2____randomSztring12345_x2")),
         };
     });
@@ -136,8 +136,6 @@ app.UseCors("AllowFrontend");
 app.MapHub<StockPriceHub>("/stockPriceHub");
 
 app.UseHttpsRedirection();
-
-app.UseCors();
 
 app.UseAuthentication();
 app.UseAuthorization();

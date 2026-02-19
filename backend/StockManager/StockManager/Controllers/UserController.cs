@@ -11,10 +11,10 @@ namespace StockManager.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
-//[Authorize]
+[Authorize]
 public class UserController(IUserService userService) : ControllerBase
 {
-    private int UserId => int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);    
+    private int UserId => int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
     [HttpGet]
     //[Authorize]
@@ -30,10 +30,17 @@ public class UserController(IUserService userService) : ControllerBase
     [ProducesResponseType<LoginResponse>(StatusCodes.Status200OK)]
     public async Task<IActionResult> Login([FromBody] UserLoginDto userDto)
     {
-        return Ok(new LoginResponse
+        try
         {
-            Token = await userService.LoginAsync(userDto)
-        });
+            return Ok(new LoginResponse
+            {
+                Token = await userService.LoginAsync(userDto)
+            });
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(new { message = ex.Message });
+        }
     }
 
     [HttpPost]

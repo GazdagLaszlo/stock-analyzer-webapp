@@ -8,11 +8,10 @@ namespace StockManager.Controllers
 {
     [ApiController]
     [Route("api/[controller]/[action]")]
-    //[Authorize]
+    [Authorize]
     public class PortfolioController(IPortfolioService portfolioService) : ControllerBase
     {
-        //Visszaállítani!
-        private int _userId = 3; /*=> int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value)*/
+        private int _userId => int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromBody] PortfolioCreateDto createDto)
@@ -22,10 +21,11 @@ namespace StockManager.Controllers
         }
 
         [HttpGet]
-        //[Authorize(Roles = "")]
+        //[Authorize(Roles = "Investor")]
         [ProducesResponseType<IList<PortfolioDto>>(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllAsync()
         {
+            Console.WriteLine("user: "+ _userId);
             var result = await portfolioService.GetAllAsync(_userId);
             return Ok(result);
         }

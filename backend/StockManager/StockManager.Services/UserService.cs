@@ -43,7 +43,7 @@ public class UserService(AppDbContext context, IMapper mapper) : IUserService
         var expires = DateTime.Now.AddDays(Convert.ToDouble(5));
 
         var id = await GetClaimsIdentity(user);
-        var token = new JwtSecurityToken("https://localhost:5160", "https://localhost:5160", id.Claims, expires: expires, signingCredentials: creds);
+        var token = new JwtSecurityToken("https://localhost:7024", "https://localhost:7024", id.Claims, expires: expires, signingCredentials: creds);
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }

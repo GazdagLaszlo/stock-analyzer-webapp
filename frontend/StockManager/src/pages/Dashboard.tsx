@@ -51,83 +51,96 @@ const Dashboard = () => {
         className="columns mt-5 is-variable is-0 data-boxes"
         style={{ overflowX: 'auto' }}
       >
-        {portfolios.map((portfolio) => {
-          const value = portfolio.portfolioItems?.reduce((sum, item) => {
+        {portfolios.length > 0 &&
+          portfolios.map((portfolio) => {
+            const value = portfolio.portfolioItems?.reduce((sum, item) => {
+              return (
+                sum +
+                (item.quantity ?? 0) *
+                  (getLivePrice(item.stock?.symbol ?? '') ||
+                    (item.stock?.price ?? 0))
+              );
+            }, 0);
+
+            const profit = portfolio.portfolioItems?.reduce((sum, item) => {
+              const itemProfit =
+                ((getLivePrice(item.stock?.symbol ?? '') ||
+                  (item.stock?.price ?? 0)) -
+                  (item.averagePurchasePrice ?? 0)) *
+                (item.quantity ?? 0);
+              return sum + itemProfit;
+            }, 0);
+
+            const invested = portfolio.portfolioItems?.reduce((sum, item) => {
+              return (
+                sum + (item.averagePurchasePrice ?? 0) * (item.quantity ?? 0)
+              );
+            }, 0);
+
+            const changePercent = ((profit ?? 0) / (invested ?? 1)) * 100;
+
             return (
-              sum +
-              (item.quantity ?? 0) *
-                (getLivePrice(item.stock?.symbol ?? '') ||
-                  (item.stock?.price ?? 0))
-            );
-          }, 0);
-
-          const profit = portfolio.portfolioItems?.reduce((sum, item) => {
-            const itemProfit =
-              ((getLivePrice(item.stock?.symbol ?? '') ||
-                (item.stock?.price ?? 0)) -
-                (item.averagePurchasePrice ?? 0)) *
-              (item.quantity ?? 0);
-            return sum + itemProfit;
-          }, 0);
-
-          const invested = portfolio.portfolioItems?.reduce((sum, item) => {
-            return (
-              sum + (item.averagePurchasePrice ?? 0) * (item.quantity ?? 0)
-            );
-          }, 0);
-
-          const changePercent = ((profit ?? 0) / (invested ?? 1)) * 100;
-
-          return (
-            <div
-              key={portfolio.id}
-              className="data-box is-flex is-flex-direction-column is-justify-content-space-between p-5"
-              style={{ height: '23vh', cursor: 'pointer' }}
-              onClick={() => navigate(`/portfolio/${portfolio.id}`)}
-            >
-              <p className="is-size-5 mb-4">{portfolio.name}</p>
-              <div className="is-flex flex-direction-row is-justify-content-space-between">
-                <div className="mr-6">
-                  <p className="box-title">Total value</p>
-                  <span className="subtitle mt- is-size-4">
-                    {value?.toFixed(2)} <span className="is-size-6">USD</span>
-                  </span>
-                </div>
-                <div>
-                  <p className="box-title">Unrealized profit</p>
-                  <span
-                    className="subtitle mt- is-size-4"
-                    style={{
-                      color:
-                        (profit ?? 0) > 0
-                          ? 'green'
-                          : (profit ?? 0) < 0
-                            ? 'red'
-                            : 'black',
-                    }}
-                  >
-                    {(profit ?? 0) > 0
-                      ? `+${profit?.toFixed(2)}`
-                      : profit?.toFixed(2)}
-                    <span className="is-size-6" style={{ color: 'inherit' }}>
-                      {' '}
-                      USD
-                    </span>
-                    <span
-                      style={{ color: 'inherit' }}
-                      className="ml-4 is-size-6"
-                    >
-                      {(changePercent ?? 0) > 0
-                        ? `+${changePercent.toFixed(2)}`
-                        : changePercent.toFixed(2)}
-                      %
-                    </span>
-                  </span>
+              <div
+                key={portfolio.id}
+                className="data-box is-flex is-flex-direction-column is-justify-content-space-between p-5"
+                style={{ height: '23vh', cursor: 'pointer' }}
+                onClick={() => navigate(`/app/portfolio/${portfolio.id}`)}
+              >
+                <p className="is-size-5 mb-4">{portfolio.name}</p>
+                <div className="is-flex flex-direction-row is-justify-content-space-between">
+                  <div className="mr-6">
+                    <p className="box-title">Total value</p>
+                    {value ? (
+                      <span className="subtitle mt- is-size-4">
+                        {value?.toFixed(2)}{' '}
+                        <span className="is-size-6">USD</span>
+                      </span>
+                    ) : (
+                      <span className="subtitle mt-3 is-size-4">-</span>
+                    )}
+                  </div>
+                  <div>
+                    <p className="box-title">Unrealized profit</p>
+                    {profit ? (
+                      <span
+                        className="subtitle mt- is-size-4"
+                        style={{
+                          color:
+                            (profit ?? 0) > 0
+                              ? 'green'
+                              : (profit ?? 0) < 0
+                                ? 'red'
+                                : 'black',
+                        }}
+                      >
+                        {(profit ?? 0) > 0
+                          ? `+${profit?.toFixed(2)}`
+                          : profit?.toFixed(2)}
+                        <span
+                          className="is-size-6"
+                          style={{ color: 'inherit' }}
+                        >
+                          {' '}
+                          USD
+                        </span>
+                        <span
+                          style={{ color: 'inherit' }}
+                          className="ml-4 is-size-6"
+                        >
+                          {(changePercent ?? 0) > 0
+                            ? `+${changePercent.toFixed(2)}`
+                            : changePercent.toFixed(2)}
+                          %
+                        </span>
+                      </span>
+                    ) : (
+                      <span className="subtitle mt-3 is-size-4">-</span>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
       </div>
 
       <div className="mt-6">

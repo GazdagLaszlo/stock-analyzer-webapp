@@ -13,10 +13,6 @@ const useAuth = () => {
     useContext(AuthContext);
   const isLoggedIn = !!token;
 
-  useEffect(() => {
-    console.log('isLoggedIn: ', isLoggedIn);
-  }, [isLoggedIn]);
-
   const login = (email: string, password: string) => {
     return api.User.apiUserLoginPost({ email, password })
       .then((res) => {
@@ -38,13 +34,18 @@ const useAuth = () => {
         throw error;
       });
   };
-
   /*
-    const register = (name: string, email: string, password: string, roleType: number) => {
-        api.User.apiUserRegisterPost({ name, email, password, roleType})
-            .then(() => alert("Sikeres regisztráció"))
-    };
-    */
+  const register = (
+    name: string,
+    email: string,
+    password: string,
+    roleType: number
+  ) => {
+    api.User.apiUserRegisterPost({ name, email, password, roleType }).then(() =>
+      alert('Sikeres regisztráció')
+    );
+  };
+  */
 
   const logout = () => {
     localStorage.clear();
