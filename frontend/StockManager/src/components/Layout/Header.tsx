@@ -7,8 +7,8 @@ const Header = () => {
             <nav className='navbar'>
                 <div className='navbar-brand'>
                     <Link to="/">
-                        <p className='is-size-4 has-text-weight-bold'>StockManager</p>
-                        <p>Stock analyst and Portfolio Manager</p>
+                        <p className='is-size-4 has-text-weight-bold'>StockAnalyzer</p>
+                        <p>Stock Analysis & Portfolio Management</p>
                     </Link>
 
                     <a role="button" className="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
@@ -27,7 +27,7 @@ const Header = () => {
                         <NavLink className={({ isActive }) => "navbar-item" + (isActive ? " active" : "")} to="/watchlist">Watchlist</NavLink>
                         <NavLink className={({ isActive }) => "navbar-item" + (isActive ? " active" : "")} to="/transactions">Transactions</NavLink>
                         <NavLink className={({ isActive }) => "navbar-item" + (isActive ? " active" : "")} to="/results">Trade statistics</NavLink>
-                    </div>                    
+                    </div>
                 </div>
             </nav>            
         </header>

@@ -3,6 +3,8 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
+**/frontend/StockManager/generated-sources/
+
 # User-specific files
 *.rsuser
 *.suo
@@ -10,6 +12,7 @@
 *.userosscache
 *.sln.docstates
 *.env
+*.db
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs

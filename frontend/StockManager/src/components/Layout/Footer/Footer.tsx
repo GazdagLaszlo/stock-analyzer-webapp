@@ -1,11 +1,16 @@
-import "./Footer.scss";
+import './Footer.scss';
 
 const Footer = () => {
-    return <>
-        <footer className="mt-6 has-text-centered">
-            <p>© 2025 StockManager. All rights reserved.</p>
-        </footer>
-    </>
-}
+  return (
+    <div
+      style={{ height: '10vh' }}
+      className="is-flex is-justify-content-center is-align-items-center"
+    >
+      <footer className="has-text-centered is-flex is-justify-content-center is-align-items-center">
+        <p>© 2025 StockManager. All rights reserved.</p>
+      </footer>
+    </div>
+  );
+};
 
 export default Footer;
