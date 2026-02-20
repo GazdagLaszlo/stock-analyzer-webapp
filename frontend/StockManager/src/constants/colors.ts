@@ -1,4 +1,4 @@
 export const COLORS = {
-  boxBackground: '#eaeaea',
+  boxBackground: 'rgb(250, 250, 250)',
   background: '#f5f5f5',
 };

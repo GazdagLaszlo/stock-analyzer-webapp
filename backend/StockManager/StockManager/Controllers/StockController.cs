@@ -8,7 +8,7 @@ namespace StockManager.Controllers
 {
     [ApiController]
     [Route("api/[controller]/[action]")]
-    //[Authorize]
+    [Authorize]
     public class StockController(IStockService stockService, StockPriceUpdaterWebSocketService priceService) : ControllerBase
     {
         [HttpPost]

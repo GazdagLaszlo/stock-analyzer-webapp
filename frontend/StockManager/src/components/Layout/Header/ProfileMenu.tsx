@@ -7,7 +7,7 @@ type Props = {
 
 const ProfileMenu = ({ onLogout }: Props) => {
   const [open, setOpen] = useState(false);
-  const email = localStorage.getItem('email');
+  const username = localStorage.getItem('username');
 
   useEffect(() => {
     if (open) {
@@ -43,12 +43,14 @@ const ProfileMenu = ({ onLogout }: Props) => {
         style={{ left: 'auto', right: 0 }}
       >
         <div className="dropdown-content">
-          <p
-            className="dropdown-item"
-            style={{ borderBottom: '1px solid black', marginBottom: 5 }}
-          >
-            {email}
-          </p>
+          <a className="dropdown-item">
+            <div className="is-flex is-flex-direction-row is-align-items-center">
+              <span className="icon mr-2">
+                <i className="fas fa-user"></i>
+              </span>
+              <p>{username}</p>
+            </div>
+          </a>
           <a
             className="dropdown-item"
             onClick={(e) => {
@@ -57,7 +59,12 @@ const ProfileMenu = ({ onLogout }: Props) => {
               setOpen(false);
             }}
           >
-            Logout
+            <div className="is-flex is-flex-direction-row is-align-items-center">
+              <span className="icon mr-2">
+                <i className="fas fa-sign-out-alt"></i>
+              </span>
+              <p>Logout</p>
+            </div>
           </a>
         </div>
       </div>

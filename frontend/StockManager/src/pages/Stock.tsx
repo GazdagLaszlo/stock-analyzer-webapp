@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { formatMoney } from '../utils/formatMoney';
 import { useStockHub } from '../hooks/useStockHub';
 import { List, AutoSizer } from 'react-virtualized';
+import StockImage from './StockImage';
 
 const Stock = () => {
   const navigate = useNavigate();
@@ -12,6 +13,7 @@ const Stock = () => {
   const [searchInput, setSearchInput] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
   const [visibleSymbols, setVisibleSymbols] = useState<string[]>([]);
+  const [noImage, setNoImage] = useState<boolean>(false);
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -71,10 +73,7 @@ const Stock = () => {
         >
           <div style={{ flex: '1' }} className="is-flex is-align-items-center">
             <figure className="image is-24x24">
-              <img
-                className="border-radius-5"
-                src={`https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${stock?.symbol}.png`}
-              />
+              <StockImage symbol={stock.symbol ?? ''} />
             </figure>
           </div>
           <div className="cell">{stock.symbol}</div>
@@ -126,6 +125,7 @@ const Stock = () => {
               rowCount={filteredStocks.length}
               rowHeight={45}
               rowRenderer={rowRenderer}
+              overscanRowCount={20}
               onRowsRendered={({
                 startIndex,
                 stopIndex,

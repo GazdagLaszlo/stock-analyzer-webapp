@@ -17,6 +17,7 @@ namespace StockManager.DataContext.DTOs
         public double? Fee { get; set; }
         public string? Note { get; set; }
         public int PortfolioId { get; set; }
+        public double RealizedProfit {  get; set; }
     }
     public class TransactionDto
     {
@@ -29,6 +30,7 @@ namespace StockManager.DataContext.DTOs
         public TransactionType TransactionType { get; set; }
         public double Fee { get; set; }
         public string Note { get; set; }
+        public double RealizedProfit { get; set; }
     }
 
     public class TransactionUpdateDto

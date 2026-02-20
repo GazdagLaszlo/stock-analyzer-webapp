@@ -16,7 +16,7 @@ namespace StockManager.Services
     public interface ITransactionService
     {
         Task CreateAsync(TransactionCreateDto transactionCreateDto, int userId);
-        Task<IList<TransactionDto>> GetAllAsync(int userId);
+        Task<IList<TransactionDto>> GetAllAsync(int userId, TransactionType? type);
         Task<TransactionDto> GetByIdAsync(int id);
         Task<TransactionDto> UpdateAsync(int id, TransactionUpdateDto updateDto);
         Task DeleteAsync(int id);
@@ -53,6 +53,7 @@ namespace StockManager.Services
 
             var portfolioItem = portfolio.PortfolioItems
                 .FirstOrDefault(x => x.StockId == transactionCreateDto.StockId);
+            double realizedProfit = 0;
 
             if (portfolioItem != null)
             {
@@ -76,6 +77,7 @@ namespace StockManager.Services
                     {
                         throw new InvalidOperationException("Not enough stock quantity to sell!");
                     }
+                    realizedProfit = (transactionCreateDto.Price - portfolioItem.AveragePurchasePrice) * transactionCreateDto.Quantity;
                     portfolioItem.Quantity -= transactionCreateDto.Quantity;
                 }
             }
@@ -98,6 +100,7 @@ namespace StockManager.Services
             transaction.UserId = userId;
             transaction.PortfolioItem = portfolioItem;
             transaction.IsActive = true;
+            transaction.RealizedProfit = realizedProfit;
 
             if (portfolioItem.Quantity == 0)
             {
@@ -109,11 +112,11 @@ namespace StockManager.Services
             await context.AddAsync(transaction);
             await context.SaveChangesAsync();
         }
-        public async Task<IList<TransactionDto>> GetAllAsync(int userId)
+        public async Task<IList<TransactionDto>> GetAllAsync(int userId, TransactionType? type)
         {
             var transactions = await context.Transactions
                 .Include(x => x.Stock)
-                .Where(x => x.UserId == userId)
+                .Where(x => x.UserId == userId && x.TransactionType == type)
                 .ToListAsync();
 
             return mapper.Map<IList<TransactionDto>>(transactions);

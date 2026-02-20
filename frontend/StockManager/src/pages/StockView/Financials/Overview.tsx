@@ -35,7 +35,12 @@ const Summary = ({ stock }: { stock?: StockDto }) => {
         console.log("prev:"+previousEPS?.v);
 
         if(currentEPS?.v && previousEPS?.v) {
-            return (currentEPS.v/previousEPS.v-1) * 100;
+            if(previousEPS.v < 0 || currentEPS.v < 0){
+                return { type: 'absolute', value: currentEPS.v - previousEPS.v };
+            }
+            else{
+                return { type: 'percent', value: ((currentEPS.v / previousEPS.v) - 1) * 100 };                
+            }            
         }
     }, [stockData]);
 
@@ -72,29 +77,40 @@ const Summary = ({ stock }: { stock?: StockDto }) => {
                     <p className="box-title">Market Capitalization</p>
                     <span className='subtitle mt-3 is-size-4'>{formatMoney(stock?.marketCap ?? 0)} <span className="is-size-6">USD</span></span>
                 </div>
-                <div className="column data-box is-flex is-flex-direction-row is-align-items-center is-justify-content-space-between px-5">
-                    <div>
-                        <p className="box-title">EPS (TTM)</p>
-                        <p className='subtitle mt-3 is-size-4'>{stockData?.epsTTM?.toFixed(2)} <span className="is-size-6">USD</span></p>
+                <div className="column data-box px-3 is-flex is-flex-direction-column is-justify-content-center">
+                    <p className="box-title ml-3 mb-4" style={{color:""}}>EPS Analysis</p>
+                    
+                    <div className="is-flex is-flex-direction-row is-align-items-center is-justify-content-space-between">
+                        <div style={{borderRight:"1px solid lightgrey"}}  className="column p-2 is-flex is-flex-direction-column is-align-items-center">                            
+                            <p className='subtitle is-size-4 mb-3'>{stockData?.epsTTM?.toFixed(2)} <span className="is-size-6">USD</span></p>
+                            <p className="box-title">EPS (TTM)</p>
+                        </div>                    
+                        <div className="column p-2 is-flex is-flex-direction-column is-align-items-center">                            
+                            <p style={{color: getEPSGrowthYoY ? (getEPSGrowthYoY.value > 0 ? "green" : "red") : "black"}}
+                                className="is-size-4 subtitle has-text-centered mb-3">{getEPSGrowthYoY ? 
+                                    (getEPSGrowthYoY?.type == "percent"
+                                        ? ((getEPSGrowthYoY.value >= 0 ? "+" : "") + getEPSGrowthYoY?.value?.toFixed(2)+"%") 
+                                        : (<>
+                                        {(getEPSGrowthYoY.value >= 0 ? "+" : "") + getEPSGrowthYoY.value.toFixed(2)}<span className="is-size-6" style={{color:"inherit"}}> USD</span></>)):("-")}                            </p>
+                            <p className="box-title">EPS Growth (YoY)</p>
+                        </div>
                     </div>                    
-                    <div>
-                        <p className="box-title">EPS Growth (YoY)</p>
-                        <p style={{color: getEPSGrowthYoY ? (getEPSGrowthYoY > 0 ? "green" : "red") : "black"}}
-                            className="is-size-5 mt-3 subtitle has-text-centered">{getEPSGrowthYoY?.toFixed(2)}%
-                        </p>
-                    </div>
                 </div>
-                <div className="column data-box is-flex is-flex-direction-row is-align-items-center is-justify-content-space-between px-5">
-                    <div>
-                        <p className="box-title">P/E (TTM)</p>
-                        <p className='subtitle mt-3 is-size-4'>{stockData?.pettm?.toFixed(2)}</p>
+                <div className="column data-box px-3 is-flex is-flex-direction-column is-justify-content-center">
+                    <p className="box-title ml-3 mb-4" style={{color:""}}>P/E Analysis</p>
+
+                    <div className="is-flex is-flex-direction-row is-align-items-center is-justify-content-space-between">
+                        <div style={{borderRight:"1px solid lightgrey"}} className="column p-2 is-flex is-flex-direction-column is-align-items-center">                            
+                            <p className='subtitle is-size-4 mb-3'>{stockData?.pettm?.toFixed(2)}</p>
+                            <p className="box-title">P/E (TTM)</p>
+                        </div>
+                        <div className="column p-2 is-flex is-flex-direction-column is-align-items-center">                            
+                            <p className="is-size-4 subtitle has-text-centered mb-3">
+                                {PEIndustryAvg ? PEIndustryAvg.toFixed(2) : "-"}
+                            </p>
+                            <p className="box-title">Sector Avg P/E</p>
+                        </div>
                     </div>                    
-                    <div>
-                        <p className="box-title">P/E (Sector avg.)</p>
-                        <p className="is-size-5 mt-3 subtitle has-text-centered">
-                            {PEIndustryAvg ? PEIndustryAvg.toFixed(2) : "-"}
-                        </p>
-                    </div>
                 </div>
                 <div className="column data-box is-flex is-flex-direction-column is-justify-content-center pl-5">
                     <p className="box-title">Current dividend yield (TTM)</p>

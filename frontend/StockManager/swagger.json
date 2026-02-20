@@ -993,6 +993,15 @@
         "tags": [
           "Transaction"
         ],
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/TransactionType"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -2374,6 +2383,10 @@
           "portfolioId": {
             "type": "integer",
             "format": "int32"
+          },
+          "realizedProfit": {
+            "type": "number",
+            "format": "double"
           }
         },
         "additionalProperties": false
@@ -2414,6 +2427,10 @@
           "note": {
             "type": "string",
             "nullable": true
+          },
+          "realizedProfit": {
+            "type": "number",
+            "format": "double"
           }
         },
         "additionalProperties": false

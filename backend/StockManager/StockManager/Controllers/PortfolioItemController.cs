@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using StockManager.DataContext.DTOs;
 using StockManager.Services;
 using System.Formats.Asn1;
@@ -8,7 +9,7 @@ namespace StockManager.Controllers
 {
     [ApiController]
     [Route("api/[controller]/[action]")]
-    //[Authorize]
+    [Authorize]
     public class PortfolioItemController(IPortfolioItemService portfolioItemService) : ControllerBase
     {
         [HttpPost]

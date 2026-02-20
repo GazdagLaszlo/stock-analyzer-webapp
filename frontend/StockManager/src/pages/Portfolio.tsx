@@ -1,8 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   TransactionType,
-  type PortfolioCreateDto,
-  type PortfolioDto,
   type PortfolioItemDto,
   type PortfolioUpdateDto,
   type StockDto,
@@ -16,16 +14,30 @@ import PortfolioMenu from '../components/Portfolio/PortfolioMenu';
 import PortfolioDeleteModal from '../components/Portfolio/PortfolioDeleteModal';
 import RenamePortfolioModal from '../components/Portfolio/RenamePortfolioModal';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useStockHub } from '../hooks/useStockHub';
+import { useContext } from 'react';
+import { PortfolioContext } from '../context/PortfolioContext';
 
 const Portfolio = () => {
+  const portfolioContext = useContext(PortfolioContext);
+  if (!portfolioContext) {
+    throw new Error('PortfolioContext not found');
+  }
+  const {
+    portfolios,
+    selectedPortfolio,
+    getPortfolioValue,
+    getTotalInvested,
+    getTotalProfit,
+    createPortfolio,
+    selectPortfolio,
+    deletePortfolio,
+    fetchPortfolios,
+    getLivePrice,
+    getItemProfit,
+  } = portfolioContext;
+
   const { portfolioId } = useParams<{ portfolioId?: string }>();
 
-  const [portfolios, setPortfolios] = useState<PortfolioDto[]>([]);
-  const [selectedPortfolio, setSelectedPortfolio] = useState<
-    PortfolioDto | undefined
-  >(undefined);
-  const [portfolioValue, setPortfolioValue] = useState<number | null>();
   const [selectedStock, setSelectedStock] = useState<StockDto>();
   const [selectedPortfolioItem, setSelectedPortfolioItem] =
     useState<PortfolioItemDto>();
@@ -56,44 +68,15 @@ const Portfolio = () => {
   >(false);
 
   useEffect(() => {
-    api.Portfolio.apiPortfolioGetAllGet()
-      .then((res) => {
-        setPortfolios(res.data);
-        if (res.data.length > 0) {
-          if (portfolioId != null) {
-            const id = res.data.find((p) => p.id === parseInt(portfolioId));
-            setSelectedPortfolio(id);
-          } else {
-            navigate(`/app/portfolio/${res.data[0].id}`, { replace: true });
-            setSelectedPortfolio(res.data[0]);
-          }
-        }
-      })
-      .catch((error) => {
-        console.error('Error while loading portfolios: ', error);
-      });
-  }, []);
-
-  useEffect(() => {
-    if (!selectedPortfolio?.portfolioItems) return;
-
-    const sum = selectedPortfolio.portfolioItems.reduce((acc, item) => {
-      return acc + (item.quantity ?? 0) * (item.stock?.price ?? 0);
-    }, 0);
-
-    setPortfolioValue(sum);
-  }, [selectedPortfolio]);
-
-  useEffect(() => {
-    if (selectedPortfolio) {
-      const updated = portfolios.find((p) => p.id === selectedPortfolio.id);
-      if (updated) {
-        setSelectedPortfolio(updated);
-      } else {
-        setSelectedPortfolio(undefined);
+    if (portfolioId) {
+      const portfolio = portfolios.find((p) => p.id === parseInt(portfolioId));
+      if (portfolio?.id) {
+        selectPortfolio(portfolio?.id);
       }
+    } else {
+      navigate(`/app/portfolio/${portfolios[0].id}`);
     }
-  }, [portfolios]);
+  }, [portfolioId, portfolios]);
 
   const createTransaction = async (dto: {
     price: number;
@@ -116,24 +99,9 @@ const Portfolio = () => {
       }
     }
     await api.Transaction.apiTransactionCreatePost(dto);
-
-    const response = await api.Portfolio.apiPortfolioGetAllGet();
-    setPortfolios(response.data);
+    await fetchPortfolios();
 
     setTransactionModalOpen(false);
-  };
-
-  const createPortfolio = async (createDto: PortfolioCreateDto) => {
-    const createResponse =
-      await api.Portfolio.apiPortfolioCreatePost(createDto);
-    const createdPortfolioId = createResponse.data;
-
-    const response = await api.Portfolio.apiPortfolioGetAllGet();
-    setPortfolios(response.data);
-
-    const newPortfolio = response.data.find((x) => x.id === createdPortfolioId);
-    setSelectedPortfolio(newPortfolio);
-    navigate(`/app/portfolio/${createdPortfolioId}`);
   };
 
   const deletePortfolioItem = async (id: number | undefined) => {
@@ -141,8 +109,7 @@ const Portfolio = () => {
       await api.PortfolioItem.apiPortfolioItemDeleteIdDelete(id);
     }
 
-    const response = await api.Portfolio.apiPortfolioGetAllGet();
-    setPortfolios(response.data);
+    await fetchPortfolios();
   };
 
   const renamePortfolio = async (portfolio: PortfolioUpdateDto) => {
@@ -153,60 +120,7 @@ const Portfolio = () => {
       );
     }
 
-    const response = await api.Portfolio.apiPortfolioGetAllGet();
-    setPortfolios(response.data);
-  };
-
-  const deletePortfolio = async () => {
-    if (selectedPortfolio?.id) {
-      await api.Portfolio.apiPortfolioDeleteIdDelete(selectedPortfolio.id);
-    }
-
-    const response = await api.Portfolio.apiPortfolioGetAllGet();
-    setPortfolios(response.data);
-
-    setSelectedPortfolio(response.data[0]);
-  };
-
-  const symbols = useMemo(
-    () =>
-      selectedPortfolio?.portfolioItems?.map(
-        (item) => item.stock?.symbol ?? ''
-      ) ?? [],
-    [selectedPortfolio]
-  );
-  const liveStocks = useStockHub(symbols);
-
-  const getItemProfit = (item: PortfolioItemDto, currentPrice: number) => {
-    if (!item.averagePurchasePrice || !item.quantity || currentPrice == 0) {
-      return 0;
-    }
-    return (currentPrice - item.averagePurchasePrice) * item.quantity;
-  };
-
-  const getLivePrice = (symbol: string) => {
-    if (symbol != '') {
-      const stock = liveStocks.find((s) => s.symbol === symbol);
-      return stock ? (stock.price ?? 0) : 0;
-    } else return 0;
-  };
-
-  const getTotalInvested = () =>
-    selectedPortfolio?.portfolioItems?.reduce(
-      (total, item) =>
-        total + (item.averagePurchasePrice ?? 0) * (item.quantity ?? 0),
-      0
-    ) ?? 0;
-
-  const getTotalProfit = () => {
-    return (
-      selectedPortfolio?.portfolioItems?.reduce((sum, item) => {
-        const livePrice =
-          getLivePrice(item.stock?.symbol ?? '') || (item.stock?.price ?? 0);
-        const profit = getItemProfit(item, livePrice);
-        return sum + profit;
-      }, 0) ?? 0
-    );
+    await fetchPortfolios();
   };
 
   const sortedItems = selectedPortfolio?.portfolioItems
@@ -244,7 +158,7 @@ const Portfolio = () => {
         <td>
           {(
             (((item.quantity ?? 0) * (livePrice ?? 0)) /
-              (portfolioValue ?? 1)) *
+              (getPortfolioValue(selectedPortfolio) ?? 1)) *
             100
           ).toFixed(2)}
           %
@@ -289,7 +203,9 @@ const Portfolio = () => {
     );
   });
 
-  const totalProfit = getTotalProfit();
+  const portfolioValue = getPortfolioValue(selectedPortfolio);
+  const totalProfit = getTotalProfit(selectedPortfolio);
+  const totalInvested = getTotalInvested(selectedPortfolio);
 
   return (
     <div className="portfolio mt-5">
@@ -306,7 +222,7 @@ const Portfolio = () => {
                   }
                   onClick={() => {
                     navigate(`/app/portfolio/${portfolio.id}`);
-                    setSelectedPortfolio(portfolio);
+                    selectPortfolio(portfolio.id!);
                   }}
                 >
                   {portfolio.name}
@@ -343,7 +259,7 @@ const Portfolio = () => {
               <p className="box-title">Portfolio value</p>
               {portfolioValue ? (
                 <span className="subtitle mt-3 is-size-4">
-                  {portfolioValue?.toFixed(2)}{' '}
+                  {portfolioValue.toFixed(2)}{' '}
                   <span className="is-size-6">USD</span>
                 </span>
               ) : (
@@ -369,7 +285,7 @@ const Portfolio = () => {
                     USD
                   </span>
                   <span className="is-size-6 ml-3" style={{ color: 'inherit' }}>
-                    {((totalProfit / getTotalInvested()) * 100).toFixed(2)} %
+                    {((totalProfit / totalInvested) * 100).toFixed(2)} %
                   </span>
                 </p>
               ) : (

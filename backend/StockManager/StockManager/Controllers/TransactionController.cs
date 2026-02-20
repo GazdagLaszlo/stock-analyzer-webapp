@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StockManager.DataContext.DTOs;
+using StockManager.DataContext.Entities;
 using StockManager.Services;
 using System.Security.Claims;
 
@@ -23,9 +24,9 @@ namespace StockManager.Controllers
         [HttpGet]
         //[Authorize(Roles = "")]
         [ProducesResponseType<IList<TransactionDto>>(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IList<TransactionDto>>> GetAllAsync()
+        public async Task<ActionResult<IList<TransactionDto>>> GetAllAsync([FromQuery] TransactionType? type)
         {
-            var result = await transactionService.GetAllAsync(_userId);
+            var result = await transactionService.GetAllAsync(_userId, type);
             return Ok(result);
         }
 

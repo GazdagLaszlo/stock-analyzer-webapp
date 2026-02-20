@@ -20,5 +20,6 @@
         public int PortfolioItemId { get; set; }
         public PortfolioItem PortfolioItem { get; set; }
         public bool IsActive { get; set; }
+        public double RealizedProfit {  get; set; }
     }
 }

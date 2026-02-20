@@ -4,12 +4,13 @@ import {
   emailKeyName,
   roleKeyName,
   tokenKeyName,
+  usernameKeyName,
 } from '../constants/constants.ts';
 import api from '../api/api.ts';
 import { jwtDecode } from 'jwt-decode';
 
 const useAuth = () => {
-  const { token, setToken, email, setEmail, role, setRole } =
+  const { token, setToken, email, setEmail, role, setRole, setUsername } =
     useContext(AuthContext);
   const isLoggedIn = !!token;
 
@@ -26,7 +27,13 @@ const useAuth = () => {
         setRole(role);
         localStorage.setItem(roleKeyName, role);
         setEmail(email);
+        const name =
+          decodedToken[
+            'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'
+          ];
         localStorage.setItem(emailKeyName, email);
+        setUsername(name);
+        localStorage.setItem(usernameKeyName, name);
 
         return res;
       })

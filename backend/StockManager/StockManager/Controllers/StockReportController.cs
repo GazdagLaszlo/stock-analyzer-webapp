@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using StockManager.DataContext.DTOs;
 using StockManager.DataContext.Entities;
 using StockManager.Services;
@@ -7,7 +8,7 @@ namespace StockManager.Controllers
 {
     [ApiController]
     [Route("api/[controller]/[action]")]
-    //[Authorize]
+    [Authorize]
     public class StockReportController(IStockReportService stockReportService) : ControllerBase
     {
         [HttpGet("{symbol}")]

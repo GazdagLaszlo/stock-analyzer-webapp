@@ -7,7 +7,7 @@ namespace StockManager.Controllers
 {
     [ApiController]
     [Route("api/[controller]/[action]")]
-    //[Authorize]
+    [Authorize]
     public class StockDataController(IStockDataService stockDataService) : ControllerBase
     {
         [HttpPost]
