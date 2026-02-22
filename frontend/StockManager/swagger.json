@@ -1174,6 +1174,35 @@
         }
       }
     },
+    "/api/Transaction/GetTransactionsSummary": {
+      "get": {
+        "tags": [
+          "Transaction"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/TradeSummaryDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TradeSummaryDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TradeSummaryDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/User/Me": {
       "get": {
         "tags": [
@@ -2345,6 +2374,54 @@
           "website": {
             "type": "string",
             "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TradeSummaryDto": {
+        "type": "object",
+        "properties": {
+          "totalProfitLoss": {
+            "type": "number",
+            "format": "double"
+          },
+          "winRate": {
+            "type": "number",
+            "format": "double"
+          },
+          "totalClosedTrades": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "profitableTradesCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "losingTradesCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "averageGain": {
+            "type": "number",
+            "format": "double"
+          },
+          "averageLoss": {
+            "type": "number",
+            "format": "double"
+          },
+          "averageRRR": {
+            "type": "number",
+            "format": "double"
+          },
+          "profitFactor": {
+            "type": "number",
+            "format": "double"
+          },
+          "bestTrade": {
+            "$ref": "#/components/schemas/TransactionDto"
+          },
+          "worstTrade": {
+            "$ref": "#/components/schemas/TransactionDto"
           }
         },
         "additionalProperties": false

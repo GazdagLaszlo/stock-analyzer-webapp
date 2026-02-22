@@ -7,16 +7,17 @@ import type {
 } from '../../generated-sources/openapi';
 import api from '../api/api';
 import WatchlistItemMenu from '../components/Watchlist/WatchlistItemMenu';
-import { formatMoney } from '../utils/formatMoney';
 import StockSelectModal from '../components/Portfolio/StockSelectModal';
 import WatchlistItemDeleteModal from '../components/Watchlist/WatchListItemDeleteModal';
 import WatchlistItemEditModal from '../components/Watchlist/WatchlistItemEditModal';
 import { useNavigate } from 'react-router-dom';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 const Watchlist = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [stocks, setStocks] = useState<StockDto[]>([]);
-  const [watchlist, setWatchlist] = useState<WatchListDto>();
+  //const [watchlist, setWatchlist] = useState<WatchListDto>();
   const [selectedWatchlistItem, setSelectedWatchlistItem] =
     useState<WatchListItemDto>();
 
@@ -38,15 +39,14 @@ const Watchlist = () => {
     loadStocks();
   }, []);
 
-  useEffect(() => {
-    api.WatchList.apiWatchListGetByUserIdGet()
-      .then((res) => {
-        setWatchlist(res.data);
-      })
-      .catch((error) => {
-        console.error('Error while loading watchlist: ', error);
-      });
-  }, []);
+  const { data: watchlist, isLoading: watchlistLoading } =
+    useQuery<WatchListDto>({
+      queryKey: ['watchlistGet'],
+      queryFn: async () => {
+        const res = await api.WatchList.apiWatchListGetByUserIdGet();
+        return res.data;
+      },
+    });
 
   const rows = watchlist?.watchListItems?.map((item) => (
     <tr
@@ -100,8 +100,7 @@ const Watchlist = () => {
     try {
       await api.WatchListItem.apiWatchListItemCreatePost({ stockId });
 
-      const response = await api.WatchList.apiWatchListGetByUserIdGet();
-      setWatchlist(response.data);
+      queryClient.invalidateQueries({ queryKey: ['watchlistGet'] });
     } catch (error) {
       console.log('WatchlistItem create was not successful: ', error);
     }
@@ -111,8 +110,7 @@ const Watchlist = () => {
     if (id) {
       await api.WatchListItem.apiWatchListItemDeleteIdDelete(id);
 
-      const response = await api.WatchList.apiWatchListGetByUserIdGet();
-      setWatchlist(response.data);
+      queryClient.invalidateQueries({ queryKey: ['watchlistGet'] });
     }
   };
 
@@ -123,39 +121,68 @@ const Watchlist = () => {
     if (id) {
       await api.WatchListItem.apiWatchListItemUpdateIdPut(id, updateDto);
 
-      const response = await api.WatchList.apiWatchListGetByUserIdGet();
-      setWatchlist(response.data);
+      queryClient.invalidateQueries({ queryKey: ['watchlistGet'] });
     }
   };
 
   return (
     <div>
       <h1 className="title has-text-centered my-6">My Watchlist</h1>
-      <div className="is-flex is-justify-content-right my-5">
-        <button
-          className="button button-navy is-dark"
-          onClick={() => setStockModalOpen(true)}
-        >
-          Add stocks
-        </button>
-      </div>
+      {rows && rows.length > 0 ? (
+        <>
+          <div className="is-flex is-justify-content-right my-5">
+            <button
+              className="button button-navy is-dark"
+              onClick={() => setStockModalOpen(true)}
+            >
+              Add stocks
+            </button>
+          </div>
 
-      <div className="is-flex is-flex-direction-column mt-6">
-        <table className="table">
-          <thead>
-            <tr>
-              <th></th>
-              <th>Symbol</th>
-              <th>Company</th>
-              <th>Price</th>
-              <th className="pl-6">Entry Price</th>
-              <th>Note</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>{rows}</tbody>
-        </table>
-      </div>
+          <div className="is-flex is-flex-direction-column mt-6">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Symbol</th>
+                  <th>Company</th>
+                  <th>Price</th>
+                  <th className="pl-6">Entry Price</th>
+                  <th>Note</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>{rows}</tbody>
+            </table>
+          </div>
+        </>
+      ) : (
+        <div
+          className="is-flex is-flex-direction-column is-justify-content-center is-align-items-center"
+          style={{ marginTop: '10vh' }}
+        >
+          <div className="has-text-centered py-6">
+            <span className="icon is-large has-text-grey-light mb-5">
+              <i className="fas fa-eye fa-3x"></i>
+            </span>
+            <h3 className="title is-4 pb-2">
+              Your Watchlist is currently empty
+            </h3>
+            <p className="subtitle is-6 has-text-grey">
+              Keep track of interesting companies without committing capital.
+              Monitor price movements and set your strategy before you trade.
+            </p>
+            <div className="buttons is-centered mt-5">
+              <button
+                className="button button-navy"
+                onClick={() => setStockModalOpen(true)}
+              >
+                Add stocks
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <StockSelectModal
         open={stockModalOpen}

@@ -73,7 +73,7 @@ const Portfolio = () => {
       if (portfolio?.id) {
         selectPortfolio(portfolio?.id);
       }
-    } else {
+    } else if (portfolios.length > 0) {
       navigate(`/app/portfolio/${portfolios[0].id}`);
     }
   }, [portfolioId, portfolios]);

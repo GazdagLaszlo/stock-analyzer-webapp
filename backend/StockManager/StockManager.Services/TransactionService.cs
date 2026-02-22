@@ -20,6 +20,7 @@ namespace StockManager.Services
         Task<TransactionDto> GetByIdAsync(int id);
         Task<TransactionDto> UpdateAsync(int id, TransactionUpdateDto updateDto);
         Task DeleteAsync(int id);
+        Task<TradeSummaryDto> GetTransactionsSummary(int userid);
     }
 
     public class TransactionService(AppDbContext context, IMapper mapper) : ITransactionService
@@ -115,8 +116,9 @@ namespace StockManager.Services
         public async Task<IList<TransactionDto>> GetAllAsync(int userId, TransactionType? type)
         {
             var transactions = await context.Transactions
+                .IgnoreQueryFilters()
                 .Include(x => x.Stock)
-                .Where(x => x.UserId == userId && x.TransactionType == type)
+                .Where(x => x.UserId == userId && (type == null || x.TransactionType == type))
                 .ToListAsync();
 
             return mapper.Map<IList<TransactionDto>>(transactions);
@@ -200,6 +202,53 @@ namespace StockManager.Services
 
             context.Transactions.Remove(transaction);
             await context.SaveChangesAsync();
+        }
+
+        public async Task<TradeSummaryDto> GetTransactionsSummary(int userId)
+        {
+            var allTransactions = await context.Transactions
+                .Include(x => x.Stock)
+                .Where(x => x.UserId == userId)
+                .ToListAsync();
+
+            var closedTrades = allTransactions
+                .Where(t => t.RealizedProfit != 0)
+                .ToList();
+
+            var wins = closedTrades.Where(x => x.RealizedProfit > 0);
+            var losses = closedTrades.Where(x => x.RealizedProfit < 0);
+
+            double avgGain = wins.Any() ? wins.Average(x => x.RealizedProfit) : 0;
+            double avgLoss = losses.Any() ? Math.Abs(losses.Average(x => x.RealizedProfit)) : 0;
+
+            //Risk to Reward ratio
+            double averageRRR = avgLoss != 0 ? avgGain / avgLoss : 0;
+
+            double totalWins = wins.Any() ? wins.Sum(x => x.RealizedProfit) : 0;
+            double totalLosses = losses.Any() ? losses.Sum(x => Math.Abs(x.RealizedProfit)) : 0;
+
+            var bestTrade = closedTrades.Any()
+                ? closedTrades.OrderByDescending(t => t.RealizedProfit).First()
+                : null;
+
+            var worstTrade = closedTrades.Any()
+                ? closedTrades.OrderBy(t => t.RealizedProfit).First()
+                : null;
+
+            return new TradeSummaryDto
+            {
+                TotalProfitLoss = closedTrades.Sum(x => x.RealizedProfit),
+                TotalClosedTrades = closedTrades.Count(x => x.TransactionType == TransactionType.Sell),
+                ProfitableTradesCount = wins.Count(),
+                LosingTradesCount = losses.Count(),
+                WinRate = closedTrades.Any() ? (double)wins.Count() / closedTrades.Count() * 100 : 0,
+                AverageGain = avgGain,
+                AverageLoss = avgLoss,
+                AverageRRR = averageRRR,
+                ProfitFactor = totalWins / totalLosses,
+                BestTrade = bestTrade != null ? mapper.Map<TransactionDto>(bestTrade) : null,
+                WorstTrade = worstTrade != null ? mapper.Map<TransactionDto>(worstTrade) : null,
+            };
         }
     }
 }
