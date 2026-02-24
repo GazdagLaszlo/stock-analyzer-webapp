@@ -54,7 +54,7 @@ const Watchlist = () => {
       className="table-row"
       onClick={() => navigate(`/app/stocks/${item.stock?.symbol}`)}
     >
-      <td style={{ width: '70px' }}>
+      <td style={{ width: '3vw' }}>
         <figure className="image is-24x24">
           <img
             className="border-radius-5"
@@ -62,14 +62,14 @@ const Watchlist = () => {
           />
         </figure>
       </td>
-      <td>{item.stock?.symbol}</td>
-      <td>{item.stock?.companyName}</td>
-      <td>{item.stock?.price} USD</td>
-      <td className="pl-6">
+      <td style={{ width: '8vw' }}>{item.stock?.symbol}</td>
+      <td style={{ width: '20vw' }}>{item.stock?.companyName}</td>
+      <td style={{ width: '10vw' }}>{item.stock?.price} USD</td>
+      <td style={{ width: '10vw' }}>
         {item.entryPrice != null ? item.entryPrice + ' USD' : '-'}
       </td>
-      <td>{item.note ?? '-'}</td>
-      <td className="is-narrow">
+      <td style={{ width: '44vw' }}>{item.note ?? '-'}</td>
+      <td style={{ width: '5vw' }}>
         <WatchlistItemMenu
           onEdit={() => {
             setSelectedWatchlistItem(item);
@@ -128,7 +128,56 @@ const Watchlist = () => {
   return (
     <div>
       <h1 className="title has-text-centered my-6">My Watchlist</h1>
-      {rows && rows.length > 0 ? (
+      {watchlistLoading ? (
+        <>
+          <div className="is-flex is-justify-content-right my-5">
+            <button
+              className="button button-navy is-dark"
+              onClick={() => setStockModalOpen(true)}
+            >
+              Add stocks
+            </button>
+          </div>
+          <div className="is-flex is-flex-direction-column mt-6">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Symbol</th>
+                  <th>Company</th>
+                  <th>Price</th>
+                  <th>Entry Price</th>
+                  <th>Note</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {[...Array(5)].map((_, i) => (
+                  <tr key={i} className="table-row">
+                    <td style={{ width: '3vw' }}></td>
+                    <td style={{ width: '8vw' }}>
+                      <div className="skeleton skeleton-text"></div>
+                    </td>
+                    <td style={{ width: '20vw' }}>
+                      <div className="skeleton skeleton-text"></div>
+                    </td>
+                    <td style={{ width: '10vw' }}>
+                      <div className="skeleton skeleton-text"></div>
+                    </td>
+                    <td style={{ width: '10vw' }}>
+                      <div className="skeleton skeleton-text"></div>
+                    </td>
+                    <td style={{ width: '44vw' }}>
+                      <div className="skeleton skeleton-text"></div>
+                    </td>
+                    <td style={{ width: '5vw' }}></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      ) : rows && rows.length > 0 ? (
         <>
           <div className="is-flex is-justify-content-right my-5">
             <button
@@ -147,7 +196,7 @@ const Watchlist = () => {
                   <th>Symbol</th>
                   <th>Company</th>
                   <th>Price</th>
-                  <th className="pl-6">Entry Price</th>
+                  <th>Entry Price</th>
                   <th>Note</th>
                   <th></th>
                 </tr>
