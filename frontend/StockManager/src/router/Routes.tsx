@@ -7,6 +7,7 @@ import StockView from '../pages/StockView/StockView.tsx';
 import TradeSummary from '../pages/TradeSummary.tsx';
 import Login from '../pages/Login.tsx';
 import Register from '../pages/Register.tsx';
+import Profile from '../pages/Profile.tsx';
 
 export const routes = [
   {
@@ -58,5 +59,10 @@ export const routes = [
     path: 'register',
     component: <Register />,
     isPrivate: false,
+  },
+  {
+    path: 'profile',
+    component: <Profile />,
+    isPrivate: true,
   },
 ];

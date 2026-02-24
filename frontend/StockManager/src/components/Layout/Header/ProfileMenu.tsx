@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
-import ProfileIcon from '../../../assets/images/profileIcon.png';
+import { useNavigate } from 'react-router-dom';
 
 type Props = {
   onLogout: () => void;
 };
 
 const ProfileMenu = ({ onLogout }: Props) => {
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const username = localStorage.getItem('username');
 
@@ -31,8 +32,8 @@ const ProfileMenu = ({ onLogout }: Props) => {
             setOpen(!open);
           }}
         >
-          <span className="icon">
-            <img src={ProfileIcon} alt="Profile" />
+          <span className="icon is-size-5">
+            <i className="fa-regular fa-circle-user"></i>
           </span>
         </button>
       </div>
@@ -43,7 +44,7 @@ const ProfileMenu = ({ onLogout }: Props) => {
         style={{ left: 'auto', right: 0 }}
       >
         <div className="dropdown-content">
-          <a className="dropdown-item">
+          <a className="dropdown-item" onClick={() => navigate('/app/profile')}>
             <div className="is-flex is-flex-direction-row is-align-items-center">
               <span className="icon mr-2">
                 <i className="fas fa-user"></i>

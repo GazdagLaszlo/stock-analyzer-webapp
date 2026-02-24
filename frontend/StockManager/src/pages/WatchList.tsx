@@ -127,7 +127,9 @@ const Watchlist = () => {
 
   return (
     <div>
-      <h1 className="title has-text-centered my-6">My Watchlist</h1>
+      <h1 className="is-size-3 has-text-weight-bold has-text-centered my-6">
+        My Watchlist
+      </h1>
       {watchlistLoading ? (
         <>
           <div className="is-flex is-justify-content-right my-5">

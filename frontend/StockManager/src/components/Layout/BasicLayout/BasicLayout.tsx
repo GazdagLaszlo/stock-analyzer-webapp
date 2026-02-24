@@ -10,7 +10,7 @@ const BasicLayout = () => {
     >
       <Header />
 
-      <main className="is-flex-grow-1 mt-4 px-6">
+      <main className="is-flex-grow-1 px-6">
         <Outlet />
       </main>
 

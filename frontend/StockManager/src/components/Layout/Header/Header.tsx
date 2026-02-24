@@ -7,7 +7,7 @@ const Header = () => {
 
   return (
     <>
-      <header className="py-3 px-6">
+      <header className="py-3 px-6" style={{ height: '10vh' }}>
         <nav className="navbar">
           <div className="navbar-brand">
             <Link to="/">

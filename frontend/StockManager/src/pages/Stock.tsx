@@ -91,7 +91,7 @@ const Stock = () => {
 
   return (
     <div className="stocks is-flex is-flex-direction-column is-align-items-center">
-      <h1 className="title has-text-centered my-6">
+      <h1 className="is-size-3 has-text-weight-bold has-text-centered my-6">
         Stocks by market capitalization
       </h1>
       <div className="field" style={{ width: '70%' }}>
