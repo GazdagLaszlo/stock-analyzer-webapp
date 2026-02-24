@@ -10,15 +10,6 @@ public class UserDto
     public string Name { get; set; }
     public string Email { get; set; }
 }
-    /*
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public string Email { get; set; }
-    public string PasswordHash { get; set; }
-    public WatchList WatchList { get; set; }
-    public UserRole Role { get; set; } = UserRole.Investor;
-    public List<Portfolio> Portfolios { get; set; }
-    */
 
 public class UserCreateDto
 {

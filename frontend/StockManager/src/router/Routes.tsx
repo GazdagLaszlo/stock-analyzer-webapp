@@ -6,6 +6,7 @@ import Watchlist from '../pages/WatchList';
 import StockView from '../pages/StockView/StockView.tsx';
 import TradeSummary from '../pages/TradeSummary.tsx';
 import Login from '../pages/Login.tsx';
+import Register from '../pages/Register.tsx';
 
 export const routes = [
   {
@@ -51,6 +52,11 @@ export const routes = [
   {
     path: 'login',
     component: <Login />,
+    isPrivate: false,
+  },
+  {
+    path: 'register',
+    component: <Register />,
     isPrivate: false,
   },
 ];
