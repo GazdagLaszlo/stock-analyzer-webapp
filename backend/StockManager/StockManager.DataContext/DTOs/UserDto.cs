@@ -34,9 +34,9 @@ public class UserLoginDto
     public string Password { get; set; }
 }
 
-public class LoginResponse
+public class TokenResponseDto
 {
-    public string Token { get; set; }
+    public string AccessToken { get; set; }
 }
 
 public class UserUpdateDto

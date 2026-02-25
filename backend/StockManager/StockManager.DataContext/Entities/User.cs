@@ -17,6 +17,8 @@ namespace StockManager.DataContext.Entities
         public string Email { get; set; }
         [Required]
         public string PasswordHash { get; set; }
+        public string? RefreshToken { get; set; }
+        public DateTime? RefreshTokenExpiryTime { get; set; }
         public WatchList WatchList { get; set; }
         public UserRole Role { get; set; } = UserRole.Investor;
         public List<Portfolio> Portfolios { get; set; } = new List<Portfolio>();

@@ -17,7 +17,7 @@ public class UserController(IUserService userService) : ControllerBase
     private int UserId => int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
     [HttpGet]
-    //[Authorize]
+    [Authorize]
     [ProducesResponseType<UserDto>(StatusCodes.Status200OK)]
     public async Task<IActionResult> Me()
     {
@@ -27,20 +27,42 @@ public class UserController(IUserService userService) : ControllerBase
 
     [HttpPost]
     [AllowAnonymous]
-    [ProducesResponseType<LoginResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<TokenResponseDto>(StatusCodes.Status200OK)]
     public async Task<IActionResult> Login([FromBody] UserLoginDto userDto)
     {
         try
         {
-            return Ok(new LoginResponse
-            {
-                Token = await userService.LoginAsync(userDto)
-            });
+            var tokenResponse = await userService.LoginAsync(userDto, Response);
+            return Ok(tokenResponse);
         }
         catch (UnauthorizedAccessException ex)
         {
             return Unauthorized(new { message = ex.Message });
         }
+    }
+
+    [HttpPost]
+    [AllowAnonymous]
+    [ProducesResponseType<TokenResponseDto>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> RefreshToken()
+    {
+        try
+        {
+            var tokenResponse = await userService.RefreshTokenAsync(Request, Response);
+            return Ok(tokenResponse);
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Unauthorized(new { message = "Invalid or expired refresh token." });
+        }
+    }
+
+    [HttpPost]
+    [Authorize]
+    public async Task<IActionResult> Logout()
+    {
+        await userService.LogoutAsync(Request, Response);
+        return Ok(new { message = "Logged out successfully." });
     }
 
     [HttpPost]
@@ -53,7 +75,7 @@ public class UserController(IUserService userService) : ControllerBase
     }
 
     [HttpGet]
-    //[Authorize]
+    [Authorize(Roles = "Administrator")]
     [ProducesResponseType<IEnumerable<UserDto>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllUsers()
     {
@@ -62,7 +84,7 @@ public class UserController(IUserService userService) : ControllerBase
     }
 
     [HttpPut("{id}")]
-    //[Authorize(Roles = "Administrator")]
+    [Authorize(Roles = "Administrator")]
     [ProducesResponseType<UserDto>(StatusCodes.Status200OK)]
     public async Task<IActionResult> UpdateUser(int id, [FromBody] UserUpdateDto userUpdateDto)
     {
@@ -71,10 +93,10 @@ public class UserController(IUserService userService) : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    //[Authorize(Roles = "Administrator")]
+    [Authorize(Roles = "Administrator")]
     public async Task<IActionResult> DeleteUser(int id)
     {
         await userService.DeleteUserAsync(id);
-        return Ok();
+        return Ok(new { message = "User deleted successfully." });
     }
 }

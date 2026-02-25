@@ -1,13 +1,7 @@
-import { useContext, useEffect } from 'react';
+import { useContext } from 'react';
 import { AuthContext } from '../context/AuthContext.tsx';
-import {
-  emailKeyName,
-  roleKeyName,
-  tokenKeyName,
-  usernameKeyName,
-} from '../constants/constants.ts';
 import api from '../api/api.ts';
-import { jwtDecode } from 'jwt-decode';
+import { tokenKeyName } from '../constants/constants.ts';
 
 const useAuth = () => {
   const { token, setToken, email, setEmail, role, setRole, setUsername } =
@@ -17,58 +11,39 @@ const useAuth = () => {
   const login = (email: string, password: string) => {
     return api.User.apiUserLoginPost({ email, password })
       .then((res) => {
-        setToken(res.data.token!);
-        localStorage.setItem(tokenKeyName, res.data.token!);
-        const decodedToken: never = jwtDecode(res.data.token!);
-        const role =
-          decodedToken[
-            'http://schemas.microsoft.com/ws/2008/06/identity/claims/role'
-          ];
-        setRole(role);
-        localStorage.setItem(roleKeyName, role);
-        setEmail(email);
-        const name =
-          decodedToken[
-            'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'
-          ];
-        localStorage.setItem(emailKeyName, email);
-        setUsername(name);
-        localStorage.setItem(usernameKeyName, name);
-
+        const accessToken = res.data.accessToken!;
+        localStorage.setItem(tokenKeyName, accessToken);
+        setToken(accessToken);
         return res;
       })
       .catch((error) => {
         throw error;
       });
   };
-  /*
-  const register = (
-    name: string,
-    email: string,
-    password: string,
-    roleType: number
-  ) => {
-    api.User.apiUserRegisterPost({ name, email, password, roleType }).then(() =>
-      alert('Sikeres regisztráció')
-    );
-  };
-  */
 
-  const logout = () => {
-    localStorage.clear();
-    setToken(null);
+  const logout = async () => {
+    try {
+      await api.User.apiUserLogoutPost();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      localStorage.removeItem(tokenKeyName);
+      setToken(null);
+      setRole(null);
+      setUsername(null);
+      setEmail(null);
+    }
   };
-
-  useEffect(() => {}, []);
 
   return {
     login,
-    /*register,*/ logout,
+    logout,
     token,
     email,
     isLoggedIn,
     role,
     setRole,
+    username: useContext(AuthContext).username,
   };
 };
 

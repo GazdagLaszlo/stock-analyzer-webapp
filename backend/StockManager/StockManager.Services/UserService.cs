@@ -1,21 +1,25 @@
-﻿using System.Globalization;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using AutoMapper;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using StockManager.DataContext.Context;
 using StockManager.DataContext.DTOs;
 using StockManager.DataContext.Entities;
-using Microsoft.EntityFrameworkCore;
-using System.Text;
-using Microsoft.IdentityModel.Tokens;
+using System.Globalization;
+using System.IdentityModel.Tokens.Jwt;
 using System.Numerics;
+using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace StockManager.Services;
 
 public interface IUserService
 {
     Task<UserDto> RegisterAsync(UserCreateDto userDto);
-    Task<string> LoginAsync(UserLoginDto userDto);
+    Task<TokenResponseDto> LoginAsync(UserLoginDto userDto, HttpResponse response);
+    Task<TokenResponseDto> RefreshTokenAsync(HttpRequest request, HttpResponse response);
+    Task LogoutAsync(HttpRequest request, HttpResponse response);
     Task<UserDto> UpdateUserAsync(int userId, UserUpdateDto userDto);
     Task<IList<UserDto>> GetAllUsersAsync();
     Task DeleteUserAsync(int userId);
@@ -24,7 +28,7 @@ public interface IUserService
 
 public class UserService(AppDbContext context, IMapper mapper) : IUserService
 {       
-    public async Task<string> LoginAsync(UserLoginDto userLoginDto)
+    public async Task<TokenResponseDto> LoginAsync(UserLoginDto userLoginDto, HttpResponse response)
     {
         var user = await context.Users
             .FirstOrDefaultAsync(x => x.Email == userLoginDto.Email);
@@ -33,19 +37,94 @@ public class UserService(AppDbContext context, IMapper mapper) : IUserService
             throw new UnauthorizedAccessException("Invalid email or password!");
         }
 
-        return await GenerateToken(user);
+        var accessToken = await GenerateAccessToken(user);
+        var refreshToken = await GenerateRefreshToken(user);
+
+        user.RefreshToken = refreshToken;
+        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+        await context.SaveChangesAsync();
+
+        response.Cookies.Append("refreshToken", refreshToken, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.None,
+            Expires = DateTime.UtcNow.AddDays(7)
+        });
+
+        return new TokenResponseDto
+        {
+            AccessToken = accessToken
+        };
     }
-    
-    private async Task<string> GenerateToken(User user)
+    public async Task<TokenResponseDto> RefreshTokenAsync(HttpRequest request, HttpResponse response)
     {
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("randomSztring12345_x2____randomSztring12345_x2"));
+        var refreshToken = request.Cookies["refreshToken"];
+        if (string.IsNullOrEmpty(refreshToken)) throw new UnauthorizedAccessException();
+
+        var user = await context.Users.FirstOrDefaultAsync(x => x.RefreshToken == refreshToken);
+
+        if (user == null || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
+            throw new UnauthorizedAccessException();
+
+        var newAccessToken = await GenerateAccessToken(user);
+        var newRefreshToken = await GenerateRefreshToken(user);
+
+        user.RefreshToken = newRefreshToken;
+        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+        await context.SaveChangesAsync();
+
+        response.Cookies.Append("refreshToken", newRefreshToken, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            //SameSite = SameSiteMode.Strict,
+            SameSite = SameSiteMode.None,
+            Expires = DateTime.UtcNow.AddDays(7),
+        });
+
+        return new TokenResponseDto { AccessToken = newAccessToken };
+    }
+    private async Task<string> GenerateAccessToken(User user)
+    {
+        var key = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes("randomSztring12345_x2____randomSztring12345_x2"));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-        var expires = DateTime.Now.AddDays(Convert.ToDouble(5));
+        var expires = DateTime.UtcNow.AddMinutes(15);
 
         var id = await GetClaimsIdentity(user);
-        var token = new JwtSecurityToken("https://localhost:7024", "https://localhost:7024", id.Claims, expires: expires, signingCredentials: creds);
+        var token = new JwtSecurityToken(
+            issuer: "https://localhost:7024",
+            audience: "https://localhost:7024",
+            claims: id.Claims,
+            expires: expires,
+            signingCredentials: creds);
 
         return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+    public async Task LogoutAsync(HttpRequest request, HttpResponse response)
+    {
+        var refreshToken = request.Cookies["refreshToken"];
+        if (!string.IsNullOrEmpty(refreshToken))
+        {
+            var user = await context.Users.FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
+            if (user != null)
+            {
+                user.RefreshToken = null;
+                user.RefreshTokenExpiryTime = null;
+                await context.SaveChangesAsync();
+            }
+        }
+
+        response.Cookies.Delete("refreshToken");
+    }
+    private async Task<string> GenerateRefreshToken(User user)
+    {
+        var randomBytes = new byte[64];
+        using var randomGenerator = RandomNumberGenerator.Create();
+        randomGenerator.GetBytes(randomBytes);
+        return Convert.ToBase64String(randomBytes);
     }
 
     private async Task<ClaimsIdentity> GetClaimsIdentity(User user)

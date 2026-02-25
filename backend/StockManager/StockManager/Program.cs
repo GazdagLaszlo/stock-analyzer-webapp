@@ -55,7 +55,7 @@ builder.Services
         {
             ValidateIssuer = true,
             ValidateAudience = true,
-            ValidateLifetime = true,
+            ValidateLifetime = true,            
             ValidateIssuerSigningKey = true,
             ValidIssuer = "https://localhost:7024",
             ValidAudience = "https://localhost:7024",
@@ -71,11 +71,6 @@ builder.Services.AddAuthorization(options =>
 
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(
-        policy =>
-        {
-            policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
-        });
     options.AddPolicy("AllowFrontend", policy =>
     {
         policy.WithOrigins("http://localhost:5173")
@@ -133,7 +128,7 @@ app.UseDefaultFiles();
 app.UseStaticFiles();
 
 app.UseCors("AllowFrontend");
-app.MapHub<StockPriceHub>("/stockPriceHub");
+
 
 app.UseHttpsRedirection();
 
@@ -141,5 +136,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<StockPriceHub>("/stockPriceHub");
 
 app.Run();

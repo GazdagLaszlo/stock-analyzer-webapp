@@ -1,10 +1,5 @@
 import { createContext } from 'react';
-import {
-  emailKeyName,
-  roleKeyName,
-  tokenKeyName,
-  usernameKeyName,
-} from '../constants/constants.ts';
+import { tokenKeyName } from '../constants/constants';
 
 interface AuthContext {
   token: string | null;
@@ -12,18 +7,18 @@ interface AuthContext {
   email: string | null;
   setEmail: (email: string | null) => void;
   role: string | null;
-  setRole: (role: string) => void;
+  setRole: (role: string | null) => void;
   username: string | null;
-  setUsername: (name: string) => void;
+  setUsername: (name: string | null) => void;
 }
 
 export const AuthContext = createContext<AuthContext>({
   token: localStorage.getItem(tokenKeyName),
   setToken: () => {},
-  email: localStorage.getItem(emailKeyName),
+  email: null,
   setEmail: () => {},
-  role: localStorage.getItem(roleKeyName),
+  role: null,
   setRole: () => {},
-  username: localStorage.getItem(usernameKeyName),
+  username: null,
   setUsername: () => {},
 });

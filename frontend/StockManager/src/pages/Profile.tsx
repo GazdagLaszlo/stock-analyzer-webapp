@@ -1,8 +1,10 @@
+import { useContext } from 'react';
 import useAuth from '../hooks/useAuth';
+import { AuthContext } from '../context/AuthContext';
+import { COLORS } from '../constants/colors';
 
 const Profile = () => {
-  const name = localStorage.getItem('username');
-  const email = localStorage.getItem('email');
+  const { username, email, role } = useContext(AuthContext);
 
   const { logout } = useAuth();
 
@@ -16,7 +18,19 @@ const Profile = () => {
           <span className="mb-4">
             <i className="fa-regular fa-circle-user fa-5x"></i>
           </span>
-          <p className="is-size-4 has-text-weight-bold">{name}</p>
+          <div
+            className="p-1 is-size-7"
+            style={{
+              backgroundColor: COLORS.background,
+              borderRadius: 10,
+              position: 'relative',
+              bottom: 30,
+              marginBottom: -20,
+            }}
+          >
+            <p>{role}</p>
+          </div>
+          <p className="is-size-4 has-text-weight-bold">{username}</p>
           <p style={{ color: 'grey' }}>{email}</p>
           <button className="button button-navy mt-4">Edit Profile</button>
 

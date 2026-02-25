@@ -94,6 +94,8 @@ const Portfolio = () => {
       );
 
       if (dto.quantity > (portfolioItem?.quantity ?? 0)) {
+        console.log(dto.quantity);
+        console.log(portfolioItem?.quantity);
         alert('You cannot sell more stock, than you have in your portfolio.');
         return;
       }

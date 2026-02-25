@@ -1,14 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../../../context/AuthContext';
 
 type Props = {
   onLogout: () => void;
 };
 
 const ProfileMenu = ({ onLogout }: Props) => {
+  const { username } = useContext(AuthContext);
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
-  const username = localStorage.getItem('username');
 
   useEffect(() => {
     if (open) {
