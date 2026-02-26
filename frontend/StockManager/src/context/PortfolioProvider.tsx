@@ -95,11 +95,26 @@ export const PortfolioProvider = ({
 
   const getTotalProfit = useCallback(
     (portfolio: PortfolioDto | undefined) => {
-      const value = getPortfolioValue(portfolio);
-      const invested = getTotalInvested(portfolio);
-      return value - invested;
+      if (!portfolio?.portfolioItems || portfolio.portfolioItems.length === 0) {
+        return null;
+      }
+      const activeItems = portfolio?.portfolioItems?.filter(
+        (item) => item.isActive
+      );
+
+      if (!activeItems || activeItems.length === 0) {
+        return null;
+      }
+
+      return portfolio.portfolioItems
+        .filter((item) => item.isActive)
+        .reduce((sum, item) => {
+          const currentPrice =
+            getLivePrice(item.stock?.symbol ?? '') || (item.stock?.price ?? 0);
+          return sum + getItemProfit(item, currentPrice);
+        }, 0);
     },
-    [getPortfolioValue, getTotalInvested]
+    [getLivePrice]
   );
 
   const selectPortfolio = (id: number) => {

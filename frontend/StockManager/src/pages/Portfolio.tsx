@@ -41,6 +41,9 @@ const Portfolio = () => {
   const [selectedStock, setSelectedStock] = useState<StockDto>();
   const [selectedPortfolioItem, setSelectedPortfolioItem] =
     useState<PortfolioItemDto>();
+  const [totalProfit, setTotalProfit] = useState<number | null>(0);
+  const [portfolioValue, setPortfolioValue] = useState<number>(0);
+  const [totalInvested, setTotalInvested] = useState<number>(0);
 
   const navigate = useNavigate();
 
@@ -66,6 +69,16 @@ const Portfolio = () => {
   const [renamePortfolioModalOpen, setRenamePortfolioModalOpen] = useState<
     true | false
   >(false);
+
+  useEffect(() => {
+    if (selectedPortfolio) {
+      const totalProfit = getTotalProfit(selectedPortfolio);
+
+      setTotalProfit(totalProfit ? totalProfit : null);
+      setPortfolioValue(getPortfolioValue(selectedPortfolio));
+      setTotalInvested(getTotalInvested(selectedPortfolio));
+    }
+  }, [selectedPortfolio?.portfolioItems]);
 
   useEffect(() => {
     if (portfolioId) {
@@ -107,9 +120,9 @@ const Portfolio = () => {
   };
 
   const deletePortfolioItem = async (id: number | undefined) => {
-    if (id) {
-      await api.PortfolioItem.apiPortfolioItemDeleteIdDelete(id);
-    }
+    if (!id || !selectedPortfolio) return;
+
+    await api.PortfolioItem.apiPortfolioItemDeleteIdDelete(id);
 
     await fetchPortfolios();
   };
@@ -132,82 +145,6 @@ const Portfolio = () => {
         (b.stock?.price ?? 0) * (b.quantity ?? 0) -
         (a.stock?.price ?? 0) * (a.quantity ?? 0)
     );
-
-  const portfolioItems = sortedItems?.map((item, i) => {
-    const livePrice =
-      getLivePrice(item.stock?.symbol ?? '') || (item.stock?.price ?? 0);
-    const profit = getItemProfit(item, livePrice);
-    const percentage =
-      (profit / ((item.averagePurchasePrice ?? 0) * (item.quantity ?? 0))) *
-      100;
-
-    return (
-      <tr
-        key={i}
-        onClick={() => navigate(`/app/stocks/${item.stock?.symbol}`)}
-        className="table-row"
-      >
-        <td className="is-narrow">
-          <figure className="image is-24x24">
-            <img
-              className="border-radius-5"
-              src={`https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${item.stock?.symbol}.png`}
-            />
-          </figure>
-        </td>
-        <td>{item.stock?.symbol}</td>
-        <td>{item.stock?.companyName}</td>
-        <td>
-          {(
-            (((item.quantity ?? 0) * (livePrice ?? 0)) /
-              (getPortfolioValue(selectedPortfolio) ?? 1)) *
-            100
-          ).toFixed(2)}
-          %
-        </td>
-        <td>{item.averagePurchasePrice?.toFixed(2)} USD</td>
-        <td>
-          {((item.quantity ?? 0) * (livePrice ?? 0)).toFixed(2)} USD (
-          {item.quantity?.toFixed(2)} {item.stock?.symbol})
-        </td>
-        <td>
-          {((item.averagePurchasePrice ?? 0) * (item.quantity ?? 0)).toFixed(2)}{' '}
-          USD
-        </td>
-        <td
-          style={{ color: profit > 0 ? 'green' : profit < 0 ? 'red' : 'black' }}
-        >
-          {profit.toFixed(2)} USD
-          <span className="ml-3 is-size-7" style={{ color: 'inherit' }}>
-            {percentage.toFixed(2) + ' %'}
-          </span>
-        </td>
-
-        <td className="is-narrow">
-          <PortfolioItemMenu
-            onAddTransaction={() => {
-              setSelectedStock(item.stock);
-              setTransactionModalOpen(true);
-              setTransactionCreateData({
-                ...transactionCreateData,
-                price: livePrice.toString() ?? '0',
-              });
-            }}
-            onDeleteItem={() => {
-              if (item.id != null) {
-                setSelectedPortfolioItem(item);
-                setPortfolioItemDeleteModalOpen(true);
-              }
-            }}
-          />
-        </td>
-      </tr>
-    );
-  });
-
-  const portfolioValue = getPortfolioValue(selectedPortfolio);
-  const totalProfit = getTotalProfit(selectedPortfolio);
-  const totalInvested = getTotalInvested(selectedPortfolio);
 
   return (
     <div className="portfolio mt-5">
@@ -287,7 +224,10 @@ const Portfolio = () => {
                     USD
                   </span>
                   <span className="is-size-6 ml-3" style={{ color: 'inherit' }}>
-                    {((totalProfit / totalInvested) * 100).toFixed(2)} %
+                    {totalInvested !== 0
+                      ? ((totalProfit / totalInvested) * 100).toFixed(2)
+                      : 0}
+                    %
                   </span>
                 </p>
               ) : (
@@ -295,11 +235,10 @@ const Portfolio = () => {
               )}
             </div>
           </div>
-          <hr className="has-background-grey-light" />
 
-          {portfolioItems && portfolioItems.length > 0 ? (
+          {sortedItems && sortedItems.length > 0 ? (
             <div className="is-flex is-flex-direction-column mt-6">
-              <table className="table">
+              <table className="custom-table">
                 <thead>
                   <tr>
                     <th></th>
@@ -313,7 +252,101 @@ const Portfolio = () => {
                     <th></th>
                   </tr>
                 </thead>
-                <tbody>{portfolioItems}</tbody>
+                <tbody>
+                  {sortedItems?.map((item, i) => {
+                    const livePrice =
+                      getLivePrice(item.stock?.symbol ?? '') ||
+                      (item.stock?.price ?? 0);
+                    const profit = getItemProfit(item, livePrice);
+                    const percentage =
+                      profit !== 0
+                        ? (profit /
+                            ((item.averagePurchasePrice ?? 0) *
+                              (item.quantity ?? 0))) *
+                          100
+                        : 0;
+
+                    return (
+                      <tr
+                        key={i}
+                        onClick={() =>
+                          navigate(`/app/stocks/${item.stock?.symbol}`)
+                        }
+                      >
+                        <td className="is-narrow" style={{ width: '3vw' }}>
+                          <figure className="image is-24x24">
+                            <img
+                              className="border-radius-5"
+                              src={`https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${item.stock?.symbol}.png`}
+                            />
+                          </figure>
+                        </td>
+                        <td style={{ width: '8vw' }}>{item.stock?.symbol}</td>
+                        <td style={{ width: '20vw' }}>
+                          {item.stock?.companyName}
+                        </td>
+                        <td style={{ width: '8vw' }}>
+                          {(
+                            (((item.quantity ?? 0) * (livePrice ?? 0)) /
+                              (getPortfolioValue(selectedPortfolio) ?? 1)) *
+                            100
+                          ).toFixed(2)}
+                          %
+                        </td>
+                        <td style={{ width: '8vw' }}>
+                          {item.averagePurchasePrice?.toFixed(2)} USD
+                        </td>
+                        <td style={{ width: '20vw' }}>
+                          {((item.quantity ?? 0) * (livePrice ?? 0)).toFixed(2)}{' '}
+                          USD ({item.quantity?.toFixed(2)} {item.stock?.symbol})
+                        </td>
+                        <td>
+                          {(
+                            (item.averagePurchasePrice ?? 0) *
+                            (item.quantity ?? 0)
+                          ).toFixed(2)}{' '}
+                          USD
+                        </td>
+                        <td
+                          style={{
+                            color:
+                              profit > 0
+                                ? 'green'
+                                : profit < 0
+                                  ? 'red'
+                                  : 'black',
+                          }}
+                        >
+                          {profit.toFixed(2)} USD
+                          <span
+                            className="ml-3 is-size-7"
+                            style={{ color: 'inherit' }}
+                          >
+                            {percentage.toFixed(2) + ' %'}
+                          </span>
+                        </td>
+                        <td className="is-narrow">
+                          <PortfolioItemMenu
+                            onAddTransaction={() => {
+                              setSelectedStock(item.stock);
+                              setTransactionModalOpen(true);
+                              setTransactionCreateData({
+                                ...transactionCreateData,
+                                price: livePrice.toString() ?? '0',
+                              });
+                            }}
+                            onDeleteItem={() => {
+                              if (item.id != null) {
+                                setSelectedPortfolioItem(item);
+                                setPortfolioItemDeleteModalOpen(true);
+                              }
+                            }}
+                          />
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
               </table>
             </div>
           ) : (

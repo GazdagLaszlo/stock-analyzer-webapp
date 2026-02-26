@@ -48,44 +48,6 @@ const Watchlist = () => {
       },
     });
 
-  const rows = watchlist?.watchListItems?.map((item) => (
-    <tr
-      key={item.id}
-      className="table-row"
-      onClick={() => navigate(`/app/stocks/${item.stock?.symbol}`)}
-    >
-      <td style={{ width: '3vw' }}>
-        <figure className="image is-24x24">
-          <img
-            className="border-radius-5"
-            src={`https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${item.stock?.symbol}.png`}
-          />
-        </figure>
-      </td>
-      <td style={{ width: '8vw' }}>{item.stock?.symbol}</td>
-      <td style={{ width: '20vw' }}>{item.stock?.companyName}</td>
-      <td style={{ width: '10vw' }}>{item.stock?.price} USD</td>
-      <td style={{ width: '10vw' }}>
-        {item.entryPrice != null ? item.entryPrice + ' USD' : '-'}
-      </td>
-      <td style={{ width: '44vw' }}>{item.note ?? '-'}</td>
-      <td style={{ width: '5vw' }}>
-        <WatchlistItemMenu
-          onEdit={() => {
-            setSelectedWatchlistItem(item);
-            setEditModalOpen(true);
-          }}
-          onDeleteItem={() => {
-            if (item.id != null) {
-              setSelectedWatchlistItem(item);
-              setDeleteModalOpen(true);
-            }
-          }}
-        />
-      </td>
-    </tr>
-  ));
-
   const createWatchlistItem = async (stockId?: number) => {
     if (!stockId) {
       console.log('StockId is undefined');
@@ -141,7 +103,7 @@ const Watchlist = () => {
             </button>
           </div>
           <div className="is-flex is-flex-direction-column mt-6">
-            <table className="table">
+            <table className="custom-table">
               <thead>
                 <tr>
                   <th></th>
@@ -179,7 +141,7 @@ const Watchlist = () => {
             </table>
           </div>
         </>
-      ) : rows && rows.length > 0 ? (
+      ) : watchlist?.watchListItems && watchlist.watchListItems.length > 0 ? (
         <>
           <div className="is-flex is-justify-content-right my-5">
             <button
@@ -190,8 +152,8 @@ const Watchlist = () => {
             </button>
           </div>
 
-          <div className="is-flex is-flex-direction-column mt-6">
-            <table className="table">
+          <div className="mt-6">
+            <table className="custom-table">
               <thead>
                 <tr>
                   <th></th>
@@ -203,7 +165,46 @@ const Watchlist = () => {
                   <th></th>
                 </tr>
               </thead>
-              <tbody>{rows}</tbody>
+              <tbody>
+                {watchlist?.watchListItems?.map((item) => (
+                  <tr
+                    key={item.id}
+                    onClick={() =>
+                      navigate(`/app/stocks/${item.stock?.symbol}`)
+                    }
+                  >
+                    <td style={{ width: '3vw' }}>
+                      <figure className="image is-24x24 ">
+                        <img
+                          className="border-radius-5"
+                          src={`https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${item.stock?.symbol}.png`}
+                        />
+                      </figure>
+                    </td>
+                    <td style={{ width: '8vw' }}>{item.stock?.symbol}</td>
+                    <td style={{ width: '20vw' }}>{item.stock?.companyName}</td>
+                    <td style={{ width: '10vw' }}>{item.stock?.price} USD</td>
+                    <td style={{ width: '10vw' }}>
+                      {item.entryPrice != null ? item.entryPrice + ' USD' : '-'}
+                    </td>
+                    <td style={{ width: '44vw' }}>{item.note ?? '-'}</td>
+                    <td style={{ width: '5vw' }}>
+                      <WatchlistItemMenu
+                        onEdit={() => {
+                          setSelectedWatchlistItem(item);
+                          setEditModalOpen(true);
+                        }}
+                        onDeleteItem={() => {
+                          if (item.id != null) {
+                            setSelectedWatchlistItem(item);
+                            setDeleteModalOpen(true);
+                          }
+                        }}
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
             </table>
           </div>
         </>

@@ -5,10 +5,6 @@ body {
 body,
 .navbar,
 .table td,
-.table th {
-  background-color: white;
-}
-
 .panel-tabs > a,
 .title,
 .panel > p,
@@ -28,10 +24,6 @@ span,
 
 .subtitle {
   font-weight: bold;
-}
-
-.table-row:hover {
-  background-color: none;
 }
 
 header,
@@ -136,7 +128,9 @@ header .navbar-item {
 
   .table-row div {
     transition: 0.5s;
-    border-bottom: 0.5px solid grey;
+    border-bottom: 0.5px solid lightgrey;
+    display: flex;
+    align-items: center;
   }
 
   .table-div {
@@ -146,45 +140,11 @@ header .navbar-item {
 
   .table-header {
     width: 100%;
-    border-bottom: 2px solid lightgrey;
     padding-right: 15px;
-  }
-
-  .cell {
-    flex: 2;
-    display: flex;
-    align-items: center;
-  }
-}
-
-.transaction {
-  .table-row:hover td {
-    cursor: pointer;
-    background-color: rgb(234, 234, 234);
-    transition: 0.5s;
-  }
-
-  .table-row td {
-    transition: 0.5s;
-    border-bottom: 0.5px solid grey;
-  }
-
-  .table-div {
-    overflow-y: auto;
-    height: 50vh;
-    width: 100%;
-  }
-
-  .cell {
-    flex: 2;
-    display: flex;
-    align-items: center;
-  }
-
-  .table thead th {
-    position: sticky;
-    top: 0;
-    z-index: 1;
+    border-radius: 10px;
+    background-color: rgb(242, 242, 242);
+    padding: 10px;
+    color: rgb(82, 82, 82);
   }
 }
 
@@ -239,13 +199,13 @@ header .navbar-item {
 .skeleton {
   animation: skeleton-loading 1s linear infinite alternate;
   border-radius: 4px;
-  display: inline-block;
+  display: block;
   width: 100%;
 }
 
 .skeleton-text {
   height: 1rem;
-  margin-bottom: 0.5rem;
+  vertical-align: middle;
 }
 .skeleton-title {
   height: 2rem;
@@ -254,4 +214,30 @@ header .navbar-item {
 }
 .skeleton-box {
   height: 100px;
+}
+
+.custom-table {
+  th {
+    background-color: rgb(242, 242, 242);
+    padding: 10px;
+    color: rgb(82, 82, 82);
+    height: 30px;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+  th:nth-child(1) {
+    border-radius: 10px 0 0 10px;
+  }
+  th:last-child {
+    border-radius: 0 10px 10px 0;
+  }
+  tbody tr {
+    height: 50px;
+    border-bottom: 0.5px solid lightgrey;
+  }
+  td {
+    padding: 10px;
+    vertical-align: middle;
+  }
 }

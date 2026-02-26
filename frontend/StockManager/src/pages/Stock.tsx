@@ -13,7 +13,6 @@ const Stock = () => {
   const [searchInput, setSearchInput] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
   const [visibleSymbols, setVisibleSymbols] = useState<string[]>([]);
-  const [noImage, setNoImage] = useState<boolean>(false);
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -71,18 +70,23 @@ const Stock = () => {
             navigate(`${stock.symbol}`, { state: { stockId: stock.id } })
           }
         >
-          <div style={{ flex: '1' }} className="is-flex is-align-items-center">
+          <div
+            style={{ width: '3vw' }}
+            className="is-flex is-align-items-center"
+          >
             <figure className="image is-24x24">
               <StockImage symbol={stock.symbol ?? ''} />
             </figure>
           </div>
-          <div className="cell">{stock.symbol}</div>
-          <div style={{ flex: '3' }} className="cell">
-            {stock.companyName}
+          <div className="" style={{ width: '8vw' }}>
+            {stock.symbol}
           </div>
-          <div className="cell">{stock.sector}</div>
-          <div className="cell">${price.toFixed(2)}</div>
-          <div className="cell">{formatMoney(stock.marketCap ?? 0)}</div>
+          <div style={{ width: '59vw' }}>{stock.companyName}</div>
+          <div style={{ width: '10vw' }}>{stock.sector}</div>
+          <div style={{ width: '10vw' }}>${price.toFixed(2)}</div>
+          <div style={{ width: '10vw' }}>
+            {formatMoney(stock.marketCap ?? 0)}
+          </div>
         </div>
       );
     },
@@ -109,12 +113,20 @@ const Stock = () => {
         </div>
       </div>
       <div className="table-header is-flex has-text-weight-bold py-3 mt-6 pl-2">
-        <div style={{ flex: '1' }}></div>
-        <div className="cell">Symbol</div>
-        <div style={{ flex: '3' }}>Company name</div>
-        <div className="cell">Sector</div>
-        <div className="cell">Price</div>
-        <div className="cell">Market Cap</div>
+        <div style={{ width: '3vw' }}></div>
+        <div className="" style={{ width: '8vw' }}>
+          Symbol
+        </div>
+        <div style={{ width: '59vw' }}>Company name</div>
+        <div className="" style={{ width: '10vw' }}>
+          Sector
+        </div>
+        <div className="" style={{ width: '10vw' }}>
+          Price
+        </div>
+        <div className="" style={{ width: '10vw' }}>
+          Market Cap
+        </div>
       </div>
       <div className="table-div">
         <AutoSizer>
@@ -123,9 +135,9 @@ const Stock = () => {
               width={width}
               height={height}
               rowCount={filteredStocks.length}
-              rowHeight={45}
+              rowHeight={50}
               rowRenderer={rowRenderer}
-              overscanRowCount={20}
+              overscanRowCount={10}
               onRowsRendered={({
                 startIndex,
                 stopIndex,

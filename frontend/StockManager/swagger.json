@@ -1833,6 +1833,9 @@
               "$ref": "#/components/schemas/TransactionDto"
             },
             "nullable": true
+          },
+          "isActive": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false
@@ -2424,39 +2427,53 @@
         "properties": {
           "totalProfitLoss": {
             "type": "number",
-            "format": "double"
+            "format": "double",
+            "nullable": true
           },
           "winRate": {
             "type": "number",
-            "format": "double"
+            "format": "double",
+            "nullable": true
           },
           "totalClosedTrades": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "nullable": true
           },
           "profitableTradesCount": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "nullable": true
           },
           "losingTradesCount": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "nullable": true
           },
           "averageGain": {
             "type": "number",
-            "format": "double"
+            "format": "double",
+            "nullable": true
           },
           "averageLoss": {
             "type": "number",
-            "format": "double"
+            "format": "double",
+            "nullable": true
           },
           "averageRRR": {
             "type": "number",
-            "format": "double"
+            "format": "double",
+            "nullable": true
           },
           "profitFactor": {
             "type": "number",
-            "format": "double"
+            "format": "double",
+            "nullable": true
+          },
+          "totalVolume": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
           },
           "bestTrade": {
             "$ref": "#/components/schemas/TransactionDto"

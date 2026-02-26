@@ -6,27 +6,12 @@ import type {
   PortfolioUpdateDto,
 } from '../../generated-sources/openapi';
 
-/*
-export interface PortfolioAsset {
-  symbol: string;
-  quantity: number;
-  averagePrice: number;
-  currentPrice?: number;
-}
-
-export interface PortfolioData {
-  totalValue: number;
-  dailyChange: number;
-  assets: PortfolioAsset[];
-}
-*/
-
 export interface PortfolioContextType {
   portfolios: PortfolioDto[];
   selectedPortfolio: PortfolioDto | undefined;
   getPortfolioValue: (portfolio: PortfolioDto | undefined) => number;
   getTotalInvested: (portfolio: PortfolioDto | undefined) => number;
-  getTotalProfit: (portfolio: PortfolioDto | undefined) => number;
+  getTotalProfit: (portfolio: PortfolioDto | undefined) => number | null;
   getItemProfit: (item: PortfolioItemDto, currentPrice: number) => number;
   getLivePrice: (symbol: string) => number;
   fetchPortfolios: () => Promise<PortfolioDto[] | undefined>;

@@ -105,6 +105,7 @@ namespace StockManager.Services
 
             if (portfolioItem.Quantity == 0)
             {
+                portfolioItem.AveragePurchasePrice = 0;
                 portfolioItem.IsActive = false;
                 portfolioItem.Transactions.ForEach(x => x.IsActive = false);
                 transaction.IsActive = false;
@@ -215,14 +216,16 @@ namespace StockManager.Services
                 .Where(t => t.RealizedProfit != 0)
                 .ToList();
 
-            var wins = closedTrades.Where(x => x.RealizedProfit > 0);
-            var losses = closedTrades.Where(x => x.RealizedProfit < 0);
+            var wins = closedTrades.Where(x => x.RealizedProfit > 0).ToList();
+            var losses = closedTrades.Where(x => x.RealizedProfit < 0).ToList();
 
-            double avgGain = wins.Any() ? wins.Average(x => x.RealizedProfit) : 0;
-            double avgLoss = losses.Any() ? Math.Abs(losses.Average(x => x.RealizedProfit)) : 0;
+            int? profitableCount = wins.Any() ? wins.Count : null;
+            int? losingCount = losses.Any() ? losses.Count : null;
 
-            //Risk to Reward ratio
-            double averageRRR = avgLoss != 0 ? avgGain / avgLoss : 0;
+            double? avgGain = wins.Count() != 0 ? wins.Average(x => x.RealizedProfit) : null;
+            double? avgLoss = losses.Count() != 0 ? Math.Abs(losses.Average(x => x.RealizedProfit)) : null;
+
+            double? averageRRR = avgLoss != 0 ? avgGain / avgLoss : 0;
 
             double totalWins = wins.Any() ? wins.Sum(x => x.RealizedProfit) : 0;
             double totalLosses = losses.Any() ? losses.Sum(x => Math.Abs(x.RealizedProfit)) : 0;
@@ -237,17 +240,18 @@ namespace StockManager.Services
 
             return new TradeSummaryDto
             {
-                TotalProfitLoss = closedTrades.Sum(x => x.RealizedProfit),
-                TotalClosedTrades = closedTrades.Count(x => x.TransactionType == TransactionType.Sell),
-                ProfitableTradesCount = wins.Count(),
-                LosingTradesCount = losses.Count(),
-                WinRate = closedTrades.Any() ? (double)wins.Count() / closedTrades.Count() * 100 : 0,
+                TotalProfitLoss = closedTrades.Count() != 0 ? closedTrades.Sum(x => x.RealizedProfit) : null,
+                TotalClosedTrades = closedTrades.Count() != 0 ? closedTrades.Count(x => x.TransactionType == TransactionType.Sell) : null,
+                ProfitableTradesCount = profitableCount,
+                LosingTradesCount = losingCount,
+                WinRate = closedTrades.Any() ? (double)wins.Count() / closedTrades.Count() * 100 : null,
                 AverageGain = avgGain,
                 AverageLoss = avgLoss,
                 AverageRRR = averageRRR,
-                ProfitFactor = totalWins / totalLosses,
+                ProfitFactor = totalLosses != 0 ? totalWins / totalLosses : null,
                 BestTrade = bestTrade != null ? mapper.Map<TransactionDto>(bestTrade) : null,
                 WorstTrade = worstTrade != null ? mapper.Map<TransactionDto>(worstTrade) : null,
+                TotalVolume = allTransactions.Count() != 0 ? allTransactions.Sum(x => x.Price+(x.Fee ?? 0)) : null,
             };
         }
     }

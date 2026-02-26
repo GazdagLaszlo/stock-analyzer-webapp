@@ -40,7 +40,7 @@ namespace StockManager.DataContext.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Portfolios");
+                    b.ToTable("Portfolios", (string)null);
                 });
 
             modelBuilder.Entity("StockManager.DataContext.Entities.PortfolioItem", b =>
@@ -76,7 +76,7 @@ namespace StockManager.DataContext.Migrations
 
                     b.HasIndex("StockId");
 
-                    b.ToTable("PortfolioItems");
+                    b.ToTable("PortfolioItems", (string)null);
                 });
 
             modelBuilder.Entity("StockManager.DataContext.Entities.Stock", b =>
@@ -111,7 +111,7 @@ namespace StockManager.DataContext.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Stocks");
+                    b.ToTable("Stocks", (string)null);
                 });
 
             modelBuilder.Entity("StockManager.DataContext.Entities.StockData", b =>
@@ -170,7 +170,7 @@ namespace StockManager.DataContext.Migrations
                     b.HasIndex("StockId")
                         .IsUnique();
 
-                    b.ToTable("StockData");
+                    b.ToTable("StockData", (string)null);
                 });
 
             modelBuilder.Entity("StockManager.DataContext.Entities.StockDataItem", b =>
@@ -201,7 +201,7 @@ namespace StockManager.DataContext.Migrations
 
                     b.HasIndex("StockDataId");
 
-                    b.ToTable("StockDataItems");
+                    b.ToTable("StockDataItems", (string)null);
                 });
 
             modelBuilder.Entity("StockManager.DataContext.Entities.StockReport", b =>
@@ -239,7 +239,7 @@ namespace StockManager.DataContext.Migrations
 
                     b.HasIndex("StockId");
 
-                    b.ToTable("StockReports");
+                    b.ToTable("StockReports", (string)null);
                 });
 
             modelBuilder.Entity("StockManager.DataContext.Entities.StockReportItem", b =>
@@ -274,7 +274,7 @@ namespace StockManager.DataContext.Migrations
 
                     b.HasIndex("StockReportId");
 
-                    b.ToTable("StockReportItems");
+                    b.ToTable("StockReportItems", (string)null);
                 });
 
             modelBuilder.Entity("StockManager.DataContext.Entities.Transaction", b =>
@@ -322,7 +322,7 @@ namespace StockManager.DataContext.Migrations
 
                     b.HasIndex("StockId");
 
-                    b.ToTable("Transactions");
+                    b.ToTable("Transactions", (string)null);
                 });
 
             modelBuilder.Entity("StockManager.DataContext.Entities.User", b =>
@@ -354,7 +354,7 @@ namespace StockManager.DataContext.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("StockManager.DataContext.Entities.WatchList", b =>
@@ -371,7 +371,7 @@ namespace StockManager.DataContext.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("WatchLists");
+                    b.ToTable("WatchLists", (string)null);
                 });
 
             modelBuilder.Entity("StockManager.DataContext.Entities.WatchListItem", b =>
@@ -398,7 +398,7 @@ namespace StockManager.DataContext.Migrations
 
                     b.HasIndex("WatchListId");
 
-                    b.ToTable("WatchListItems");
+                    b.ToTable("WatchListItems", (string)null);
                 });
 
             modelBuilder.Entity("StockManager.DataContext.Entities.Portfolio", b =>

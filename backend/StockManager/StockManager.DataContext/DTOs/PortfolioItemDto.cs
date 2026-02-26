@@ -1,4 +1,5 @@
 ﻿using StockManager.DataContext.Entities;
+using StockManager.DataContext.Migrations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,7 @@ namespace StockManager.DataContext.DTOs
         public string Note { get; set; }
         public double ProfitLoss { get; set; }
         public List<TransactionDto> Transactions { get; set; } = new List<TransactionDto>();
+        public bool IsActive { get; set; }
     }
 
     public class PortfolioItemCreateDto

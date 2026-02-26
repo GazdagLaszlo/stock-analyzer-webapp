@@ -24,8 +24,7 @@ namespace StockManager.Controllers
         //[Authorize(Roles = "Investor")]
         [ProducesResponseType<IList<PortfolioDto>>(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllAsync()
-        {
-            Console.WriteLine("user: "+ _userId);
+        {            
             var result = await portfolioService.GetAllAsync(_userId);
             return Ok(result);
         }

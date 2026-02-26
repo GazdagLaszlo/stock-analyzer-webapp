@@ -95,14 +95,19 @@ namespace StockManager.Services
         public async Task DeleteAsync(int portfolioItemId)
         {
             var portfolioItem = await context.PortfolioItems
-                .Include(x => x.Stock)
+                .Include(x => x.Transactions)
                 .FirstOrDefaultAsync(x => x.Id == portfolioItemId);
             if (portfolioItem == null)
             {
                 throw new KeyNotFoundException($"PortfolioItem with id - {portfolioItemId} not found!");
             }
+            //Csak az aktív tranzakciókat töröljük. A PortfolioItem-ben pedig isActive = false            
+            var activeTransactions = portfolioItem.Transactions.Where(t => t.IsActive).ToList();
+            context.Transactions.RemoveRange(activeTransactions);
 
-            context.PortfolioItems.Remove(portfolioItem);
+            portfolioItem.IsActive = false;
+            portfolioItem.AveragePurchasePrice = 0;
+            portfolioItem.Quantity = 0;
             await context.SaveChangesAsync();
         }
     }
