@@ -25,14 +25,18 @@ const TradeSummary = () => {
 
   return (
     <div>
-      <div className="is-flex is-flex-direction-row mt-4">
+      <div className="is-flex is-flex-direction-row mt-5">
         <div
           style={{ flex: 6, height: '20vh' }}
-          className="is-flex is-flex-direction-row mr-2"
+          className="is-flex is-flex-direction-row mr-5"
         >
           <div
-            className="data-box is-flex is-flex-direction-column is-justify-content-center pl-5 mr-2"
-            style={{ flex: 6, backgroundColor: COLORS.boxBackground }}
+            className="box is-flex is-flex-direction-column is-justify-content-center pl-5 mr-4"
+            style={{
+              flex: 6,
+              backgroundColor: COLORS.boxBackground,
+              height: '20vh',
+            }}
           >
             <div className="is-flex is-flex-direction-row">
               <p className="mr-1">Total P/L</p>
@@ -63,11 +67,12 @@ const TradeSummary = () => {
             </p>
           </div>
           <div
-            className="is-one-third data-box is-flex is-flex-direction-column is-justify-content-center pl-5"
+            className="is-one-third box is-flex is-flex-direction-column is-justify-content-center pl-5"
             style={{
               paddingRight: 20,
               flex: 6,
               backgroundColor: COLORS.boxBackground,
+              height: '20vh',
             }}
           >
             <div className="is-flex is-flex-direction-row is-justify-content-space-between">
@@ -116,7 +121,7 @@ const TradeSummary = () => {
           </div>
         </div>
         <div
-          className="data-box p-5"
+          className="box p-5"
           style={{ flex: 6, backgroundColor: COLORS.boxBackground }}
         >
           <div
@@ -239,7 +244,7 @@ const TradeSummary = () => {
       <p className="mb-6">3 legjobb tranzakció</p>
 
       <div
-        className="data-box is-flex is-justify-content-center is-flex-direction-column p-5"
+        className="box is-flex is-justify-content-center is-flex-direction-column p-5"
         style={{ backgroundColor: COLORS.boxBackground }}
       >
         <p className="has-text-centered subtitle is-size-5 mb-3">Best Trade</p>

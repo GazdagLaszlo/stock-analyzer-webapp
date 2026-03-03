@@ -46,7 +46,7 @@ const Dashboard = () => {
             return (
               <div
                 key={portfolio.id}
-                className="data-box is-flex is-flex-direction-column is-justify-content-space-between p-5"
+                className="box is-flex is-flex-direction-column is-justify-content-space-between p-5"
                 style={{ height: '23vh', cursor: 'pointer' }}
                 onClick={() => navigate(`/app/portfolio/${portfolio.id}`)}
               >
@@ -114,7 +114,7 @@ const Dashboard = () => {
             ? stockNews.slice(0, 6).map((newsItem, index) => (
                 <div
                   key={index}
-                  className="column news-box p-3"
+                  className="column box news-box p-3"
                   style={{ backgroundColor: COLORS.boxBackground }}
                 >
                   <a

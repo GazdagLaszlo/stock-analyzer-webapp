@@ -25,7 +25,7 @@ const ProfileMenu = ({ onLogout }: Props) => {
     >
       <div className="dropdown-trigger is-flex is-align-items-center">
         <button
-          className="button is-rounded is-light"
+          className="button is-rounded "
           style={{ width: '40px', height: '40px', padding: 0 }}
           aria-haspopup="true"
           onClick={(e) => {

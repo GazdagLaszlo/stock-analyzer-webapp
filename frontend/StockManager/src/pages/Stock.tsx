@@ -64,15 +64,15 @@ const Stock = () => {
       return (
         <div
           key={key}
-          className="table-row is-flex pl-2"
+          className="table-row is-flex"
           style={{ ...style }}
           onClick={() =>
             navigate(`${stock.symbol}`, { state: { stockId: stock.id } })
           }
         >
           <div
-            style={{ width: '3vw' }}
-            className="is-flex is-align-items-center"
+            style={{ width: '4vw' }}
+            className="is-flex is-align-items-center is-justify-content-center"
           >
             <figure className="image is-24x24">
               <StockImage symbol={stock.symbol ?? ''} />
@@ -112,8 +112,8 @@ const Stock = () => {
           </span>
         </div>
       </div>
-      <div className="table-header is-flex has-text-weight-bold py-3 mt-6 pl-2">
-        <div style={{ width: '3vw' }}></div>
+      <div className="table-header is-flex has-text-weight-bold py-3 mt-6">
+        <div style={{ width: '4vw' }}></div>
         <div className="" style={{ width: '8vw' }}>
           Symbol
         </div>
