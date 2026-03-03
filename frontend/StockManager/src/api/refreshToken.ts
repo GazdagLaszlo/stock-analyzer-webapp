@@ -8,12 +8,12 @@ export const refreshAccessToken = async (): Promise<string | null> => {
     });
     const newToken = res.data.accessToken!;
 
-    localStorage.setItem(tokenKeyName, newToken);
+    sessionStorage.setItem(tokenKeyName, newToken);
 
     return newToken;
   } catch (err) {
     console.error('Refresh token failed', err);
-    localStorage.removeItem(tokenKeyName);
+    sessionStorage.removeItem(tokenKeyName);
     return null;
   }
 };

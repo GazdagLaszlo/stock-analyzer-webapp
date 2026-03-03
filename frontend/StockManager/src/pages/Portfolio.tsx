@@ -16,6 +16,7 @@ import RenamePortfolioModal from '../components/Portfolio/RenamePortfolioModal';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useContext } from 'react';
 import { PortfolioContext } from '../context/PortfolioContext';
+import { COLORS } from '../constants/colors';
 
 const Portfolio = () => {
   const portfolioContext = useContext(PortfolioContext);
@@ -194,7 +195,13 @@ const Portfolio = () => {
           </div>
 
           <div className="columns mt-5 is-variable is-0 data-boxes">
-            <div className="column is-one-quarter data-box is-flex is-flex-direction-column is-justify-content-center pl-5">
+            <div
+              className="column is-one-quarter box is-flex is-flex-direction-column is-justify-content-center pl-5"
+              style={{
+                backgroundColor: COLORS.boxBackground,
+                height: '20vh',
+              }}
+            >
               <p className="box-title">Portfolio value</p>
               {portfolioValue ? (
                 <span className="subtitle mt-3 is-size-4">
@@ -205,7 +212,13 @@ const Portfolio = () => {
                 <span className="subtitle mt-3 is-size-4">-</span>
               )}
             </div>
-            <div className="column is-one-quarter data-box is-flex is-flex-direction-column is-justify-content-center pl-5">
+            <div
+              className="column is-one-quarter box is-flex is-flex-direction-column is-justify-content-center pl-5"
+              style={{
+                backgroundColor: COLORS.boxBackground,
+                height: '20vh',
+              }}
+            >
               <p className="box-title">Unrealized profit</p>
               {totalProfit ? (
                 <p

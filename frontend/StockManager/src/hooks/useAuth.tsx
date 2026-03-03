@@ -12,7 +12,7 @@ const useAuth = () => {
     return api.User.apiUserLoginPost({ email, password })
       .then((res) => {
         const accessToken = res.data.accessToken!;
-        localStorage.setItem(tokenKeyName, accessToken);
+        sessionStorage.setItem(tokenKeyName, accessToken);
         setToken(accessToken);
         return res;
       })
@@ -27,7 +27,7 @@ const useAuth = () => {
     } catch (err) {
       console.error(err);
     } finally {
-      localStorage.removeItem(tokenKeyName);
+      sessionStorage.removeItem(tokenKeyName);
       setToken(null);
       setRole(null);
       setUsername(null);

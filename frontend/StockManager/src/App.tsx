@@ -20,7 +20,7 @@ interface jwtDecodeType {
 
 function App() {
   const [token, setToken] = useState<string | null>(
-    localStorage.getItem(tokenKeyName)
+    sessionStorage.getItem(tokenKeyName)
   );
   const [email, setEmail] = useState<string | null>(null);
   const [role, setRole] = useState<string | null>(null);
@@ -47,7 +47,7 @@ function App() {
       } catch (error) {
         console.error('Token error!', error);
         setToken(null);
-        localStorage.removeItem(tokenKeyName);
+        sessionStorage.removeItem(tokenKeyName);
       }
     } else {
       setEmail(null);

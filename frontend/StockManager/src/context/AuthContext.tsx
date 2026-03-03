@@ -13,7 +13,7 @@ interface AuthContext {
 }
 
 export const AuthContext = createContext<AuthContext>({
-  token: localStorage.getItem(tokenKeyName),
+  token: sessionStorage.getItem(tokenKeyName),
   setToken: () => {},
   email: null,
   setEmail: () => {},

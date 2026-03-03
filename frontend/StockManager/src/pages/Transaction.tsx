@@ -4,8 +4,10 @@ import api from '../api/api';
 import { formatMoney } from '../utils/formatMoney';
 import TransactionDeleteModal from '../components/Transaction/TransactionDeleteModal';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 
 const Transaction = () => {
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [selectedTransaction, setSelectedTransaction] =
     useState<TransactionDto>();
@@ -108,7 +110,12 @@ const Transaction = () => {
                     </tr>
                   ))
                 : transactions.map((transaction) => (
-                    <tr key={transaction.id}>
+                    <tr
+                      key={transaction.id}
+                      onClick={() =>
+                        navigate(`/app/transactions/${transaction.id}`)
+                      }
+                    >
                       <td style={{ width: '4vw' }}>
                         <figure className="image is-24x24">
                           <img

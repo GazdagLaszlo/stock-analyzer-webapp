@@ -81,8 +81,8 @@ const Stock = () => {
           <div className="" style={{ width: '8vw' }}>
             {stock.symbol}
           </div>
-          <div style={{ width: '59vw' }}>{stock.companyName}</div>
-          <div style={{ width: '10vw' }}>{stock.sector}</div>
+          <div style={{ width: '50vw' }}>{stock.companyName}</div>
+          <div style={{ width: '15vw' }}>{stock.sector}</div>
           <div style={{ width: '10vw' }}>${price.toFixed(2)}</div>
           <div style={{ width: '10vw' }}>
             {formatMoney(stock.marketCap ?? 0)}
@@ -117,8 +117,8 @@ const Stock = () => {
         <div className="" style={{ width: '8vw' }}>
           Symbol
         </div>
-        <div style={{ width: '59vw' }}>Company name</div>
-        <div className="" style={{ width: '10vw' }}>
+        <div style={{ width: '50vw' }}>Company name</div>
+        <div className="" style={{ width: '15vw' }}>
           Sector
         </div>
         <div className="" style={{ width: '10vw' }}>

@@ -8,6 +8,7 @@ import TradeSummary from '../pages/TradeSummary.tsx';
 import Login from '../pages/Login.tsx';
 import Register from '../pages/Register.tsx';
 import Profile from '../pages/Profile.tsx';
+import TransactionDetails from '../pages/TransactionDetails.tsx';
 
 export const routes = [
   {
@@ -38,6 +39,11 @@ export const routes = [
   {
     path: 'transactions',
     component: <Transaction />,
+    isPrivate: true,
+  },
+  {
+    path: 'transactions/:id',
+    component: <TransactionDetails />,
     isPrivate: true,
   },
   {

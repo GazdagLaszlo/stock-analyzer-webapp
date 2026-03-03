@@ -218,19 +218,19 @@ const StockView = () => {
 
         <p className="panel-tabs is-justify-content-flex-start">
           <Link
-            to={`/stocks/${symbol}/overview`}
+            to={`/app/stocks/${symbol}/overview`}
             className={activeTab === 'overview' ? 'is-active' : ''}
           >
             Overview
           </Link>
           <Link
-            to={`/stocks/${symbol}/financials/overview`}
+            to={`/app/stocks/${symbol}/financials/overview`}
             className={activeTab === 'financials' ? 'is-active' : ''}
           >
             Financials
           </Link>
           <Link
-            to={`/stocks/${symbol}/technical`}
+            to={`/app/stocks/${symbol}/technical`}
             className={activeTab === 'technical' ? 'is-active' : ''}
           >
             Technicals

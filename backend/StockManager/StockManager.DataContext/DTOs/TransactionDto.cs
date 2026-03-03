@@ -31,6 +31,7 @@ namespace StockManager.DataContext.DTOs
         public double Fee { get; set; }
         public string Note { get; set; }
         public double RealizedProfit { get; set; }
+        public bool isActive { get; set; }
     }
 
     public class TransactionUpdateDto

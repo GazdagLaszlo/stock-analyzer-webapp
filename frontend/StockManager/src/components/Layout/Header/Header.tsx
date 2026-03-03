@@ -1,18 +1,24 @@
 import { Link, NavLink } from 'react-router-dom';
 import ProfileMenu from './ProfileMenu';
 import useAuth from '../../../hooks/useAuth';
+import { COLORS } from '../../../constants/colors';
 
 const Header = () => {
   const { logout } = useAuth();
 
   return (
     <>
-      <header className="py-3 px-6" style={{ height: '10vh' }}>
-        <nav className="navbar">
+      <header
+        className="py-3 px-6"
+        style={{ height: '10vh', backgroundColor: COLORS.header }}
+      >
+        <nav className="navbar" style={{ backgroundColor: COLORS.header }}>
           <div className="navbar-brand">
             <Link to="/">
-              <p className="is-size-4 has-text-weight-bold">StockAnalyzer</p>
-              <p>Stock Analysis & Portfolio Management</p>
+              <p className="is-size-5 has-text-weight-bold">StockAnalyzer</p>
+              <p style={{ color: COLORS.infoText, fontSize: 14 }}>
+                Stock Analysis & Portfolio Management
+              </p>
             </Link>
 
             <a
@@ -30,11 +36,16 @@ const Header = () => {
           </div>
 
           <div className="navbar-menu">
-            <div className="navbar-end">
+            <div className="navbar-end is-flex is-flex-direction-row is-align-items-center">
               <NavLink
                 className={({ isActive }) =>
                   'navbar-item' + (isActive ? ' active' : '')
                 }
+                style={({ isActive }) => ({
+                  backgroundColor: isActive
+                    ? COLORS.headerActive
+                    : 'transparent',
+                })}
                 to="/app/dashboard"
               >
                 Dashboard
@@ -43,6 +54,11 @@ const Header = () => {
                 className={({ isActive }) =>
                   'navbar-item' + (isActive ? ' active' : '')
                 }
+                style={({ isActive }) => ({
+                  backgroundColor: isActive
+                    ? COLORS.headerActive
+                    : 'transparent',
+                })}
                 to="/app/stocks"
               >
                 Stocks
@@ -51,6 +67,11 @@ const Header = () => {
                 className={({ isActive }) =>
                   'navbar-item' + (isActive ? ' active' : '')
                 }
+                style={({ isActive }) => ({
+                  backgroundColor: isActive
+                    ? COLORS.headerActive
+                    : 'transparent',
+                })}
                 to="/app/portfolio"
               >
                 Portfolio
@@ -59,6 +80,11 @@ const Header = () => {
                 className={({ isActive }) =>
                   'navbar-item' + (isActive ? ' active' : '')
                 }
+                style={({ isActive }) => ({
+                  backgroundColor: isActive
+                    ? COLORS.headerActive
+                    : 'transparent',
+                })}
                 to="/app/watchlist"
               >
                 Watchlist
@@ -67,6 +93,11 @@ const Header = () => {
                 className={({ isActive }) =>
                   'navbar-item' + (isActive ? ' active' : '')
                 }
+                style={({ isActive }) => ({
+                  backgroundColor: isActive
+                    ? COLORS.headerActive
+                    : 'transparent',
+                })}
                 to="/app/transactions"
               >
                 Transactions
@@ -75,6 +106,11 @@ const Header = () => {
                 className={({ isActive }) =>
                   'navbar-item' + (isActive ? ' active' : '')
                 }
+                style={({ isActive }) => ({
+                  backgroundColor: isActive
+                    ? COLORS.headerActive
+                    : 'transparent',
+                })}
                 to="/app/results"
               >
                 Trade statistics

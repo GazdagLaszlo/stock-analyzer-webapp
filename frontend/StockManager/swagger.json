@@ -2566,6 +2566,9 @@
           "realizedProfit": {
             "type": "number",
             "format": "double"
+          },
+          "isActive": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false
