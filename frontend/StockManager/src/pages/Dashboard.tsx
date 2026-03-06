@@ -131,7 +131,12 @@ const Dashboard = () => {
                     <p className="is-size-6 has-text-weight-bold py-3">
                       {newsItem.headline}
                     </p>
-                    <p style={{ flex: '1' }}>{newsItem.summary}</p>
+                    <p
+                      style={{ flex: '1' }}
+                      dangerouslySetInnerHTML={{
+                        __html: newsItem.summary ?? '',
+                      }}
+                    ></p>
                     <p className="has-text-right vertical-align-end is-italic mt-3">
                       {new Date((newsItem.datetime ?? 0) * 1000).toLocaleString(
                         'hu-HU'

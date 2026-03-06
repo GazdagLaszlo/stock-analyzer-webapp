@@ -15,7 +15,7 @@ const Transaction = () => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   const { data: transactions = [], isLoading: transactionsLoading } = useQuery({
-    queryKey: ['allTransactions'],
+    queryKey: ['transactions'],
     queryFn: async () => {
       const res = await api.Transaction.apiTransactionGetAllGet();
       return res.data;
@@ -34,7 +34,7 @@ const Transaction = () => {
 
     try {
       await api.Transaction.apiTransactionDeleteIdDelete(id);
-      queryClient.invalidateQueries({ queryKey: ['allTransactions'] });
+      queryClient.invalidateQueries({ queryKey: ['transactions'] });
     } catch (error) {
       alert(
         'Cannot delete this the transaction because some of the shares have already been sold.'
@@ -48,8 +48,7 @@ const Transaction = () => {
       <h1 className="is-size-3 has-text-weight-bold has-text-centered my-6">
         Transactions
       </h1>
-
-      {transactionsLoading || transactions.length > 0 ? (
+      {transactionsLoading ? (
         <div
           className="mt-6"
           style={{ overflowY: 'scroll', width: '100%', height: '50vh' }}
@@ -71,114 +70,47 @@ const Transaction = () => {
               </tr>
             </thead>
             <tbody>
-              {transactionsLoading
-                ? [...Array(5)].map((_, i) => (
-                    <tr key={i}>
-                      <td style={{ width: '4vw' }}>
-                        <div className="skeleton skeleton-text"></div>
-                      </td>
-                      <td style={{ width: '8vw' }}>
-                        <div className="skeleton skeleton-text"></div>
-                      </td>
-                      <td style={{ width: '18vw' }}>
-                        <div className="skeleton skeleton-text"></div>
-                      </td>
-                      <td style={{ width: '10vw' }}>
-                        <div className="skeleton skeleton-text"></div>
-                      </td>
-                      <td style={{ width: '10vw' }}>
-                        <div className="skeleton skeleton-text"></div>
-                      </td>
-                      <td style={{ width: '10vw' }}>
-                        <div className="skeleton skeleton-text"></div>
-                      </td>
-                      <td style={{ width: '8vw' }}>
-                        <div className="skeleton skeleton-text"></div>
-                      </td>
-                      <td style={{ width: '10vw' }}>
-                        <div className="skeleton skeleton-text"></div>
-                      </td>
-                      <td style={{ width: '8vw' }}>
-                        <div className="skeleton skeleton-text"></div>
-                      </td>
-                      <td style={{ width: '5vw' }}>
-                        <div className="skeleton skeleton-text"></div>
-                      </td>
-                      <td style={{ width: '4vw' }}>
-                        <div className="skeleton skeleton-text"></div>
-                      </td>
-                    </tr>
-                  ))
-                : transactions.map((transaction) => (
-                    <tr
-                      key={transaction.id}
-                      onClick={() =>
-                        navigate(`/app/transactions/${transaction.id}`)
-                      }
-                    >
-                      <td style={{ width: '4vw' }}>
-                        <figure className="image is-24x24">
-                          <img
-                            className="border-radius-5"
-                            src={`https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${transaction.stock?.symbol}.png`}
-                          />
-                        </figure>
-                      </td>
-                      <td style={{ width: '8vw' }}>
-                        {transaction.stock?.symbol}
-                      </td>
-                      <td style={{ width: '18vw' }}>
-                        {transaction.stock?.companyName}
-                      </td>
-                      <td style={{ width: '10vw' }}>
-                        {new Date(
-                          transaction.date == undefined ? '-' : transaction.date
-                        ).toLocaleDateString()}
-                      </td>
-                      <td style={{ width: '10vw' }}>{transaction.price} USD</td>
-                      <td style={{ width: '10vw' }}>{transaction.quantity}</td>
-                      <td style={{ width: '8vw' }}>
-                        {formatMoney(transaction.fee ?? 0)} USD
-                      </td>
-                      <td style={{ width: '10vw' }}>
-                        {formatMoney(
-                          (transaction.price ?? 0) *
-                            (transaction.quantity ?? 0) +
-                            (transaction.fee ?? 0)
-                        )}{' '}
-                        USD
-                      </td>
-                      <td
-                        style={{
-                          color:
-                            transaction.transactionType === 0 ? 'green' : 'red',
-                          width: '8vw',
-                        }}
-                      >
-                        {transaction.transactionType === 0 ? 'Buy' : 'Sell'}
-                      </td>
-                      <td style={{ width: '5vw' }}>
-                        {transaction.note == '' ? '-' : transaction.note}
-                      </td>
-                      <td style={{ width: '4vw' }}>
-                        <button
-                          className="button is-small"
-                          onClick={() => {
-                            setDeleteModalOpen(true);
-                            setSelectedTransaction(transaction);
-                          }}
-                        >
-                          <span className="icon">
-                            <i className="fas fa-trash"></i>
-                          </span>
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+              {[...Array(5)].map((_, i) => (
+                <tr key={i}>
+                  <td style={{ width: '4vw' }}>
+                    <div className="skeleton skeleton-text"></div>
+                  </td>
+                  <td style={{ width: '8vw' }}>
+                    <div className="skeleton skeleton-text"></div>
+                  </td>
+                  <td style={{ width: '18vw' }}>
+                    <div className="skeleton skeleton-text"></div>
+                  </td>
+                  <td style={{ width: '10vw' }}>
+                    <div className="skeleton skeleton-text"></div>
+                  </td>
+                  <td style={{ width: '10vw' }}>
+                    <div className="skeleton skeleton-text"></div>
+                  </td>
+                  <td style={{ width: '10vw' }}>
+                    <div className="skeleton skeleton-text"></div>
+                  </td>
+                  <td style={{ width: '8vw' }}>
+                    <div className="skeleton skeleton-text"></div>
+                  </td>
+                  <td style={{ width: '10vw' }}>
+                    <div className="skeleton skeleton-text"></div>
+                  </td>
+                  <td style={{ width: '8vw' }}>
+                    <div className="skeleton skeleton-text"></div>
+                  </td>
+                  <td style={{ width: '5vw' }}>
+                    <div className="skeleton skeleton-text"></div>
+                  </td>
+                  <td style={{ width: '4vw' }}>
+                    <div className="skeleton skeleton-text"></div>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
-      ) : (
+      ) : transactions.length === 0 ? (
         <div
           className="is-flex is-flex-direction-column is-justify-content-center is-align-items-center"
           style={{ marginTop: '5vh' }}
@@ -193,7 +125,102 @@ const Transaction = () => {
               and start building your portfolio by adding transactions on the
               Portfolio page.
             </p>
+            <button
+              className="button button-navy"
+              onClick={() => navigate('/app/portfolio')}
+            >
+              Go to Portfolio
+            </button>
           </div>
+        </div>
+      ) : (
+        <div
+          className="mt-6"
+          style={{ overflowY: 'scroll', width: '100%', height: '50vh' }}
+        >
+          <table className="custom-table">
+            <thead>
+              <tr>
+                <th style={{ width: '4vw' }}></th>
+                <th style={{ width: '8vw' }}>Symbol</th>
+                <th style={{ width: '18vw' }}>Company name</th>
+                <th style={{ width: '10vw' }}>Date</th>
+                <th style={{ width: '10vw' }}>Price</th>
+                <th style={{ width: '10vw' }}>Quantity</th>
+                <th style={{ width: '8vw' }}>Fee</th>
+                <th style={{ width: '10vw' }}>Total</th>
+                <th style={{ width: '8vw' }}>Transaction</th>
+                <th style={{ width: '5vw' }}>Note</th>
+                <th style={{ width: '4vw' }}></th>
+              </tr>
+            </thead>
+            <tbody>
+              {transactions.map((transaction) => (
+                <tr
+                  key={transaction.id}
+                  onClick={() =>
+                    navigate(`/app/transactions/${transaction.id}`)
+                  }
+                >
+                  <td style={{ width: '4vw' }}>
+                    <figure className="image is-24x24">
+                      <img
+                        className="border-radius-5"
+                        src={`https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${transaction.stock?.symbol}.png`}
+                      />
+                    </figure>
+                  </td>
+                  <td style={{ width: '8vw' }}>{transaction.stock?.symbol}</td>
+                  <td style={{ width: '18vw' }}>
+                    {transaction.stock?.companyName}
+                  </td>
+                  <td style={{ width: '10vw' }}>
+                    {transaction.date
+                      ? new Date(transaction.date).toLocaleDateString()
+                      : '-'}
+                  </td>
+                  <td style={{ width: '10vw' }}>{transaction.price} USD</td>
+                  <td style={{ width: '10vw' }}>{transaction.quantity}</td>
+                  <td style={{ width: '8vw' }}>
+                    {formatMoney(transaction.fee ?? 0)} USD
+                  </td>
+                  <td style={{ width: '10vw' }}>
+                    {formatMoney(
+                      (transaction.price ?? 0) * (transaction.quantity ?? 0) +
+                        (transaction.fee ?? 0)
+                    )}{' '}
+                    USD
+                  </td>
+                  <td
+                    style={{
+                      color:
+                        transaction.transactionType === 0 ? 'green' : 'red',
+                      width: '8vw',
+                    }}
+                  >
+                    {transaction.transactionType === 0 ? 'Buy' : 'Sell'}
+                  </td>
+                  <td style={{ width: '5vw' }}>
+                    {transaction.note == '' ? '-' : transaction.note}
+                  </td>
+                  <td style={{ width: '4vw' }}>
+                    <button
+                      className="button is-small"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDeleteModalOpen(true);
+                        setSelectedTransaction(transaction);
+                      }}
+                    >
+                      <span className="icon">
+                        <i className="fas fa-trash"></i>
+                      </span>
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
 

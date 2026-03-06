@@ -219,7 +219,7 @@ const TransactionDetails = () => {
             </div>
           </div>
 
-          {!isBuy && transaction.realizedProfit && (
+          {!isBuy && transaction.realizedProfit != null && (
             <div
               className="box border-radius-10"
               style={{
@@ -240,12 +240,12 @@ const TransactionDetails = () => {
                       className={`title is-3`}
                       style={{
                         color:
-                          transaction.realizedProfit >= 0
+                          transaction.realizedProfit > 0
                             ? COLORS.success
                             : COLORS.error,
                       }}
                     >
-                      {transaction.realizedProfit >= 0 ? '+' : ''}
+                      {transaction.realizedProfit > 0 ? '+' : ''}
                       {formatMoney(transaction.realizedProfit)} USD
                     </p>
                   </div>

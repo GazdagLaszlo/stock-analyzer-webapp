@@ -4,8 +4,15 @@ import { type TradeSummaryDto } from '../../generated-sources/openapi';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 import InfoButton from '../components/InfoButton';
 import { COLORS } from '../constants/colors';
+import { useState } from 'react';
 
 const TradeSummary = () => {
+  const [selectedTradeId, setSelectedTradeId] = useState<string | null>(null);
+
+  const toggleExpand = (tradeId: string) => {
+    setSelectedTradeId((prev) => (prev === tradeId ? null : tradeId));
+  };
+
   const { data: tradeSummary } = useQuery<TradeSummaryDto>({
     queryKey: ['getTradeSummary'],
     queryFn: async () => {
@@ -22,6 +29,11 @@ const TradeSummary = () => {
       loss: tradeSummary?.winRate != null ? 100 - tradeSummary.winRate : 0,
     },
   ];
+
+  const trades = [...(tradeSummary?.closedTrades ?? [])].sort(
+    (a, b) =>
+      new Date(b.endDate ?? 0).getTime() - new Date(a.endDate ?? 0).getTime()
+  );
 
   return (
     <div>
@@ -176,7 +188,7 @@ const TradeSummary = () => {
             </div>
             <p className="mr-2">
               {tradeSummary?.profitFactor
-                ? '$' + tradeSummary?.profitFactor?.toFixed(2)
+                ? tradeSummary?.profitFactor?.toFixed(2)
                 : '-'}
             </p>
           </div>
@@ -239,149 +251,422 @@ const TradeSummary = () => {
         </div>
       </div>
 
-      <p style={{ marginTop: '10vh' }} />
-      <p>Lezárt ügyletek eredményei</p>
-      <p className="mb-6">3 legjobb tranzakció</p>
+      {tradeSummary?.closedTrades?.length !== 0 && (
+        <div
+          className="box is-flex is-justify-content-center is-flex-direction-column p-5 mt-6"
+          style={{ backgroundColor: COLORS.boxBackground }}
+        >
+          <p className="has-text-centered subtitle is-size-5 mb-3">Trades</p>
+          <div
+            style={{
+              borderRadius: 10,
+              border: '1px solid lightgrey',
+              overflow: 'hidden',
+              backgroundColor: COLORS.background,
+            }}
+          >
+            <table
+              className="table"
+              style={{
+                backgroundColor: COLORS.background,
+                width: '100%',
+              }}
+            >
+              <thead
+                style={{
+                  backgroundColor: COLORS.tableHeader,
+                }}
+              >
+                <tr>
+                  <th></th>
+                  <th>Symbol</th>
+                  <th>Company name</th>
+                  <th>Start</th>
+                  <th>End</th>
+                  <th>Quantity</th>
+                  <th>Realized P/L</th>
+                </tr>
+              </thead>
+              <tbody>
+                {trades?.map((trade) => {
+                  const isExpanded = selectedTradeId === trade.tradeId;
+                  return (
+                    <>
+                      <tr
+                        key={trade.tradeId}
+                        onClick={() => toggleExpand(trade.tradeId!)}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <td style={{ width: '4vw' }}>
+                          <figure className="image is-24x24">
+                            <img
+                              className="border-radius-5"
+                              src={`https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${trade.stockSymbol}.png`}
+                            />
+                          </figure>
+                        </td>
+                        <td style={{ width: '8vw' }}>{trade.stockSymbol}</td>
+                        <td style={{ width: '18vw' }}>{trade.stockName}</td>
+                        <td style={{ width: '10vw' }}>
+                          {new Date(
+                            trade.startDate == undefined ? '-' : trade.startDate
+                          ).toLocaleDateString()}
+                        </td>
+                        <td style={{ width: '10vw' }}>
+                          {new Date(
+                            trade.endDate == undefined ? '-' : trade.endDate
+                          ).toLocaleDateString()}
+                        </td>
+                        <td style={{ width: '10vw' }}>
+                          {trade.totalQuantity?.toFixed(4)}
+                        </td>
+                        <td
+                          style={{
+                            width: '10vw',
+                            color:
+                              trade.realizedProfit! > 0
+                                ? COLORS.success
+                                : COLORS.error,
+                          }}
+                        >
+                          {trade.realizedProfit?.toFixed(2)} USD
+                        </td>
+                      </tr>
 
-      <div
-        className="box is-flex is-justify-content-center is-flex-direction-column p-5"
-        style={{ backgroundColor: COLORS.boxBackground }}
-      >
-        <p className="has-text-centered subtitle is-size-5 mb-3">Best Trade</p>
-        <div
-          className="py-1"
-          style={{
-            borderRadius: 10,
-            border: '1px solid lightgrey',
-            overflow: 'hidden',
-            backgroundColor: COLORS.background,
-          }}
-        >
-          <table
-            className="table"
-            style={{
-              backgroundColor: COLORS.background,
-              width: '100%',
-            }}
-          >
-            <thead>
-              <tr>
-                <th></th>
-                <th>Symbol</th>
-                <th>Company name</th>
-                <th>Date</th>
-                <th>Quantity</th>
-                <th>Selling price</th>
-                <th>Buy price (avg)</th>
-                <th>Profit</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr key={tradeSummary?.bestTrade?.id}>
-                <td style={{ width: '4vw' }}>
-                  <figure className="image is-24x24">
-                    <img
-                      className="border-radius-5"
-                      src={`https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${tradeSummary?.bestTrade?.stock?.symbol}.png`}
-                    />
-                  </figure>
-                </td>
-                <td style={{ width: '8vw' }}>
-                  {tradeSummary?.bestTrade?.stock?.symbol}
-                </td>
-                <td style={{ width: '18vw' }}>
-                  {tradeSummary?.bestTrade?.stock?.companyName}
-                </td>
-                <td style={{ width: '10vw' }}>
-                  {new Date(
-                    tradeSummary?.bestTrade?.date == undefined
-                      ? '-'
-                      : tradeSummary?.bestTrade?.date
-                  ).toLocaleDateString()}
-                </td>
-                <td style={{ width: '10vw' }}>
-                  {tradeSummary?.bestTrade?.quantity?.toFixed(4)}
-                </td>
-                <td style={{ width: '10vw' }}>
-                  {tradeSummary?.bestTrade?.price} USD
-                </td>
-                <td style={{ width: '10vw' }}></td>
-                <td style={{ width: '10vw' }}>
-                  {tradeSummary?.bestTrade?.realizedProfit?.toFixed(2)} USD
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                      {isExpanded && (
+                        <tr key={`${trade.tradeId}-transactions`}>
+                          <td
+                            colSpan={7}
+                            style={{
+                              padding: 0,
+                              backgroundColor: COLORS.tableHeader,
+                            }}
+                          >
+                            <div
+                              style={{ animation: 'expandRow 0.2s ease-out' }}
+                            >
+                              <table
+                                className="table is-fullwidth is-size-7"
+                                style={{
+                                  backgroundColor: 'transparent',
+                                  margin: 0,
+                                }}
+                              >
+                                <thead>
+                                  <tr style={{ opacity: 0.6 }}>
+                                    <th
+                                      style={{
+                                        width: '4vw',
+                                        background: 'transparent',
+                                        position: 'static',
+                                      }}
+                                    />
+                                    <th
+                                      style={{
+                                        width: '8vw',
+                                        background: 'transparent',
+                                        position: 'static',
+                                      }}
+                                    >
+                                      Type
+                                    </th>
+                                    <th
+                                      style={{
+                                        width: '18vw',
+                                        background: 'transparent',
+                                        position: 'static',
+                                      }}
+                                    >
+                                      Date
+                                    </th>
+                                    <th
+                                      style={{
+                                        width: '10vw',
+                                        background: 'transparent',
+                                        position: 'static',
+                                      }}
+                                    >
+                                      Price
+                                    </th>
+                                    <th
+                                      style={{
+                                        width: '10vw',
+                                        background: 'transparent',
+                                        position: 'static',
+                                      }}
+                                    >
+                                      Quantity
+                                    </th>
+                                    <th
+                                      style={{
+                                        width: '10vw',
+                                        background: 'transparent',
+                                        position: 'static',
+                                      }}
+                                    >
+                                      Fee
+                                    </th>
+                                    <th
+                                      style={{
+                                        width: '10vw',
+                                        background: 'transparent',
+                                        position: 'static',
+                                      }}
+                                    >
+                                      Realized P/L
+                                    </th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {trade.transactions?.map((transaction) => (
+                                    <tr key={transaction.id}>
+                                      <td
+                                        style={{
+                                          width: '4vw',
+                                        }}
+                                      />
+                                      <td
+                                        style={{
+                                          width: '8vw',
+                                        }}
+                                      >
+                                        <span
+                                          style={{
+                                            color:
+                                              transaction.transactionType === 0
+                                                ? COLORS.success
+                                                : COLORS.error,
+                                          }}
+                                        >
+                                          {transaction.transactionType === 0
+                                            ? 'Buy'
+                                            : 'Sell'}
+                                        </span>
+                                      </td>
+                                      <td
+                                        style={{
+                                          width: '18vw',
+                                        }}
+                                      >
+                                        {new Date(
+                                          transaction.date!
+                                        ).toLocaleDateString()}
+                                      </td>
+                                      <td
+                                        style={{
+                                          width: '10vw',
+                                        }}
+                                      >
+                                        {transaction.price?.toFixed(2)} USD
+                                      </td>
+                                      <td
+                                        style={{
+                                          width: '10vw',
+                                        }}
+                                      >
+                                        {transaction.quantity?.toFixed(4)}
+                                      </td>
+                                      <td
+                                        style={{
+                                          width: '10vw',
+                                        }}
+                                      >
+                                        {transaction.fee != null
+                                          ? `${transaction.fee.toFixed(2)} USD`
+                                          : '—'}
+                                      </td>
+                                      <td
+                                        style={{
+                                          width: '10vw',
+                                          color:
+                                            (transaction.realizedProfit ?? 0) >
+                                            0
+                                              ? COLORS.success
+                                              : COLORS.error,
+                                        }}
+                                      >
+                                        {transaction.transactionType === 1
+                                          ? `${transaction.realizedProfit?.toFixed(2)} USD`
+                                          : '—'}
+                                      </td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
-        <p className="has-text-centered subtitle is-size-5 mb-3 mt-5">
-          Worst Trade
-        </p>
+      )}
+
+      {(tradeSummary?.bestTrade !== null ||
+        tradeSummary.worstTrade !== null) && (
         <div
-          className="py-1"
-          style={{
-            borderRadius: 10,
-            border: '1px solid lightgrey',
-            overflow: 'hidden',
-            backgroundColor: COLORS.background,
-          }}
+          className="box is-flex is-justify-content-center is-flex-direction-column p-5 mt-6"
+          style={{ backgroundColor: COLORS.boxBackground }}
         >
-          <table
-            className="table"
-            style={{
-              backgroundColor: COLORS.background,
-              width: '100%',
-            }}
-          >
-            <thead>
-              <tr>
-                <th></th>
-                <th>Symbol</th>
-                <th>Company name</th>
-                <th>Date</th>
-                <th>Quantity</th>
-                <th>Selling price</th>
-                <th>Buy price (avg)</th>
-                <th>Profit</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr key={tradeSummary?.worstTrade?.id}>
-                <td style={{ width: '4vw' }}>
-                  <figure className="image is-24x24">
-                    <img
-                      className="border-radius-5"
-                      src={`https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${tradeSummary?.worstTrade?.stock?.symbol}.png`}
-                    />
-                  </figure>
-                </td>
-                <td style={{ width: '8vw' }}>
-                  {tradeSummary?.worstTrade?.stock?.symbol}
-                </td>
-                <td style={{ width: '18vw' }}>
-                  {tradeSummary?.worstTrade?.stock?.companyName}
-                </td>
-                <td style={{ width: '10vw' }}>
-                  {new Date(
-                    tradeSummary?.worstTrade?.date == undefined
-                      ? '-'
-                      : tradeSummary?.worstTrade?.date
-                  ).toLocaleDateString()}
-                </td>
-                <td style={{ width: '10vw' }}>
-                  {tradeSummary?.worstTrade?.quantity?.toFixed(4)}
-                </td>
-                <td style={{ width: '10vw' }}>
-                  {tradeSummary?.worstTrade?.price} USD
-                </td>
-                <td style={{ width: '10vw' }}></td>
-                <td style={{ width: '10vw' }}>
-                  {tradeSummary?.worstTrade?.realizedProfit?.toFixed(2)} USD
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          {tradeSummary?.bestTrade !== null && (
+            <>
+              <p className="has-text-centered subtitle is-size-5 mb-3">
+                Best Trade
+              </p>
+              <div
+                style={{
+                  borderRadius: 10,
+                  border: '1px solid lightgrey',
+                  overflow: 'hidden',
+                  backgroundColor: COLORS.background,
+                }}
+              >
+                <table
+                  className="table"
+                  style={{
+                    backgroundColor: COLORS.background,
+                    width: '100%',
+                  }}
+                >
+                  <thead
+                    style={{
+                      backgroundColor: COLORS.tableHeader,
+                    }}
+                  >
+                    <tr>
+                      <th></th>
+                      <th>Symbol</th>
+                      <th>Company name</th>
+                      <th>Start</th>
+                      <th>End</th>
+                      <th>Quantity</th>
+                      <th>Realized P/L</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr key={tradeSummary?.bestTrade?.tradeId}>
+                      <td style={{ width: '4vw' }}>
+                        <figure className="image is-24x24">
+                          <img
+                            className="border-radius-5"
+                            src={`https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${tradeSummary?.bestTrade?.stockSymbol}.png`}
+                          />
+                        </figure>
+                      </td>
+                      <td style={{ width: '8vw' }}>
+                        {tradeSummary?.bestTrade?.stockSymbol}
+                      </td>
+                      <td style={{ width: '18vw' }}>
+                        {tradeSummary?.bestTrade?.stockName}
+                      </td>
+                      <td style={{ width: '10vw' }}>
+                        {new Date(
+                          tradeSummary?.bestTrade?.startDate == undefined
+                            ? '-'
+                            : tradeSummary?.bestTrade?.startDate
+                        ).toLocaleDateString()}
+                      </td>
+                      <td style={{ width: '10vw' }}>
+                        {new Date(
+                          tradeSummary?.bestTrade?.endDate == undefined
+                            ? '-'
+                            : tradeSummary?.bestTrade?.endDate
+                        ).toLocaleDateString()}
+                      </td>
+                      <td style={{ width: '10vw' }}>
+                        {tradeSummary?.bestTrade?.totalQuantity?.toFixed(4)}
+                      </td>
+                      <td style={{ width: '10vw' }}>
+                        {tradeSummary?.bestTrade?.realizedProfit?.toFixed(2)}{' '}
+                        USD
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
+          {tradeSummary?.worstTrade !== null && (
+            <>
+              <p className="has-text-centered subtitle is-size-5 mb-3 mt-5">
+                Worst Trade
+              </p>
+              <div
+                className="py-1"
+                style={{
+                  borderRadius: 10,
+                  border: '1px solid lightgrey',
+                  overflow: 'hidden',
+                  backgroundColor: COLORS.background,
+                }}
+              >
+                <table
+                  className="table"
+                  style={{
+                    backgroundColor: COLORS.background,
+                    width: '100%',
+                  }}
+                >
+                  <thead>
+                    <tr>
+                      <th></th>
+                      <th>Symbol</th>
+                      <th>Company name</th>
+                      <th>Start</th>
+                      <th>End</th>
+                      <th>Quantity</th>
+                      <th>Realized P/L</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr key={tradeSummary?.worstTrade?.tradeId}>
+                      <td style={{ width: '4vw' }}>
+                        <figure className="image is-24x24">
+                          <img
+                            className="border-radius-5"
+                            src={`https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${tradeSummary?.worstTrade?.stockSymbol}.png`}
+                          />
+                        </figure>
+                      </td>
+                      <td style={{ width: '8vw' }}>
+                        {tradeSummary?.worstTrade?.stockSymbol}
+                      </td>
+                      <td style={{ width: '18vw' }}>
+                        {tradeSummary?.worstTrade?.stockName}
+                      </td>
+                      <td style={{ width: '10vw' }}>
+                        {new Date(
+                          tradeSummary?.worstTrade?.startDate == undefined
+                            ? '-'
+                            : tradeSummary?.worstTrade?.startDate
+                        ).toLocaleDateString()}
+                      </td>
+                      <td style={{ width: '10vw' }}>
+                        {new Date(
+                          tradeSummary?.worstTrade?.endDate == undefined
+                            ? '-'
+                            : tradeSummary?.worstTrade?.endDate
+                        ).toLocaleDateString()}
+                      </td>
+                      <td style={{ width: '10vw' }}>
+                        {tradeSummary?.worstTrade?.totalQuantity?.toFixed(4)}
+                      </td>
+                      <td style={{ width: '10vw' }}>
+                        {tradeSummary?.worstTrade?.realizedProfit?.toFixed(2)}{' '}
+                        USD
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
         </div>
-      </div>
+      )}
     </div>
   );
 };

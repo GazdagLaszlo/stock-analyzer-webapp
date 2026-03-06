@@ -42,9 +42,15 @@ const Portfolio = () => {
   const [selectedStock, setSelectedStock] = useState<StockDto>();
   const [selectedPortfolioItem, setSelectedPortfolioItem] =
     useState<PortfolioItemDto>();
-  const [totalProfit, setTotalProfit] = useState<number | null>(0);
-  const [portfolioValue, setPortfolioValue] = useState<number>(0);
-  const [totalInvested, setTotalInvested] = useState<number>(0);
+
+  const portfolioValue = getPortfolioValue(selectedPortfolio);
+  const totalProfit = selectedPortfolio
+    ? getTotalProfit(selectedPortfolio)
+    : null;
+
+  const totalInvested = selectedPortfolio
+    ? getTotalInvested(selectedPortfolio)
+    : 0;
 
   const navigate = useNavigate();
 
@@ -70,16 +76,6 @@ const Portfolio = () => {
   const [renamePortfolioModalOpen, setRenamePortfolioModalOpen] = useState<
     true | false
   >(false);
-
-  useEffect(() => {
-    if (selectedPortfolio) {
-      const totalProfit = getTotalProfit(selectedPortfolio);
-
-      setTotalProfit(totalProfit ? totalProfit : null);
-      setPortfolioValue(getPortfolioValue(selectedPortfolio));
-      setTotalInvested(getTotalInvested(selectedPortfolio));
-    }
-  }, [selectedPortfolio?.portfolioItems]);
 
   useEffect(() => {
     if (portfolioId) {
@@ -108,8 +104,6 @@ const Portfolio = () => {
       );
 
       if (dto.quantity > (portfolioItem?.quantity ?? 0)) {
-        console.log(dto.quantity);
-        console.log(portfolioItem?.quantity);
         alert('You cannot sell more stock, than you have in your portfolio.');
         return;
       }
@@ -220,7 +214,7 @@ const Portfolio = () => {
               }}
             >
               <p className="box-title">Unrealized profit</p>
-              {totalProfit ? (
+              {totalProfit !== null ? (
                 <p
                   className="subtitle mt-3 is-size-4"
                   style={{
@@ -266,7 +260,7 @@ const Portfolio = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {sortedItems?.map((item, i) => {
+                  {sortedItems?.map((item) => {
                     const livePrice =
                       getLivePrice(item.stock?.symbol ?? '') ||
                       (item.stock?.price ?? 0);
@@ -281,7 +275,7 @@ const Portfolio = () => {
 
                     return (
                       <tr
-                        key={i}
+                        key={item.id}
                         onClick={() =>
                           navigate(`/app/stocks/${item.stock?.symbol}`)
                         }

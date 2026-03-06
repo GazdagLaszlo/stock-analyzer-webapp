@@ -1691,6 +1691,47 @@
   },
   "components": {
     "schemas": {
+      "ClosedTradeDto": {
+        "type": "object",
+        "properties": {
+          "tradeId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "stockSymbol": {
+            "type": "string",
+            "nullable": true
+          },
+          "stockName": {
+            "type": "string",
+            "nullable": true
+          },
+          "realizedProfit": {
+            "type": "number",
+            "format": "double"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "totalQuantity": {
+            "type": "number",
+            "format": "double"
+          },
+          "transactions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TransactionDto"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "Earningscalendar": {
         "type": "object",
         "properties": {
@@ -2475,11 +2516,18 @@
             "format": "double",
             "nullable": true
           },
+          "closedTrades": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ClosedTradeDto"
+            },
+            "nullable": true
+          },
           "bestTrade": {
-            "$ref": "#/components/schemas/TransactionDto"
+            "$ref": "#/components/schemas/ClosedTradeDto"
           },
           "worstTrade": {
-            "$ref": "#/components/schemas/TransactionDto"
+            "$ref": "#/components/schemas/ClosedTradeDto"
           }
         },
         "additionalProperties": false
@@ -2522,6 +2570,10 @@
           "realizedProfit": {
             "type": "number",
             "format": "double"
+          },
+          "tradeId": {
+            "type": "string",
+            "format": "uuid"
           }
         },
         "additionalProperties": false
@@ -2569,6 +2621,10 @@
           },
           "isActive": {
             "type": "boolean"
+          },
+          "tradeId": {
+            "type": "string",
+            "format": "uuid"
           }
         },
         "additionalProperties": false

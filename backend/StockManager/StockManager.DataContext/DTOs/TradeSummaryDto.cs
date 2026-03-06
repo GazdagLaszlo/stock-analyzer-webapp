@@ -19,7 +19,20 @@ namespace StockManager.DataContext.DTOs
         public double? AverageRRR { get; set; }
         public double? ProfitFactor { get; set; }
         public double? TotalVolume { get; set; }
-        public TransactionDto? BestTrade { get; set; }
-        public TransactionDto? WorstTrade { get; set; }
+        public IList<ClosedTradeDto>? ClosedTrades { get; set; } = new List<ClosedTradeDto>();
+        public ClosedTradeDto? BestTrade { get; set; }
+        public ClosedTradeDto? WorstTrade { get; set; }
+    }
+
+    public class ClosedTradeDto
+    {
+        public Guid TradeId { get; set; }
+        public string StockSymbol { get; set; }
+        public string StockName { get; set; }
+        public double RealizedProfit { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public double TotalQuantity { get; set; }
+        public IList<TransactionDto> Transactions { get; set; }
     }
 }

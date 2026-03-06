@@ -1,3 +1,5 @@
+@use 'sass:map';
+
 body {
   font-family: 'Sofia Sans Condensed', sans-serif;
 }
@@ -25,7 +27,7 @@ body,
 .navbar,
 span,
 .breadcrumb a {
-  color: map-get($colors, text);
+  color: map.get($colors, text);
 }
 
 .subtitle {
@@ -127,13 +129,13 @@ header .navbar-item {
 
 .stocks {
   .table-row:hover div {
-    background-color: map-get($colors, tableHeader);
+    background-color: map.get($colors, tableHeader);
     transition: 0.5s;
     cursor: pointer;
   }
 
   .table-row div {
-    background-color: map-get($colors, boxBackground);
+    background-color: map.get($colors, boxBackground);
     transition: 0.5s;
     border-bottom: 0.5px solid lightgrey;
     display: flex;
@@ -149,7 +151,7 @@ header .navbar-item {
     width: 100%;
     padding-right: 15px;
     border-radius: 10px 10px 0 0;
-    background-color: map-get($colors, tableHeader);
+    background-color: map.get($colors, tableHeader);
     color: rgb(82, 82, 82);
   }
 }
@@ -224,7 +226,7 @@ header .navbar-item {
 
 .custom-table {
   th {
-    background-color: map-get($colors, tableHeader);
+    background-color: map.get($colors, tableHeader);
     padding: 10px;
     color: rgb(82, 82, 82);
     height: 30px;
@@ -241,16 +243,16 @@ header .navbar-item {
   tbody tr {
     height: 50px;
     border-bottom: 0.5px solid lightgrey;
-    background-color: map-get($colors, boxBackground);
+    background-color: map.get($colors, boxBackground);
     transition: 0.5s;
     cursor: pointer;
   }
   tbody tr:hover {
-    background-color: map-get($colors, tableHeader);
+    background-color: map.get($colors, tableHeader);
     transition: 0.5s;
   }
   td {
-    padding: 10px;
+    padding: 1px 10px;
     vertical-align: middle;
   }
 }

@@ -28,20 +28,24 @@ export const PortfolioProvider = ({
 
   const fetchPortfolios = useCallback(async () => {
     if (!token) return;
+
     try {
       const res = await api.Portfolio.apiPortfolioGetAllGet();
       setPortfolios(res.data);
-      if (selectedPortfolio) {
-        const updated = res.data.find((p) => p.id === selectedPortfolio.id);
-        if (updated) {
-          setSelectedPortfolio(updated);
-        }
-      }
       return res.data;
     } catch (error) {
       console.error('Error while loading portfolios', error);
     }
   }, [token]);
+
+  useEffect(() => {
+    if (!selectedPortfolio) return;
+    const updated = portfolios.find((p) => p.id === selectedPortfolio?.id);
+
+    if (updated) {
+      setSelectedPortfolio(updated);
+    }
+  }, [portfolios]);
 
   const symbols = useMemo(
     () =>
@@ -54,10 +58,10 @@ export const PortfolioProvider = ({
 
   const getLivePrice = useCallback(
     (symbol: string) => {
-      if (symbol != '') {
-        const stock = liveStocks.find((s) => s.symbol === symbol);
-        return stock ? (stock.price ?? 0) : 0;
-      } else return 0;
+      if (!symbol) return 0;
+
+      const stock = liveStocks.find((s) => s.symbol === symbol);
+      return stock ? (stock.price ?? 0) : 0;
     },
     [liveStocks]
   );
@@ -117,10 +121,13 @@ export const PortfolioProvider = ({
     [getLivePrice]
   );
 
-  const selectPortfolio = (id: number) => {
-    const p = portfolios.find((x) => x.id === id);
-    setSelectedPortfolio(p);
-  };
+  const selectPortfolio = useCallback(
+    (id: number) => {
+      const p = portfolios.find((x) => x.id === id);
+      setSelectedPortfolio(p);
+    },
+    [portfolios]
+  );
 
   const createPortfolio = async (createDto: PortfolioCreateDto) => {
     const createResponse =

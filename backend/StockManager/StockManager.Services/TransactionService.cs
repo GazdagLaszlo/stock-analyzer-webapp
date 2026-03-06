@@ -55,6 +55,7 @@ namespace StockManager.Services
             var portfolioItem = portfolio.PortfolioItems
                 .FirstOrDefault(x => x.StockId == transactionCreateDto.StockId);
             double realizedProfit = 0;
+            Guid tradeId = Guid.Empty;
 
             if (portfolioItem != null)
             {
@@ -62,16 +63,34 @@ namespace StockManager.Services
 
                 if(transactionCreateDto.TransactionType == TransactionType.Buy)
                 {
+                    if (portfolioItem.Quantity == 0)
+                    {
+                        tradeId = Guid.NewGuid();
+                    }
+                    else
+                    {
+                        tradeId = portfolioItem.Transactions
+                            .Where(x => x.TransactionType == TransactionType.Buy)
+                            .OrderByDescending(x => x.Id)
+                            .First()
+                            .TradeId;
+                    }
                     portfolioItem.IsActive = true;
 
                     portfolioItem.AveragePurchasePrice =
                         (portfolioItem.AveragePurchasePrice * portfolioItem.Quantity + 
                         transactionCreateDto.Price * transactionCreateDto.Quantity) / (portfolioItem.Quantity + transactionCreateDto.Quantity);
 
-                    portfolioItem.Quantity += transactionCreateDto.Quantity;
+                    portfolioItem.Quantity += transactionCreateDto.Quantity;                    
                 }
                 else if (transactionCreateDto.TransactionType == TransactionType.Sell)
                 {
+                    tradeId = portfolioItem.Transactions
+                          .Where(x => x.TransactionType == TransactionType.Buy)
+                          .OrderByDescending(x => x.Id)
+                          .First()
+                          .TradeId;
+
                     portfolioItem.IsActive = true;
 
                     if(portfolioItem.Quantity < transactionCreateDto.Quantity)
@@ -85,6 +104,7 @@ namespace StockManager.Services
             else
             {
                 //Nem létezik, létrehozunk új PortfolioItem-et
+                tradeId = Guid.NewGuid();
                 portfolioItem = new PortfolioItem
                 {
                     PortfolioId = transactionCreateDto.PortfolioId,
@@ -102,6 +122,7 @@ namespace StockManager.Services
             transaction.PortfolioItem = portfolioItem;
             transaction.IsActive = true;
             transaction.RealizedProfit = realizedProfit;
+            transaction.TradeId = tradeId;
 
             if (portfolioItem.Quantity == 0)
             {
@@ -206,15 +227,34 @@ namespace StockManager.Services
         }
 
         public async Task<TradeSummaryDto> GetTransactionsSummary(int userId)
-        {
+        {            
             var allTransactions = await context.Transactions
                 .Include(x => x.Stock)
                 .Where(x => x.UserId == userId)
                 .ToListAsync();
 
             var closedTrades = allTransactions
-                .Where(t => t.RealizedProfit != 0)
-                .ToList();
+               .GroupBy(x => x.TradeId)
+               .Where(x => x.All(x => !x.IsActive))
+               .Select(x => new ClosedTradeDto
+               {
+                   TradeId = x.Key,
+                   RealizedProfit = x.Where(x => x.TransactionType == TransactionType.Sell)
+                        .Sum(x => x.RealizedProfit),
+                   Transactions = mapper.Map<IList<TransactionDto>>(x.ToList()),
+                   StartDate = x.Min(x => x.Date),
+                   EndDate = x.Max(x => x.Date),
+                   StockName = x.First().Stock.CompanyName,
+                   StockSymbol = x.First().Stock.Symbol,
+                   TotalQuantity = x.Where(t => t.TransactionType == TransactionType.Sell)
+                     .Sum(t => t.Quantity),
+               })
+               .ToList();
+
+            if (!closedTrades.Any())
+            {
+                return new TradeSummaryDto();
+            }            
 
             var wins = closedTrades.Where(x => x.RealizedProfit > 0).ToList();
             var losses = closedTrades.Where(x => x.RealizedProfit < 0).ToList();
@@ -228,20 +268,20 @@ namespace StockManager.Services
             double? averageRRR = avgLoss != 0 ? avgGain / avgLoss : 0;
 
             double totalWins = wins.Any() ? wins.Sum(x => x.RealizedProfit) : 0;
-            double totalLosses = losses.Any() ? losses.Sum(x => Math.Abs(x.RealizedProfit)) : 0;
-
+            double totalLosses = losses.Any() ? losses.Sum(x => Math.Abs(x.RealizedProfit)) : 0;            
+           
             var bestTrade = closedTrades.Any()
                 ? closedTrades.OrderByDescending(t => t.RealizedProfit).First()
                 : null;
 
             var worstTrade = closedTrades.Any()
                 ? closedTrades.OrderBy(t => t.RealizedProfit).First()
-                : null;
+                : null;            
 
             return new TradeSummaryDto
             {
                 TotalProfitLoss = closedTrades.Count() != 0 ? closedTrades.Sum(x => x.RealizedProfit) : null,
-                TotalClosedTrades = closedTrades.Count() != 0 ? closedTrades.Count(x => x.TransactionType == TransactionType.Sell) : null,
+                TotalClosedTrades = closedTrades.Count() != 0 ? closedTrades.Count() : null,
                 ProfitableTradesCount = profitableCount,
                 LosingTradesCount = losingCount,
                 WinRate = closedTrades.Any() ? (double)wins.Count() / closedTrades.Count() * 100 : null,
@@ -249,8 +289,9 @@ namespace StockManager.Services
                 AverageLoss = avgLoss,
                 AverageRRR = averageRRR,
                 ProfitFactor = totalLosses != 0 ? totalWins / totalLosses : null,
-                BestTrade = bestTrade != null ? mapper.Map<TransactionDto>(bestTrade) : null,
-                WorstTrade = worstTrade != null ? mapper.Map<TransactionDto>(worstTrade) : null,
+                ClosedTrades = closedTrades != null ? closedTrades : null,
+                BestTrade = closedTrades != null ? bestTrade : null,
+                WorstTrade = worstTrade != null ? worstTrade : null,
                 TotalVolume = allTransactions.Count() != 0 ? allTransactions.Sum(x => x.Price+(x.Fee ?? 0)) : null,
             };
         }

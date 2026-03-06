@@ -21,5 +21,6 @@
         public PortfolioItem PortfolioItem { get; set; }
         public bool IsActive { get; set; }
         public double RealizedProfit {  get; set; }
+        public Guid TradeId { get; set; }
     }
 }
