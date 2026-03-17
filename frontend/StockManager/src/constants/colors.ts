@@ -7,7 +7,7 @@ export const COLORS = {
   errorLight: '#ffacac',
   infoBox: '#F3F4F6',
   secondaryButton: '#93C5FD',
-  infoText: '#6f6f6f',
+  infoText: '#7b7b7b',
   header: '#E6F0FA',
   headerActive: '#cae2fa',
   tableHeader: '#eaecf0',

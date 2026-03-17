@@ -28,7 +28,7 @@ const TransactionDetails = () => {
   });
 
   const { data: stockQuote } = useQuery({
-    queryKey: ['getStockQuote'],
+    queryKey: ['getStockQuote', transaction?.stock?.symbol],
     queryFn: async () => {
       if (transaction?.stock?.symbol) {
         const res = await api.Stock.apiStockGetStockQuoteGet(
@@ -55,7 +55,7 @@ const TransactionDetails = () => {
 
     try {
       await api.Transaction.apiTransactionDeleteIdDelete(id);
-      queryClient.invalidateQueries({ queryKey: ['allTransactions'] });
+      queryClient.invalidateQueries({ queryKey: ['transactions'] });
       navigate(-1);
     } catch (error) {
       alert(
@@ -73,6 +73,10 @@ const TransactionDetails = () => {
   const totalCost = isBuy
     ? totalValue + (transaction.fee || 0)
     : totalValue - (transaction.fee || 0);
+
+  const costBasis = totalCost - (transaction.realizedProfit ?? 0);
+  const profitPercentage =
+    ((transaction.realizedProfit ?? 0) / costBasis) * 100;
 
   const livePrice =
     getLivePrice(transaction.stock?.symbol ?? '') ||
@@ -102,15 +106,28 @@ const TransactionDetails = () => {
             <h1 className="title is-3">
               {isBuy ? 'Buy' : 'Sell'}: {transaction.stock?.symbol}
             </h1>
-            <p className="subtitle is-6 has-text-grey">
+            <p className="subtitle is-6" style={{ color: COLORS.infoText }}>
               {transaction.stock?.companyName}
             </p>
           </div>
         </div>
         <div className="level-right">
           <div className="tags has-addons">
-            <span className="tag is-dark">Transaction ID</span>
-            <span className="tag is-info">#{transaction.id}</span>
+            <span
+              className="tag"
+              style={{
+                backgroundColor: COLORS.subtext,
+                color: COLORS.background,
+              }}
+            >
+              Transaction ID
+            </span>
+            <span
+              className="tag"
+              style={{ backgroundColor: COLORS.secondaryButton }}
+            >
+              #{transaction.id}
+            </span>
           </div>
         </div>
       </div>
@@ -118,7 +135,7 @@ const TransactionDetails = () => {
       <div className="columns is-multiline">
         <div className="column is-12">
           <div
-            className={`notification  is-light border-radius-10`}
+            className={`p-5 border-radius-10`}
             style={{
               backgroundColor: COLORS.header,
             }}
@@ -126,9 +143,9 @@ const TransactionDetails = () => {
             <div className="level is-mobile">
               <div className="level-item has-text-centered">
                 <div>
-                  <p className="heading">Type</p>
+                  <p>Type</p>
                   <span
-                    className={`tag is-weight-bold`}
+                    className={`tag`}
                     style={{
                       color: isBuy ? COLORS.success : COLORS.error,
                     }}
@@ -139,21 +156,21 @@ const TransactionDetails = () => {
               </div>
               <div className="level-item has-text-centered">
                 <div>
-                  <p className="heading">Total Amount</p>
+                  <p>Total Value</p>
                   <p className="title is-4">{formatMoney(totalCost)} USD</p>
                 </div>
               </div>
               <div className="level-item has-text-centered">
                 <div>
-                  <p className="heading">Quantity</p>
+                  <p>Quantity</p>
                   <p className="title is-4">
                     {transaction.quantity?.toFixed(4)} Shares
                   </p>
                 </div>
               </div>
-              <div className="level-item has-text-centered is-hidden-mobile">
+              <div className="level-item has-text-centered">
                 <div>
-                  <p className="heading">Status</p>
+                  <p>Status</p>
                   <span
                     className={`tag`}
                     style={{
@@ -176,7 +193,10 @@ const TransactionDetails = () => {
             <hr />
             <div className="columns is-multiline">
               <div className="column is-6">
-                <p className="has-text-grey is-size-7 is-uppercase">
+                <p
+                  className="is-size-7 is-uppercase"
+                  style={{ color: COLORS.infoText }}
+                >
                   Date & Time
                 </p>
                 <p className="is-size-6 mt-1">
@@ -184,7 +204,10 @@ const TransactionDetails = () => {
                 </p>
               </div>
               <div className="column is-6">
-                <p className="has-text-grey is-size-7 is-uppercase">
+                <p
+                  className="is-size-7 is-uppercase"
+                  style={{ color: COLORS.infoText }}
+                >
                   Price per Share
                 </p>
                 <p className="is-size-6 mt-1 has-text-weight-semibold">
@@ -192,14 +215,20 @@ const TransactionDetails = () => {
                 </p>
               </div>
               <div className="column is-6">
-                <p className="has-text-grey is-size-7 is-uppercase">
-                  Raw Value
+                <p
+                  className="is-size-7 is-uppercase"
+                  style={{ color: COLORS.infoText }}
+                >
+                  Total Amount
                 </p>
                 <p className="is-size-6 mt-1">{formatMoney(totalValue)} USD</p>
               </div>
               <div className="column is-6">
-                <p className="has-text-grey is-size-7 is-uppercase">
-                  Fee (Commission)
+                <p
+                  className="is-size-7 is-uppercase"
+                  style={{ color: COLORS.infoText }}
+                >
+                  Total Fee
                 </p>
                 <p className="is-size-6 mt-1" style={{ color: COLORS.error }}>
                   {formatMoney(transaction.fee || 0)} USD
@@ -208,10 +237,18 @@ const TransactionDetails = () => {
             </div>
 
             <div className="mt-5">
-              <p className="has-text-grey is-size-7 is-uppercase">Notes</p>
+              <p
+                className="is-size-7 is-uppercase"
+                style={{ color: COLORS.infoText }}
+              >
+                Notes
+              </p>
               <div className="notification is-light mt-2 py-3 px-4">
                 {transaction.note || (
-                  <span className="is-italic has-text-grey-light">
+                  <span
+                    className="is-italic"
+                    style={{ color: COLORS.infoText }}
+                  >
                     No notes added to this transaction.
                   </span>
                 )}
@@ -235,9 +272,9 @@ const TransactionDetails = () => {
               <div className="level">
                 <div className="level-left">
                   <div>
-                    <p className="heading">Realized Profit/Loss</p>
+                    <p>Realized Profit/Loss</p>
                     <p
-                      className={`title is-3`}
+                      className={`title is-4`}
                       style={{
                         color:
                           transaction.realizedProfit > 0
@@ -247,6 +284,15 @@ const TransactionDetails = () => {
                     >
                       {transaction.realizedProfit > 0 ? '+' : ''}
                       {formatMoney(transaction.realizedProfit)} USD
+                      <span
+                        style={{ color: 'inherit', fontWeight: '600' }}
+                        className="is-size-6 ml-2"
+                      >
+                        {profitPercentage > 0
+                          ? '+' + profitPercentage.toFixed(2)
+                          : profitPercentage.toFixed(2)}
+                        {'%'}
+                      </span>
                     </p>
                   </div>
                 </div>
@@ -267,7 +313,7 @@ const TransactionDetails = () => {
             </button>
             */}
             <button
-              className="button is-outlined is-fullwidth"
+              className="button is-fullwidth"
               style={{ border: `1px solid ${COLORS.error}` }}
               onClick={() => setDeleteModalOpen(true)}
             >
@@ -282,7 +328,7 @@ const TransactionDetails = () => {
             <div className="is-flex is-align-items-center mb-3">
               <figure className="image is-32x32 mr-3">
                 <img
-                  className="is-rounded"
+                  style={{ borderRadius: 5 }}
                   src={`https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${transaction.stock?.symbol}.png`}
                   alt="logo"
                 />
@@ -292,19 +338,25 @@ const TransactionDetails = () => {
               </h2>
             </div>
             <div className="has-text-centered py-4">
-              <p className="heading">Last Known Price</p>
+              <p>Last Known Price</p>
               <p className="title is-4">${transaction.stock?.price}</p>
               <p
                 className={`is-size-7 has-text-weight-semibold`}
                 style={{
-                  color: livePercentage >= 0 ? COLORS.success : COLORS.error,
+                  color:
+                    livePercentage > 0
+                      ? COLORS.success
+                      : livePercentage < 0
+                        ? COLORS.error
+                        : COLORS.text,
                 }}
               >
                 {livePercentage}% Today
               </p>
             </div>
             <button
-              className="button is-small is-fullwidth is-light"
+              className="button is-small is-fullwidth"
+              style={{ backgroundColor: COLORS.infoBox }}
               onClick={() =>
                 navigate(`/app/stocks/${transaction.stock?.symbol}`)
               }

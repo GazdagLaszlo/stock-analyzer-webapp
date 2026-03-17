@@ -24,6 +24,7 @@ const Login = () => {
     try {
       await login(loginData.email, loginData.password);
     } catch (error: unknown) {
+      console.log('error:', error);
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 401) {
           setLoginError('Invalid email or password!');
@@ -37,12 +38,16 @@ const Login = () => {
   return (
     <>
       <div
-        className=" is-flex is-justify-content-center is-align-items-center is-flex-direction-column"
-        style={{ height: '90vh', width: '100vw' }}
+        className="is-flex is-justify-content-center is-align-items-center is-flex-direction-column"
+        style={{
+          height: '90vh',
+          width: '100vw',
+          backgroundColor: COLORS.background,
+        }}
       >
         {registrationSuccess && (
           <div
-            className="notification"
+            className="notification box"
             style={{
               textAlign: 'center',
               marginBottom: '1rem',
@@ -52,7 +57,7 @@ const Login = () => {
           >
             <span
               className="icon mr-2 mb-5 is-size-2"
-              style={{ color: COLORS.correct }}
+              style={{ color: COLORS.success }}
             >
               <i className="fa-regular fa-circle-check"></i>
             </span>
@@ -62,7 +67,7 @@ const Login = () => {
           </div>
         )}
         <div
-          className="is-flex is-flex-direction-column p-6"
+          className="is-flex is-flex-direction-column p-6 box"
           style={{
             backgroundColor: COLORS.boxBackground,
             borderRadius: 10,

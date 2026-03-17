@@ -92,7 +92,7 @@ const TradeSummary = () => {
                 Win Rate
               </p>
               <p className="box-title mr-2">
-                {tradeSummary?.winRate
+                {tradeSummary?.winRate !== null
                   ? tradeSummary?.winRate?.toFixed(2) + '%'
                   : '-'}
               </p>
@@ -358,14 +358,12 @@ const TradeSummary = () => {
                                       style={{
                                         width: '4vw',
                                         background: 'transparent',
-                                        position: 'static',
                                       }}
                                     />
                                     <th
                                       style={{
                                         width: '8vw',
                                         background: 'transparent',
-                                        position: 'static',
                                       }}
                                     >
                                       Type
@@ -374,7 +372,6 @@ const TradeSummary = () => {
                                       style={{
                                         width: '18vw',
                                         background: 'transparent',
-                                        position: 'static',
                                       }}
                                     >
                                       Date
@@ -383,7 +380,6 @@ const TradeSummary = () => {
                                       style={{
                                         width: '10vw',
                                         background: 'transparent',
-                                        position: 'static',
                                       }}
                                     >
                                       Price
@@ -392,7 +388,6 @@ const TradeSummary = () => {
                                       style={{
                                         width: '10vw',
                                         background: 'transparent',
-                                        position: 'static',
                                       }}
                                     >
                                       Quantity
@@ -401,7 +396,6 @@ const TradeSummary = () => {
                                       style={{
                                         width: '10vw',
                                         background: 'transparent',
-                                        position: 'static',
                                       }}
                                     >
                                       Fee
@@ -410,7 +404,6 @@ const TradeSummary = () => {
                                       style={{
                                         width: '10vw',
                                         background: 'transparent',
-                                        position: 'static',
                                       }}
                                     >
                                       Realized P/L

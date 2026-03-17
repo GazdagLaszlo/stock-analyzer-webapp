@@ -31,7 +31,7 @@ const Dashboard = () => {
         <p className="subtitle mt-6 pb-3 box-header">Portfolios</p>
       )}
       <div
-        className="columns mt-5 is-variable is-0 data-boxes"
+        className="columns mt-5 is-variable is-0 data-boxes pl-3 pb-5"
         style={{ overflowX: 'auto' }}
       >
         {portfolios.length > 0 &&
@@ -47,7 +47,11 @@ const Dashboard = () => {
               <div
                 key={portfolio.id}
                 className="box is-flex is-flex-direction-column is-justify-content-space-between p-5"
-                style={{ height: '23vh', cursor: 'pointer' }}
+                style={{
+                  height: '23vh',
+                  cursor: 'pointer',
+                  minWidth: '400px',
+                }}
                 onClick={() => navigate(`/app/portfolio/${portfolio.id}`)}
               >
                 <p className="is-size-5 mb-4">{portfolio.name}</p>

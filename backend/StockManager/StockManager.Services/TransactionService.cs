@@ -79,7 +79,7 @@ namespace StockManager.Services
 
                     portfolioItem.AveragePurchasePrice =
                         (portfolioItem.AveragePurchasePrice * portfolioItem.Quantity + 
-                        transactionCreateDto.Price * transactionCreateDto.Quantity) / (portfolioItem.Quantity + transactionCreateDto.Quantity);
+                        (transactionCreateDto.Price * transactionCreateDto.Quantity + transactionCreateDto.Fee ?? 0)) / (portfolioItem.Quantity + transactionCreateDto.Quantity);
 
                     portfolioItem.Quantity += transactionCreateDto.Quantity;                    
                 }
@@ -97,7 +97,7 @@ namespace StockManager.Services
                     {
                         throw new InvalidOperationException("Not enough stock quantity to sell!");
                     }
-                    realizedProfit = (transactionCreateDto.Price - portfolioItem.AveragePurchasePrice) * transactionCreateDto.Quantity;
+                    realizedProfit = (transactionCreateDto.Price - portfolioItem.AveragePurchasePrice) * transactionCreateDto.Quantity - (transactionCreateDto.Fee ?? 0);
                     portfolioItem.Quantity -= transactionCreateDto.Quantity;
                 }
             }
@@ -226,7 +226,7 @@ namespace StockManager.Services
             await context.SaveChangesAsync();
         }
 
-        public async Task<TradeSummaryDto> GetTransactionsSummary(int userId)
+        public async Task<TradeSummaryDto> GetTransactionsSummary(int userId)   
         {            
             var allTransactions = await context.Transactions
                 .Include(x => x.Stock)
