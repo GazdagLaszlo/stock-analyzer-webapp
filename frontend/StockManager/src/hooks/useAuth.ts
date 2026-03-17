@@ -16,7 +16,7 @@ const useAuth = () => {
         setToken(accessToken);
         return res;
       })
-      .catch((error) => {
+      .catch((error: unknown) => {
         throw error;
       });
   };

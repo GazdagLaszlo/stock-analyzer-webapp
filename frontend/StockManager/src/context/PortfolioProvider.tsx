@@ -13,7 +13,7 @@ import type {
   PortfolioCreateDto,
   PortfolioItemDto,
 } from '../../generated-sources/openapi';
-import { useStockHub } from '../hooks/useStockHub';
+import { useLivePrice } from '../hooks/useLivePrice';
 
 export const PortfolioProvider = ({
   children,
@@ -54,17 +54,7 @@ export const PortfolioProvider = ({
       ) ?? [],
     [selectedPortfolio]
   );
-  const liveStocks = useStockHub(symbols);
-
-  const getLivePrice = useCallback(
-    (symbol: string) => {
-      if (!symbol) return 0;
-
-      const stock = liveStocks.find((s) => s.symbol === symbol);
-      return stock ? (stock.price ?? 0) : 0;
-    },
-    [liveStocks]
-  );
+  const getLivePrice = useLivePrice(symbols ? symbols : []);
 
   const getPortfolioValue = useCallback(
     (portfolio: PortfolioDto | undefined) => {

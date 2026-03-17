@@ -2,7 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import BasicLayout from '../components/Layout/BasicLayout/BasicLayout.tsx';
 import { routes } from './Routes.tsx';
 import type { ReactElement } from 'react';
-import useAuth from '../hooks/useAuth.tsx';
+import useAuth from '../hooks/useAuth.ts';
 
 const PrivateRoute = ({ element }: { element: ReactElement }) => {
   const { isLoggedIn } = useAuth();

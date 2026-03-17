@@ -3,9 +3,9 @@ import api from '../api/api';
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { formatMoney } from '../utils/formatMoney';
-import { useStockHub } from '../hooks/useStockHub';
 import { List, AutoSizer } from 'react-virtualized';
 import StockImage from './StockImage';
+import { useLivePrice } from '../hooks/useLivePrice';
 
 const Stock = () => {
   const navigate = useNavigate();
@@ -39,14 +39,7 @@ const Stock = () => {
     );
   }, [stocks, searchInput]);
 
-  const liveStocks = useStockHub(visibleSymbols);
-
-  const getLivePrice = (symbol: string) => {
-    if (symbol != '') {
-      const stock = liveStocks.find((x) => x.symbol === symbol);
-      return stock ? (stock.price ?? 0) : 0;
-    } else return 0;
-  };
+  const getLivePrice = useLivePrice(visibleSymbols ? visibleSymbols : []);
 
   const rowRenderer = useCallback(
     ({
@@ -90,7 +83,7 @@ const Stock = () => {
         </div>
       );
     },
-    [filteredStocks]
+    [filteredStocks, getLivePrice]
   );
 
   return (

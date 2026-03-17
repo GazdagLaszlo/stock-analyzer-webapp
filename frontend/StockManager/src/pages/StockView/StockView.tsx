@@ -10,7 +10,7 @@ import type {
 import Overview from './Overview';
 import Technical from './Technical';
 import Financial from './Financials/Financial';
-import { useStockHub } from '../../hooks/useStockHub';
+import { useLivePrice } from '../../hooks/useLivePrice';
 
 const StockView = () => {
   const { symbol, tab, subtab } = useParams<{
@@ -22,11 +22,6 @@ const StockView = () => {
   const [stock, setStock] = useState<StockDto>();
   const [stockQuote, setStockQuote] = useState<StockQuote>();
   const [onWatchlist, setOnWatchlist] = useState<true | false>(false);
-
-  /*
-    const location = useLocation();
-    const paths = location.pathname.split("/").filter((x) => x);
-    */
 
   const activeTab = tab || 'overview';
 
@@ -104,14 +99,7 @@ const StockView = () => {
     }
   };
 
-  const liveStocks = useStockHub([symbol!]);
-
-  const getLivePrice = (symbol: string) => {
-    if (symbol != '') {
-      const stock = liveStocks.find((x) => x.symbol === symbol);
-      return stock ? (stock.price ?? 0) : 0;
-    } else return 0;
-  };
+  const getLivePrice = useLivePrice(symbol ? [symbol] : []);
 
   const livePrice = symbol
     ? getLivePrice(symbol) || (stock?.price ?? 0)
