@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type {
   StockDto,
   WatchListDto,
@@ -11,13 +11,14 @@ import StockSelectModal from '../components/Portfolio/StockSelectModal';
 import WatchlistItemDeleteModal from '../components/Watchlist/WatchListItemDeleteModal';
 import WatchlistItemEditModal from '../components/Watchlist/WatchlistItemEditModal';
 import { useNavigate } from 'react-router-dom';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient, useQueries } from '@tanstack/react-query';
+import { COLORS } from '../constants/colors';
+import { useLivePrice } from '../hooks/useLivePrice';
 
 const Watchlist = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [stocks, setStocks] = useState<StockDto[]>([]);
-  //const [watchlist, setWatchlist] = useState<WatchListDto>();
   const [selectedWatchlistItem, setSelectedWatchlistItem] =
     useState<WatchListItemDto>();
 
@@ -47,6 +48,23 @@ const Watchlist = () => {
         return res.data;
       },
     });
+
+  const stockQuotesQueries = useQueries({
+    queries:
+      watchlist?.watchListItems?.map((item) => ({
+        queryKey: ['stockQuote', item.stock?.symbol],
+        queryFn: async () => {
+          if (!item.stock?.symbol) return null;
+          const res = await api.Stock.apiStockGetStockQuoteGet(
+            item.stock.symbol
+          );
+          return res.data;
+        },
+        enabled: !!item.stock?.symbol,
+        staleTime: 1000 * 60,
+        refetchInterval: 1000 * 30,
+      })) ?? [],
+  });
 
   const createWatchlistItem = async (stockId?: number) => {
     if (!stockId) {
@@ -86,6 +104,12 @@ const Watchlist = () => {
       queryClient.invalidateQueries({ queryKey: ['watchlistGet'] });
     }
   };
+
+  const symbols = useMemo(
+    () => watchlist?.watchListItems?.map((x) => x.stock?.symbol ?? ''),
+    [watchlist]
+  );
+  const getLivePrice = useLivePrice(symbols ? symbols : []);
 
   return (
     <div>
@@ -160,50 +184,87 @@ const Watchlist = () => {
                   <th>Symbol</th>
                   <th>Company</th>
                   <th>Price</th>
+                  <th>Change</th>
                   <th>Entry Price</th>
                   <th>Note</th>
                   <th></th>
                 </tr>
               </thead>
               <tbody>
-                {watchlist?.watchListItems?.map((item) => (
-                  <tr
-                    key={item.id}
-                    onClick={() =>
-                      navigate(`/app/stocks/${item.stock?.symbol}`)
-                    }
-                  >
-                    <td style={{ width: '3vw' }}>
-                      <figure className="image is-24x24 ">
-                        <img
-                          className="border-radius-5"
-                          src={`https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${item.stock?.symbol}.png`}
-                        />
-                      </figure>
-                    </td>
-                    <td style={{ width: '8vw' }}>{item.stock?.symbol}</td>
-                    <td style={{ width: '20vw' }}>{item.stock?.companyName}</td>
-                    <td style={{ width: '10vw' }}>{item.stock?.price} USD</td>
-                    <td style={{ width: '10vw' }}>
-                      {item.entryPrice != null ? item.entryPrice + ' USD' : '-'}
-                    </td>
-                    <td style={{ width: '44vw' }}>{item.note ?? '-'}</td>
-                    <td style={{ width: '5vw' }}>
-                      <WatchlistItemMenu
-                        onEdit={() => {
-                          setSelectedWatchlistItem(item);
-                          setEditModalOpen(true);
+                {watchlist?.watchListItems?.map((item, i) => {
+                  //const changePercent = stockQuotesQueries[i].data?.dp ?? 0;
+
+                  const previousClose =
+                    stockQuotesQueries[i].data?.pc ?? item.stock?.price ?? 0;
+                  const livePrice = getLivePrice(item.stock?.symbol ?? '');
+
+                  const changePercent =
+                    previousClose !== 0 && livePrice
+                      ? ((livePrice - previousClose) / previousClose) * 100
+                      : (stockQuotesQueries[i].data?.dp ?? 0);
+
+                  return (
+                    <tr
+                      key={item.id}
+                      onClick={() =>
+                        navigate(`/app/stocks/${item.stock?.symbol}`)
+                      }
+                    >
+                      <td style={{ width: '3vw' }}>
+                        <figure className="image is-24x24 ">
+                          <img
+                            className="border-radius-5"
+                            src={`https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${item.stock?.symbol}.png`}
+                          />
+                        </figure>
+                      </td>
+                      <td style={{ width: '8vw' }}>{item.stock?.symbol}</td>
+                      <td style={{ width: '20vw' }}>
+                        {item.stock?.companyName}
+                      </td>
+                      <td style={{ width: '10vw' }}>
+                        {livePrice || item.stock?.price} USD
+                      </td>
+                      <td
+                        style={{
+                          width: '10vw',
+                          fontSize: 14,
+                          color:
+                            changePercent > 0
+                              ? COLORS.success
+                              : changePercent < 0
+                                ? COLORS.error
+                                : 'inherit',
                         }}
-                        onDeleteItem={() => {
-                          if (item.id != null) {
+                      >
+                        {changePercent > 0
+                          ? '+' + changePercent.toFixed(2)
+                          : changePercent.toFixed(2)}
+                        %
+                      </td>
+                      <td style={{ width: '10vw' }}>
+                        {item.entryPrice != null
+                          ? item.entryPrice + ' USD'
+                          : '-'}
+                      </td>
+                      <td style={{ width: '44vw' }}>{item.note ?? '-'}</td>
+                      <td style={{ width: '5vw' }}>
+                        <WatchlistItemMenu
+                          onEdit={() => {
                             setSelectedWatchlistItem(item);
-                            setDeleteModalOpen(true);
-                          }
-                        }}
-                      />
-                    </td>
-                  </tr>
-                ))}
+                            setEditModalOpen(true);
+                          }}
+                          onDeleteItem={() => {
+                            if (item.id != null) {
+                              setSelectedWatchlistItem(item);
+                              setDeleteModalOpen(true);
+                            }
+                          }}
+                        />
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

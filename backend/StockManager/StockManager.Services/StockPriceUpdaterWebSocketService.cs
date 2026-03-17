@@ -19,16 +19,19 @@ namespace StockManager.Services
         private ClientWebSocket? _webSocket;        
         private readonly ConcurrentDictionary<string, int> _subscriptionCount = new();
         private readonly ConcurrentDictionary<string, decimal> _latest = new();
+        private Func<string, decimal, Task>? _onTick;
         public IReadOnlyDictionary<string, decimal> Latest => _latest;
 
-        private bool _listeningLoopStarted = false;
+        private bool _listeningLoopStarted = false;        
 
         public StockPriceUpdaterWebSocketService(IConfiguration configuration)
         {
             _finnhubApiKey = configuration["FinnhubApiKey:ApiKey"];
         }
         public async Task ConnectAndListenAsync(string symbol, bool subscribe, Func<string, decimal, Task> onTick, CancellationToken cancellationToken)
-        { 
+        {
+            _onTick = onTick;
+
             if (_webSocket == null || _webSocket.State != WebSocketState.Open)
             {
                 _webSocket = new ClientWebSocket();
@@ -60,7 +63,7 @@ namespace StockManager.Services
                                 if (tickSymbol != null)
                                 {
                                     _latest[tickSymbol] = tickPrice;                                    
-                                    await onTick(tickSymbol, tickPrice);
+                                    await _onTick(tickSymbol, tickPrice);
                                 }
                             }
                         }
