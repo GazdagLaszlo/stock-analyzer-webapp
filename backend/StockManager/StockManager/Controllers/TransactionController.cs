@@ -64,5 +64,12 @@ namespace StockManager.Controllers
             var result = await transactionService.GetTransactionsSummary(_userId);
             return Ok(result);
         }
+
+        [HttpGet]
+        public async Task<ActionResult<IList<TransactionDto>>> GetWithSameTradeId(Guid tradeId)
+        {
+            var result = await transactionService.GetWithSameTradeId(tradeId);
+            return Ok(result);
+        }
     }
 }

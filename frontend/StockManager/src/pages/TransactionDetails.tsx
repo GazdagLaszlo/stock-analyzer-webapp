@@ -40,6 +40,18 @@ const TransactionDetails = () => {
     enabled: !!transaction?.stock,
   });
 
+  const { data: relatedTransactions } = useQuery({
+    queryKey: ['getRelatedTransactions', transaction?.tradeId],
+    queryFn: async () => {
+      if (transaction?.tradeId) {
+        const resp = await api.Transaction.apiTransactionGetWithSameTradeIdGet(
+          transaction.tradeId
+        );
+        return resp.data;
+      }
+    },
+  });
+
   if (isLoading) {
     return (
       <div className="section has-text-centered">
@@ -297,6 +309,81 @@ const TransactionDetails = () => {
                   </div>
                 </div>
               </div>
+            </div>
+          )}
+
+          {relatedTransactions && (
+            <div className="box border-radius-10">
+              <h2 className="subtitle is-5 has-text-weight-bold">
+                Related Transactions
+              </h2>
+              <table className="custom-table">
+                <thead>
+                  <tr>
+                    <th style={{ width: '4vw' }}></th>
+                    <th style={{ width: '8vw' }}>Symbol</th>
+                    <th style={{ width: '10vw' }}>Date</th>
+                    <th style={{ width: '10vw' }}>Price</th>
+                    <th style={{ width: '10vw' }}>Quantity</th>
+                    <th style={{ width: '10vw' }}>Total</th>
+                    <th style={{ width: '8vw' }}>Transaction</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {relatedTransactions
+                    .filter((x) => x.id !== transaction.id)
+                    .map((transaction) => (
+                      <tr
+                        key={transaction.id}
+                        onClick={() =>
+                          navigate(`/app/transactions/${transaction.id}`)
+                        }
+                      >
+                        <td style={{ width: '4vw' }}>
+                          <figure className="image is-24x24">
+                            <img
+                              className="border-radius-5"
+                              src={`https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${transaction.stock?.symbol}.png`}
+                            />
+                          </figure>
+                        </td>
+                        <td style={{ width: '8vw' }}>
+                          {transaction.stock?.symbol}
+                        </td>
+                        <td style={{ width: '10vw' }}>
+                          {transaction.date
+                            ? new Date(transaction.date).toLocaleDateString()
+                            : '-'}
+                        </td>
+                        <td style={{ width: '10vw' }}>
+                          {transaction.price} USD
+                        </td>
+                        <td style={{ width: '10vw' }}>
+                          {transaction.quantity}
+                        </td>
+                        <td style={{ width: '10vw' }}>
+                          {formatMoney(
+                            (transaction.price ?? 0) *
+                              (transaction.quantity ?? 0) +
+                              (transaction.fee ?? 0)
+                          )}{' '}
+                          USD
+                        </td>
+                        <td
+                          style={{
+                            color:
+                              transaction.transactionType === 0
+                                ? 'green'
+                                : 'red',
+                            width: '8vw',
+                          }}
+                        >
+                          {transaction.transactionType === 0 ? 'Buy' : 'Sell'}
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
             </div>
           )}
         </div>

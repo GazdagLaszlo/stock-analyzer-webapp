@@ -136,6 +136,10 @@ const TradeSummary = () => {
           className="box p-5"
           style={{ flex: 6, backgroundColor: COLORS.boxBackground }}
         >
+          <h2 className="subtitle is-5 has-text-weight-bold">
+            Performance Summary
+          </h2>
+          <hr />
           <div
             className="is-flex is-flex-direction-row is-justify-content-space-between is-align-items-center"
             style={{ height: 50, borderBottom: '1px solid lightgrey' }}
@@ -256,7 +260,7 @@ const TradeSummary = () => {
           className="box is-flex is-justify-content-center is-flex-direction-column p-5 mt-6"
           style={{ backgroundColor: COLORS.boxBackground }}
         >
-          <p className="has-text-centered subtitle is-size-5 mb-3">Trades</p>
+          <h2 className="subtitle is-5 has-text-weight-bold">Closed Trades</h2>
           <div
             style={{
               borderRadius: 10,
@@ -498,166 +502,173 @@ const TradeSummary = () => {
           </div>
         </div>
       )}
-
-      {(tradeSummary?.bestTrade !== null ||
-        tradeSummary.worstTrade !== null) && (
+      {tradeSummary?.bestTrade !== null && (
         <div
-          className="box is-flex is-justify-content-center is-flex-direction-column p-5 mt-6"
+          className="box is-flex is-justify-content-center is-flex-direction-column p-5"
           style={{ backgroundColor: COLORS.boxBackground }}
         >
-          {tradeSummary?.bestTrade !== null && (
-            <>
-              <p className="has-text-centered subtitle is-size-5 mb-3">
-                Best Trade
-              </p>
-              <div
+          <h2 className="subtitle is-5 has-text-weight-bold">Best Trade</h2>
+          <div
+            style={{
+              borderRadius: 10,
+              border: '1px solid lightgrey',
+              overflow: 'hidden',
+              backgroundColor: COLORS.background,
+            }}
+          >
+            <table
+              className="table"
+              style={{
+                backgroundColor: COLORS.background,
+                width: '100%',
+              }}
+            >
+              <thead
                 style={{
-                  borderRadius: 10,
-                  border: '1px solid lightgrey',
-                  overflow: 'hidden',
-                  backgroundColor: COLORS.background,
+                  backgroundColor: COLORS.tableHeader,
                 }}
               >
-                <table
-                  className="table"
-                  style={{
-                    backgroundColor: COLORS.background,
-                    width: '100%',
-                  }}
-                >
-                  <thead
+                <tr>
+                  <th></th>
+                  <th>Symbol</th>
+                  <th>Company name</th>
+                  <th>Start</th>
+                  <th>End</th>
+                  <th>Quantity</th>
+                  <th>Realized P/L</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr key={tradeSummary?.bestTrade?.tradeId}>
+                  <td style={{ width: '4vw' }}>
+                    <figure className="image is-24x24">
+                      <img
+                        className="border-radius-5"
+                        src={`https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${tradeSummary?.bestTrade?.stockSymbol}.png`}
+                      />
+                    </figure>
+                  </td>
+                  <td style={{ width: '8vw' }}>
+                    {tradeSummary?.bestTrade?.stockSymbol}
+                  </td>
+                  <td style={{ width: '18vw' }}>
+                    {tradeSummary?.bestTrade?.stockName}
+                  </td>
+                  <td style={{ width: '10vw' }}>
+                    {new Date(
+                      tradeSummary?.bestTrade?.startDate == undefined
+                        ? '-'
+                        : tradeSummary?.bestTrade?.startDate
+                    ).toLocaleDateString()}
+                  </td>
+                  <td style={{ width: '10vw' }}>
+                    {new Date(
+                      tradeSummary?.bestTrade?.endDate == undefined
+                        ? '-'
+                        : tradeSummary?.bestTrade?.endDate
+                    ).toLocaleDateString()}
+                  </td>
+                  <td style={{ width: '10vw' }}>
+                    {tradeSummary?.bestTrade?.totalQuantity?.toFixed(4)}
+                  </td>
+                  <td
                     style={{
-                      backgroundColor: COLORS.tableHeader,
+                      width: '10vw',
+                      color:
+                        (tradeSummary?.bestTrade?.realizedProfit ?? 0) > 0
+                          ? COLORS.success
+                          : COLORS.error,
                     }}
                   >
-                    <tr>
-                      <th></th>
-                      <th>Symbol</th>
-                      <th>Company name</th>
-                      <th>Start</th>
-                      <th>End</th>
-                      <th>Quantity</th>
-                      <th>Realized P/L</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr key={tradeSummary?.bestTrade?.tradeId}>
-                      <td style={{ width: '4vw' }}>
-                        <figure className="image is-24x24">
-                          <img
-                            className="border-radius-5"
-                            src={`https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${tradeSummary?.bestTrade?.stockSymbol}.png`}
-                          />
-                        </figure>
-                      </td>
-                      <td style={{ width: '8vw' }}>
-                        {tradeSummary?.bestTrade?.stockSymbol}
-                      </td>
-                      <td style={{ width: '18vw' }}>
-                        {tradeSummary?.bestTrade?.stockName}
-                      </td>
-                      <td style={{ width: '10vw' }}>
-                        {new Date(
-                          tradeSummary?.bestTrade?.startDate == undefined
-                            ? '-'
-                            : tradeSummary?.bestTrade?.startDate
-                        ).toLocaleDateString()}
-                      </td>
-                      <td style={{ width: '10vw' }}>
-                        {new Date(
-                          tradeSummary?.bestTrade?.endDate == undefined
-                            ? '-'
-                            : tradeSummary?.bestTrade?.endDate
-                        ).toLocaleDateString()}
-                      </td>
-                      <td style={{ width: '10vw' }}>
-                        {tradeSummary?.bestTrade?.totalQuantity?.toFixed(4)}
-                      </td>
-                      <td style={{ width: '10vw' }}>
-                        {tradeSummary?.bestTrade?.realizedProfit?.toFixed(2)}{' '}
-                        USD
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </>
-          )}
-          {tradeSummary?.worstTrade !== null && (
-            <>
-              <p className="has-text-centered subtitle is-size-5 mb-3 mt-5">
-                Worst Trade
-              </p>
-              <div
-                className="py-1"
-                style={{
-                  borderRadius: 10,
-                  border: '1px solid lightgrey',
-                  overflow: 'hidden',
-                  backgroundColor: COLORS.background,
-                }}
-              >
-                <table
-                  className="table"
-                  style={{
-                    backgroundColor: COLORS.background,
-                    width: '100%',
-                  }}
-                >
-                  <thead>
-                    <tr>
-                      <th></th>
-                      <th>Symbol</th>
-                      <th>Company name</th>
-                      <th>Start</th>
-                      <th>End</th>
-                      <th>Quantity</th>
-                      <th>Realized P/L</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr key={tradeSummary?.worstTrade?.tradeId}>
-                      <td style={{ width: '4vw' }}>
-                        <figure className="image is-24x24">
-                          <img
-                            className="border-radius-5"
-                            src={`https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${tradeSummary?.worstTrade?.stockSymbol}.png`}
-                          />
-                        </figure>
-                      </td>
-                      <td style={{ width: '8vw' }}>
-                        {tradeSummary?.worstTrade?.stockSymbol}
-                      </td>
-                      <td style={{ width: '18vw' }}>
-                        {tradeSummary?.worstTrade?.stockName}
-                      </td>
-                      <td style={{ width: '10vw' }}>
-                        {new Date(
-                          tradeSummary?.worstTrade?.startDate == undefined
-                            ? '-'
-                            : tradeSummary?.worstTrade?.startDate
-                        ).toLocaleDateString()}
-                      </td>
-                      <td style={{ width: '10vw' }}>
-                        {new Date(
-                          tradeSummary?.worstTrade?.endDate == undefined
-                            ? '-'
-                            : tradeSummary?.worstTrade?.endDate
-                        ).toLocaleDateString()}
-                      </td>
-                      <td style={{ width: '10vw' }}>
-                        {tradeSummary?.worstTrade?.totalQuantity?.toFixed(4)}
-                      </td>
-                      <td style={{ width: '10vw' }}>
-                        {tradeSummary?.worstTrade?.realizedProfit?.toFixed(2)}{' '}
-                        USD
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </>
-          )}
+                    {tradeSummary?.bestTrade?.realizedProfit?.toFixed(2)} USD
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+      {tradeSummary?.worstTrade !== null && (
+        <div
+          className="box is-flex is-justify-content-center is-flex-direction-column p-5"
+          style={{ backgroundColor: COLORS.boxBackground }}
+        >
+          <h2 className="subtitle is-5 has-text-weight-bold">Worst Trade</h2>
+          <div
+            className="py-1"
+            style={{
+              borderRadius: 10,
+              border: '1px solid lightgrey',
+              overflow: 'hidden',
+              backgroundColor: COLORS.background,
+            }}
+          >
+            <table
+              className="table"
+              style={{
+                backgroundColor: COLORS.background,
+                width: '100%',
+              }}
+            >
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Symbol</th>
+                  <th>Company name</th>
+                  <th>Start</th>
+                  <th>End</th>
+                  <th>Quantity</th>
+                  <th>Realized P/L</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr key={tradeSummary?.worstTrade?.tradeId}>
+                  <td style={{ width: '4vw' }}>
+                    <figure className="image is-24x24">
+                      <img
+                        className="border-radius-5"
+                        src={`https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${tradeSummary?.worstTrade?.stockSymbol}.png`}
+                      />
+                    </figure>
+                  </td>
+                  <td style={{ width: '8vw' }}>
+                    {tradeSummary?.worstTrade?.stockSymbol}
+                  </td>
+                  <td style={{ width: '18vw' }}>
+                    {tradeSummary?.worstTrade?.stockName}
+                  </td>
+                  <td style={{ width: '10vw' }}>
+                    {new Date(
+                      tradeSummary?.worstTrade?.startDate == undefined
+                        ? '-'
+                        : tradeSummary?.worstTrade?.startDate
+                    ).toLocaleDateString()}
+                  </td>
+                  <td style={{ width: '10vw' }}>
+                    {new Date(
+                      tradeSummary?.worstTrade?.endDate == undefined
+                        ? '-'
+                        : tradeSummary?.worstTrade?.endDate
+                    ).toLocaleDateString()}
+                  </td>
+                  <td style={{ width: '10vw' }}>
+                    {tradeSummary?.worstTrade?.totalQuantity?.toFixed(4)}
+                  </td>
+                  <td
+                    style={{
+                      width: '10vw',
+                      color:
+                        (tradeSummary?.worstTrade?.realizedProfit ?? 0) > 0
+                          ? COLORS.success
+                          : COLORS.error,
+                    }}
+                  >
+                    {tradeSummary?.worstTrade?.realizedProfit?.toFixed(2)} USD
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>

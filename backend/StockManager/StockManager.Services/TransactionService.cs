@@ -21,6 +21,7 @@ namespace StockManager.Services
         Task<TransactionDto> UpdateAsync(int id, TransactionUpdateDto updateDto);
         Task DeleteAsync(int id);
         Task<TradeSummaryDto> GetTransactionsSummary(int userid);
+        Task<IList<TransactionDto>> GetWithSameTradeId(Guid tradeId);
     }
 
     public class TransactionService(AppDbContext context, IMapper mapper) : ITransactionService
@@ -294,6 +295,18 @@ namespace StockManager.Services
                 WorstTrade = worstTrade != null ? worstTrade : null,
                 TotalVolume = allTransactions.Count() != 0 ? allTransactions.Sum(x => x.Price+(x.Fee ?? 0)) : null,
             };
+        }
+
+        public async Task<IList<TransactionDto>> GetWithSameTradeId(Guid tradeId)
+        {            
+            var transactions = await context.Transactions.Include(x => x.Stock).Where(x => x.TradeId == tradeId).ToListAsync();
+
+            if(transactions == null)
+            {
+                throw new KeyNotFoundException($"No transactions found with tradeId - {tradeId}!");
+            }
+
+            return mapper.Map<IList<TransactionDto>>(transactions);
         }
     }
 }

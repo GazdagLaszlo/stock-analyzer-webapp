@@ -223,7 +223,7 @@ const Watchlist = () => {
                         {item.stock?.companyName}
                       </td>
                       <td style={{ width: '10vw' }}>
-                        {livePrice || item.stock?.price} USD
+                        {livePrice || item.stock?.price?.toFixed(2)} USD
                       </td>
                       <td
                         style={{
