@@ -55,6 +55,17 @@ const ProfileMenu = ({ onLogout }: Props) => {
           </a>
           <a
             className="dropdown-item"
+            onClick={() => navigate('/app/education/dashboard')}
+          >
+            <div className="is-flex is-flex-direction-row is-align-items-center">
+              <span className="icon mr-2">
+                <i className="fa-solid fa-book"></i>
+              </span>
+              <p>Education Center</p>
+            </div>
+          </a>
+          <a
+            className="dropdown-item"
             onClick={(e) => {
               e.stopPropagation();
               onLogout();

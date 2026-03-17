@@ -256,3 +256,7 @@ header .navbar-item {
     vertical-align: middle;
   }
 }
+
+.menu-list a.is-active {
+  background-color: rgb(11, 39, 71);
+}

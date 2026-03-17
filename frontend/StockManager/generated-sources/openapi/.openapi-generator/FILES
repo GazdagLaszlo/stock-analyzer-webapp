@@ -4,8 +4,12 @@ api.ts
 base.ts
 common.ts
 configuration.ts
+docs/ArticleApi.md
+docs/ArticleCreateUpdateDto.md
+docs/ArticleDto.md
+docs/ClosedTradeDto.md
 docs/Earningscalendar.md
-docs/LoginResponse.md
+docs/PeriodType.md
 docs/PortfolioApi.md
 docs/PortfolioCreateDto.md
 docs/PortfolioDto.md
@@ -19,6 +23,7 @@ docs/StockCreateDto.md
 docs/StockDataApi.md
 docs/StockDataCreateDto.md
 docs/StockDataDto.md
+docs/StockDataItemDto.md
 docs/StockDataUpdateDto.md
 docs/StockDto.md
 docs/StockNews.md
@@ -28,6 +33,8 @@ docs/StockReportApi.md
 docs/StockReportDto.md
 docs/StockReportItemDto.md
 docs/StockUpdateDto.md
+docs/TokenResponseDto.md
+docs/TradeSummaryDto.md
 docs/TransactionApi.md
 docs/TransactionCreateDto.md
 docs/TransactionDto.md

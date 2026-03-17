@@ -11,6 +11,7 @@ import {
   StockNewsApi,
   StockReportApi,
   StockDataApi,
+  ArticleApi,
 } from '../../generated-sources/openapi';
 import axios from 'axios';
 axios.defaults.withCredentials = true;
@@ -65,6 +66,11 @@ const StockData = new StockDataApi(
   undefined,
   axiosInstance
 );
+const Article = new ArticleApi(
+  new Configuration({ basePath: ' ' }),
+  undefined,
+  axiosInstance
+);
 
 const api = {
   User,
@@ -77,6 +83,7 @@ const api = {
   StockNews,
   StockReports,
   StockData,
+  Article,
 };
 
 export default api;

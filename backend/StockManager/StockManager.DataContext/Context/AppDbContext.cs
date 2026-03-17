@@ -23,5 +23,6 @@ namespace StockManager.DataContext.Context
         public DbSet<StockReport> StockReports { get; set; }
         public DbSet<StockReportItem> StockReportItems { get; set; }
         public DbSet<StockDataItem> StockDataItems { get; set; }
+        public DbSet<Article> Articles { get; set; }
     }
 }

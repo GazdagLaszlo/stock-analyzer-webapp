@@ -9,6 +9,7 @@ import Login from '../pages/Login.tsx';
 import Register from '../pages/Register.tsx';
 import Profile from '../pages/Profile.tsx';
 import TransactionDetails from '../pages/TransactionDetails.tsx';
+import Education from '../pages/Education.tsx';
 
 export const routes = [
   {
@@ -65,6 +66,11 @@ export const routes = [
     path: 'register',
     component: <Register />,
     isPrivate: false,
+  },
+  {
+    path: 'education/:topic',
+    component: <Education />,
+    isPrivate: true,
   },
   {
     path: 'profile',

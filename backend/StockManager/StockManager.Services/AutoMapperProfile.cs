@@ -53,6 +53,10 @@ namespace StockManager.Services
             CreateMap<StockReport, StockReportDto>();
 
             CreateMap<StockReportItem, StockReportItemDto>();
+
+            CreateMap<Article, ArticleDto>().ReverseMap();
+            CreateMap<ArticleCreateUpdateDto, ArticleDto>();
+            CreateMap<ArticleCreateUpdateDto, Article>();
         }
     }
 }
