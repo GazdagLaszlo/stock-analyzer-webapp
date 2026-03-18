@@ -150,7 +150,6 @@ const Transaction = () => {
                 <th style={{ width: '8vw' }}>Fee</th>
                 <th style={{ width: '10vw' }}>Total</th>
                 <th style={{ width: '8vw' }}>Transaction</th>
-                <th style={{ width: '5vw' }}>Note</th>
                 <th style={{ width: '4vw' }}></th>
               </tr>
             </thead>
@@ -179,8 +178,15 @@ const Transaction = () => {
                       ? new Date(transaction.date).toLocaleDateString()
                       : '-'}
                   </td>
-                  <td style={{ width: '10vw' }}>{transaction.price} USD</td>
-                  <td style={{ width: '10vw' }}>{transaction.quantity}</td>
+                  <td style={{ width: '10vw' }}>
+                    {transaction.price?.toLocaleString('en-US', {
+                      maximumFractionDigits: 2,
+                    })}{' '}
+                    USD
+                  </td>
+                  <td style={{ width: '10vw' }}>
+                    {transaction.quantity?.toFixed(4)}
+                  </td>
                   <td style={{ width: '8vw' }}>
                     {formatMoney(transaction.fee ?? 0)} USD
                   </td>
@@ -199,9 +205,6 @@ const Transaction = () => {
                     }}
                   >
                     {transaction.transactionType === 0 ? 'Buy' : 'Sell'}
-                  </td>
-                  <td style={{ width: '5vw' }}>
-                    {transaction.note == '' ? '-' : transaction.note}
                   </td>
                   <td style={{ width: '4vw' }}>
                     <button

@@ -76,7 +76,9 @@ const Stock = () => {
           </div>
           <div style={{ width: '50vw' }}>{stock.companyName}</div>
           <div style={{ width: '15vw' }}>{stock.sector}</div>
-          <div style={{ width: '10vw' }}>${price.toFixed(2)}</div>
+          <div style={{ width: '10vw' }}>
+            ${price.toLocaleString('en-US', { maximumFractionDigits: 2 })}
+          </div>
           <div style={{ width: '10vw' }}>
             {formatMoney(stock.marketCap ?? 0)}
           </div>

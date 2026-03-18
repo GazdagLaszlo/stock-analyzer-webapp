@@ -6,6 +6,7 @@ import { useContext, useState } from 'react';
 import { PortfolioContext } from '../context/PortfolioContext';
 import TransactionDeleteModal from '../components/Transaction/TransactionDeleteModal';
 import { COLORS } from '../constants/colors';
+import { TransactionType } from '../../generated-sources/openapi';
 
 const TransactionDetails = () => {
   const { id } = useParams();
@@ -50,6 +51,7 @@ const TransactionDetails = () => {
         return resp.data;
       }
     },
+    enabled: !!transaction?.tradeId,
   });
 
   if (isLoading) {
@@ -100,6 +102,23 @@ const TransactionDetails = () => {
     previousClose !== 0
       ? Number(((liveDiff / previousClose) * 100).toFixed(2))
       : 0;
+
+  const buyTransactions = relatedTransactions?.filter(
+    (x) => x.transactionType === TransactionType.NUMBER_0
+  );
+  const averageBuyPrice =
+    buyTransactions && buyTransactions.length > 0
+      ? buyTransactions.reduce(
+          (sum, transaction) =>
+            sum + (transaction.price ?? 0) * (transaction.quantity ?? 0),
+          0
+        ) / buyTransactions.reduce((sum, t) => sum + (t.quantity ?? 0), 0)
+      : null;
+
+  const diffPerShare =
+    transaction.price && averageBuyPrice
+      ? transaction.price - averageBuyPrice
+      : null;
 
   return (
     <div className="container mt-5 px-4">
@@ -169,14 +188,19 @@ const TransactionDetails = () => {
               <div className="level-item has-text-centered">
                 <div>
                   <p>Total Value</p>
-                  <p className="title is-4">{formatMoney(totalCost)} USD</p>
+                  <p className="title is-4">
+                    {totalCost.toLocaleString('en-US', {
+                      maximumFractionDigits: 2,
+                    })}{' '}
+                    USD
+                  </p>
                 </div>
               </div>
               <div className="level-item has-text-centered">
                 <div>
                   <p>Quantity</p>
                   <p className="title is-4">
-                    {transaction.quantity?.toFixed(4)} Shares
+                    {transaction.quantity?.toFixed(2)} Shares
                   </p>
                 </div>
               </div>
@@ -205,47 +229,83 @@ const TransactionDetails = () => {
             <hr />
             <div className="columns is-multiline">
               <div className="column is-6">
-                <p
-                  className="is-size-7 is-uppercase"
-                  style={{ color: COLORS.infoText }}
-                >
-                  Date & Time
+                <p className="is-size-7" style={{ color: COLORS.infoText }}>
+                  DATE & TIME
                 </p>
                 <p className="is-size-6 mt-1">
                   {new Date(transaction.date || '').toLocaleString()}
                 </p>
               </div>
               <div className="column is-6">
-                <p
-                  className="is-size-7 is-uppercase"
-                  style={{ color: COLORS.infoText }}
-                >
-                  Price per Share
+                <p className="is-size-7" style={{ color: COLORS.infoText }}>
+                  PRICE PER SHARE
                 </p>
                 <p className="is-size-6 mt-1 has-text-weight-semibold">
-                  {formatMoney(transaction.price || 0)} USD
+                  {transaction.price?.toLocaleString('en-US', {
+                    maximumFractionDigits: 2,
+                  }) || 0}{' '}
+                  USD
                 </p>
               </div>
               <div className="column is-6">
-                <p
-                  className="is-size-7 is-uppercase"
-                  style={{ color: COLORS.infoText }}
-                >
-                  Total Amount
+                <p className="is-size-7" style={{ color: COLORS.infoText }}>
+                  TOTAL AMOUNT
                 </p>
-                <p className="is-size-6 mt-1">{formatMoney(totalValue)} USD</p>
+                <p className="is-size-6 mt-1">
+                  {totalValue.toLocaleString('en-US', {
+                    maximumFractionDigits: 2,
+                  })}{' '}
+                  USD
+                </p>
               </div>
               <div className="column is-6">
-                <p
-                  className="is-size-7 is-uppercase"
-                  style={{ color: COLORS.infoText }}
-                >
-                  Total Fee
+                <p className="is-size-7" style={{ color: COLORS.infoText }}>
+                  TOTAL FEE
                 </p>
                 <p className="is-size-6 mt-1" style={{ color: COLORS.error }}>
-                  {formatMoney(transaction.fee || 0)} USD
+                  {transaction.fee?.toLocaleString('en-US', {
+                    maximumFractionDigits: 2,
+                  }) || 0}{' '}
+                  USD
                 </p>
               </div>
+              {transaction.transactionType === TransactionType.NUMBER_1 && (
+                <>
+                  <div className="column is-6">
+                    <p className="is-size-7" style={{ color: COLORS.infoText }}>
+                      AVG. BUY PRICE PER SHARE
+                    </p>
+                    <p className="is-size-6 mt-1">
+                      {averageBuyPrice?.toLocaleString('en-US', {
+                        maximumFractionDigits: 2,
+                      }) || 0}{' '}
+                      USD
+                    </p>
+                  </div>
+                  <div className="column is-6">
+                    <p className="is-size-7" style={{ color: COLORS.infoText }}>
+                      PRICE CHANGE PER SHARE
+                    </p>
+                    <p
+                      className="is-size-6 mt-1"
+                      style={{
+                        color: diffPerShare
+                          ? diffPerShare < 0
+                            ? COLORS.error
+                            : diffPerShare > 0
+                              ? COLORS.success
+                              : COLORS.text
+                          : COLORS.text,
+                      }}
+                    >
+                      {diffPerShare?.toLocaleString('en-US', {
+                        maximumFractionDigits: 2,
+                      }) || 0}{' '}
+                      USD
+                    </p>
+                  </div>
+                </>
+              )}
             </div>
 
             <div className="mt-5">
@@ -312,7 +372,7 @@ const TransactionDetails = () => {
             </div>
           )}
 
-          {relatedTransactions && (
+          {relatedTransactions && relatedTransactions.length > 1 && (
             <div className="box border-radius-10">
               <h2 className="subtitle is-5 has-text-weight-bold">
                 Related Transactions

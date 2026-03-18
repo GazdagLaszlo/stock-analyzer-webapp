@@ -6,6 +6,7 @@ import { PortfolioProvider } from './context/PortfolioProvider.tsx';
 import { tokenKeyName } from './constants/constants.ts';
 import { jwtDecode } from 'jwt-decode';
 import { LiveStockPriceProvider } from './context/LiveStockPriceContext.tsx';
+import { SnackbarProvider } from 'notistack';
 
 interface jwtDecodeType {
   'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier': string;
@@ -74,7 +75,9 @@ function App() {
         >
           <LiveStockPriceProvider>
             <PortfolioProvider>
-              <Routing />
+              <SnackbarProvider>
+                <Routing />
+              </SnackbarProvider>
             </PortfolioProvider>
           </LiveStockPriceProvider>
         </AuthContext.Provider>

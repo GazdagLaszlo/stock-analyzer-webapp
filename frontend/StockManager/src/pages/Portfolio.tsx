@@ -98,16 +98,6 @@ const Portfolio = () => {
     note: string;
     date: string;
   }) => {
-    if (dto.transactionType == TransactionType.NUMBER_1) {
-      const portfolioItem = selectedPortfolio?.portfolioItems?.find(
-        (x) => x.stock?.id === dto.stockId
-      );
-
-      if (dto.quantity > (portfolioItem?.quantity ?? 0)) {
-        alert('You cannot sell more stock, than you have in your portfolio.');
-        return;
-      }
-    }
     await api.Transaction.apiTransactionCreatePost(dto);
     await fetchPortfolios();
 
@@ -199,7 +189,9 @@ const Portfolio = () => {
               <p className="box-title">Portfolio value</p>
               {portfolioValue ? (
                 <span className="subtitle mt-3 is-size-4">
-                  {portfolioValue.toFixed(2)}{' '}
+                  {portfolioValue.toLocaleString('en-US', {
+                    maximumFractionDigits: 2,
+                  })}{' '}
                   <span className="is-size-6">USD</span>
                 </span>
               ) : (
@@ -226,7 +218,9 @@ const Portfolio = () => {
                           : 'black',
                   }}
                 >
-                  {totalProfit.toFixed(2) + ' '}
+                  {totalProfit.toLocaleString('en-US', {
+                    maximumFractionDigits: 2,
+                  }) + ' '}
                   <span className="is-size-6" style={{ color: 'inherit' }}>
                     USD
                   </span>
@@ -301,17 +295,26 @@ const Portfolio = () => {
                           %
                         </td>
                         <td style={{ width: '8vw' }}>
-                          {item.averagePurchasePrice?.toFixed(2)} USD
+                          {item.averagePurchasePrice?.toLocaleString('en-US', {
+                            maximumFractionDigits: 2,
+                          })}{' '}
+                          USD
                         </td>
                         <td style={{ width: '20vw' }}>
-                          {((item.quantity ?? 0) * (livePrice ?? 0)).toFixed(2)}{' '}
+                          {(
+                            (item.quantity ?? 0) * (livePrice ?? 0)
+                          ).toLocaleString('en-US', {
+                            maximumFractionDigits: 2,
+                          })}{' '}
                           USD ({item.quantity?.toFixed(2)} {item.stock?.symbol})
                         </td>
                         <td>
                           {(
                             (item.averagePurchasePrice ?? 0) *
                             (item.quantity ?? 0)
-                          ).toFixed(2)}{' '}
+                          ).toLocaleString('en-US', {
+                            maximumFractionDigits: 2,
+                          })}{' '}
                           USD
                         </td>
                         <td
@@ -324,7 +327,10 @@ const Portfolio = () => {
                                   : 'black',
                           }}
                         >
-                          {profit.toFixed(2)} USD
+                          {profit.toLocaleString('en-US', {
+                            maximumFractionDigits: 2,
+                          })}{' '}
+                          USD
                           <span
                             className="ml-3 is-size-7"
                             style={{ color: 'inherit' }}

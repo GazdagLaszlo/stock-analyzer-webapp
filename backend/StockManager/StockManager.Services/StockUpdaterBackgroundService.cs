@@ -48,7 +48,7 @@ namespace StockManager.Services
                     {
                         try
                         {
-                            //await stockDataService.StockDataRefresh(stock);
+                            await stockDataService.StockDataRefresh(stock);
                         }
                         catch (Exception ex)
                         {
@@ -61,7 +61,7 @@ namespace StockManager.Services
                     {
                         try
                         {
-                            //await stockReportService.GetStockReportsFromAPI(stock.Symbol);
+                            await stockReportService.GetStockReportsFromAPI(stock.Symbol);
                         }
                         catch (Exception ex)
                         {

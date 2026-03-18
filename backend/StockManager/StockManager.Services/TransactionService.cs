@@ -80,7 +80,7 @@ namespace StockManager.Services
 
                     portfolioItem.AveragePurchasePrice =
                         (portfolioItem.AveragePurchasePrice * portfolioItem.Quantity + 
-                        (transactionCreateDto.Price * transactionCreateDto.Quantity + transactionCreateDto.Fee ?? 0)) / (portfolioItem.Quantity + transactionCreateDto.Quantity);
+                        (transactionCreateDto.Price * transactionCreateDto.Quantity + (transactionCreateDto.Fee ?? 0))) / (portfolioItem.Quantity + transactionCreateDto.Quantity);
 
                     portfolioItem.Quantity += transactionCreateDto.Quantity;                    
                 }

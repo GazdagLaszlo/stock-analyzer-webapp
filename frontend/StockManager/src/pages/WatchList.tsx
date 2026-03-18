@@ -223,7 +223,11 @@ const Watchlist = () => {
                         {item.stock?.companyName}
                       </td>
                       <td style={{ width: '10vw' }}>
-                        {livePrice || item.stock?.price?.toFixed(2)} USD
+                        {livePrice ||
+                          item.stock?.price?.toLocaleString('en-US', {
+                            maximumFractionDigits: 2,
+                          })}{' '}
+                        USD
                       </td>
                       <td
                         style={{
@@ -244,7 +248,9 @@ const Watchlist = () => {
                       </td>
                       <td style={{ width: '10vw' }}>
                         {item.entryPrice != null
-                          ? item.entryPrice + ' USD'
+                          ? item.entryPrice.toLocaleString('en-US', {
+                              maximumFractionDigits: 2,
+                            }) + ' USD'
                           : '-'}
                       </td>
                       <td style={{ width: '44vw' }}>{item.note ?? '-'}</td>

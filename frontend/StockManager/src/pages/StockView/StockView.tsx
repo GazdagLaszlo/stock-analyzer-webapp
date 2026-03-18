@@ -171,7 +171,12 @@ const StockView = () => {
               )}
             </div>
             <div className="is-flex is-flex-direction-row is-align-items-center">
-              <p className="is-size-1">${livePrice.toFixed(2)}</p>
+              <p className="is-size-1">
+                $
+                {livePrice.toLocaleString('en-US', {
+                  maximumFractionDigits: 2,
+                })}
+              </p>
               <div
                 className="ml-4"
                 style={{
