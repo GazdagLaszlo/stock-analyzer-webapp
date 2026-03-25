@@ -123,13 +123,19 @@ namespace StockManager.Services
         public async Task<StockData> CheckExistance(string symbol)
         {
             var data = await _context.StockData
-                .Include(x => x.StockDataItems)
                 .FirstOrDefaultAsync(x => x.Stock.Symbol == symbol);
             return data;
         }
 
         public async Task StockDataRefresh(StockDto stockDto)
         {
+            var stockExists = await CheckExistance(stockDto.Symbol);
+
+            if(stockExists != null && stockExists.UpdatedDate == DateOnly.FromDateTime(DateTime.Now))
+            {                
+                return;
+            }
+
             var data = await GetStockFinancials(stockDto.Symbol);
 
             var dto = data.metric;
@@ -169,30 +175,32 @@ namespace StockManager.Services
                         MetricName = metricName,
                     });
                 }
-            }
-
-            var stockExists = await CheckExistance(stockDto.Symbol);
+            }            
 
             if (stockExists == null)
             {
                 dto.StockDataItems = newItems;
                 await CreateAsync(dto);
-            }/*
+            }
             else
             {
+                var existsData = await _context.StockData
+                    .Include(x => x.StockDataItems)
+                    .FirstOrDefaultAsync(x => x.Stock.Symbol == stockDto.Symbol);
+
                 foreach (var item in newItems)
                 {
-                    bool exists = stockExists.StockDataItems
+                    bool exists = existsData.StockDataItems
                        .Any(e =>
                            e.MetricName == item.MetricName &&
                            e.PeriodType == item.PeriodType &&
-                           e.Period == item.Period &&
-                           e.V == item.V);
+                           e.Period == item.Period);                      
 
                     if (!exists)
                     {
-                        item.StockDataId = stockExists.Id;
-                        _context.StockDataItems.Add(item);
+                        var newItem = _mapper.Map<StockDataItem>(item);
+                        newItem.StockDataId = stockExists.Id;
+                        _context.StockDataItems.Add(newItem);
                     }
                 }                
 
@@ -201,8 +209,7 @@ namespace StockManager.Services
 
             var mainData = data.metric;
             var updateDto = _mapper.Map<StockDataUpdateDto>(mainData);
-            await UpdateAsync(stockExists.Id, updateDto);
-            */
+            await UpdateAsync(stockExists.Id, updateDto);            
         }
     }
 }

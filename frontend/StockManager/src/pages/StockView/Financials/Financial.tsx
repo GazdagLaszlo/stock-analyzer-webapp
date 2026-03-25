@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
 import type { StockDto } from '../../../../generated-sources/openapi';
 
-import Dividend from './Dividend';
 import Overview from './Overview';
 import Statements from './Statements';
 
@@ -19,28 +18,21 @@ const Financial = ({
       <p className="buttons mt-3">
         <Link
           to={`/app/stocks/${stock?.symbol}/financials/overview`}
-          className={`button ${subTab === 'overview' ? 'is-dark' : 'is-light'}`}
+          className={`button ${subTab === 'overview' ? 'button-navy' : 'is-light'}`}
         >
           Overview
         </Link>
         <Link
           to={`/app/stocks/${stock?.symbol}/financials/statements`}
-          className={`button ${subTab === 'statements' ? 'is-dark' : 'is-light'}`}
+          className={`button ${subTab === 'statements' ? 'button-navy' : 'is-light'}`}
         >
           Statements
-        </Link>
-        <Link
-          to={`/app/stocks/${stock?.symbol}/financials/dividend`}
-          className={`button ${subTab === 'dividend' ? 'is-dark' : 'is-light'}`}
-        >
-          Dividend
         </Link>
       </p>
 
       <div>
         {subTab === 'overview' && <Overview stock={stock} />}
         {subTab === 'statements' && <Statements stock={stock} />}
-        {subTab === 'dividend' && <Dividend stock={stock} />}
       </div>
     </div>
   );

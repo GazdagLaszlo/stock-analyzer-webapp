@@ -8,7 +8,6 @@ import type {
 } from '../../../generated-sources/openapi';
 
 import Overview from './Overview';
-import Technical from './Technical';
 import Financial from './Financials/Financial';
 import { useLivePrice } from '../../hooks/useLivePrice';
 
@@ -125,7 +124,7 @@ const StockView = () => {
         </ul>
       </nav>
 
-      <nav className="panel">
+      <nav className="panel" style={{ boxShadow: 'none' }}>
         <div
           className="panel-block is-flex is-justify-content-space-between is-align-items-center has-text-weight-bold py-6 px-5"
           style={{ height: '40vh' }}
@@ -153,7 +152,7 @@ const StockView = () => {
             <div className="is-flex is-justify-content-end">
               {onWatchlist ? (
                 <button
-                  className="button is-dark"
+                  className="button button-navy"
                   onClick={removeFromWatchlist}
                 >
                   <span className="icon mr-2" style={{ color: 'yellow' }}>
@@ -162,7 +161,7 @@ const StockView = () => {
                   In Watchlist
                 </button>
               ) : (
-                <button className="button is-dark" onClick={addToWatchlist}>
+                <button className="button button-navy" onClick={addToWatchlist}>
                   <span className="icon mr-2" style={{ color: 'white' }}>
                     <i className="fas fa-star"></i>
                   </span>
@@ -221,12 +220,6 @@ const StockView = () => {
             className={activeTab === 'financials' ? 'is-active' : ''}
           >
             Financials
-          </Link>
-          <Link
-            to={`/app/stocks/${symbol}/technical`}
-            className={activeTab === 'technical' ? 'is-active' : ''}
-          >
-            Technicals
           </Link>
         </p>
 

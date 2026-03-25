@@ -35,8 +35,7 @@ namespace StockManager.Services
 
                 bool isOpen = await updaterService.CheckMarketStatus();
 
-                var stocks = await stockService.GetAllAsync();
-                //Ellenőrizni, hogy mikor fusson a websocket és mikor kérjünk le árfolyamot. Ne fusson le mind a 2
+                var stocks = await stockService.GetAllAsync();                
 
                 try
                 {

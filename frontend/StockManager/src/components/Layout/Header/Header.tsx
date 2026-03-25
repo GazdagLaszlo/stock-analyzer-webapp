@@ -113,7 +113,7 @@ const Header = () => {
                 })}
                 to="/app/results"
               >
-                Trade statistics
+                Statistics
               </NavLink>
               <ProfileMenu onLogout={logout}></ProfileMenu>
             </div>

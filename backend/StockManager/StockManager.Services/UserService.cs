@@ -48,6 +48,7 @@ public class UserService(AppDbContext context, IMapper mapper) : IUserService
         {
             HttpOnly = true,
             Secure = true,
+            //Cross-site kérések miatt None a fejlesztés ideje alatt
             SameSite = SameSiteMode.None,
             Expires = DateTime.UtcNow.AddDays(7)
         });
@@ -78,7 +79,7 @@ public class UserService(AppDbContext context, IMapper mapper) : IUserService
         {
             HttpOnly = true,
             Secure = true,
-            //SameSite = SameSiteMode.Strict,
+            //Cross-site kérések miatt None a fejlesztés ideje alatt
             SameSite = SameSiteMode.None,
             Expires = DateTime.UtcNow.AddDays(7),
         });

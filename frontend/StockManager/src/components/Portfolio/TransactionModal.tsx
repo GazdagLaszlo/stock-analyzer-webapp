@@ -60,16 +60,17 @@ const TransactionModal = ({
   useEffect(() => {
     if (selectedStockProp) {
       setSelectedStock(selectedStockProp);
-      setTransactionCreateData((prev) => ({
-        ...prev,
+      setTransactionCreateData({
+        ...transactionCreateData,
         price: selectedStockProp.price?.toString() ?? '0',
-      }));
+      });
     }
   }, [selectedStockProp]);
 
   useEffect(() => {
     if (open) {
       loadStocks();
+      setSelectedStock(selectedStockProp);
     } else {
       clearTransactionData();
     }
@@ -362,6 +363,7 @@ const TransactionModal = ({
           setTransactionCreateData({
             ...transactionCreateData,
             price: stock?.price?.toString() ?? '0',
+            quantity: '0',
           });
           setStockModalOpen(false);
         }}

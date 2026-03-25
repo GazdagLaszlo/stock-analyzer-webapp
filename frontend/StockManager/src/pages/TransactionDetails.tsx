@@ -80,10 +80,16 @@ const TransactionDetails = () => {
   };
 
   if (!transaction)
-    return <div className="notification is-danger">Transaction not found.</div>;
+    return (
+      <div style={{ backgroundColor: COLORS.errorLight }}>
+        Transaction not found.
+      </div>
+    );
 
   const isBuy = transaction.transactionType === 0;
+  //Költségek nélkül
   const totalValue = (transaction.price || 0) * (transaction.quantity || 0);
+  //Költségekkel együtt
   const totalCost = isBuy
     ? totalValue + (transaction.fee || 0)
     : totalValue - (transaction.fee || 0);

@@ -98,7 +98,7 @@ namespace StockManager.Services
                 .Where(x => x.Stock.Symbol == symbol)
                 .ToListAsync();
             if(stockReports.Any(x => x.Year))
-            */            
+            */
 
             var getData = $"https://finnhub.io/api/v1/stock/financials-reported?symbol={symbol}&token={_finnhubApiKey}";
             while (true)
