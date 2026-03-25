@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
   TransactionType,
+  type PortfolioDto,
   type PortfolioItemDto,
   type StockDto,
 } from '../../../generated-sources/openapi';
@@ -22,9 +23,10 @@ type Props = {
     note: string;
     date: string;
   }) => void;
-  portfolioId: number | undefined;
+  portfolioId?: number | undefined;
   selectedStock?: StockDto;
-  portfolioItems: PortfolioItemDto[];
+  portfolioItems?: PortfolioItemDto[];
+  portfolios?: PortfolioDto[];
 };
 
 type TransactionCreateData = {
@@ -42,10 +44,13 @@ const TransactionModal = ({
   portfolioId,
   portfolioItems,
   selectedStock: selectedStockProp,
+  portfolios,
 }: Props) => {
   const { enqueueSnackbar } = useSnackbar();
   const [transactionType, setTransactionType] = useState<'Buy' | 'Sell'>('Buy');
   const [selectedStock, setSelectedStock] = useState<StockDto>();
+  const [selectedPortfolio, setSelectedPortfolio] =
+    useState<PortfolioDto | null>();
   const [transactionCreateData, setTransactionCreateData] =
     useState<TransactionCreateData>({
       price: '',
@@ -56,6 +61,11 @@ const TransactionModal = ({
     });
   const [stocks, setStocks] = useState<StockDto[]>([]);
   const [stockModalOpen, setStockModalOpen] = useState(false);
+
+  const currentPortfolioId = portfolioId ?? selectedPortfolio?.id;
+  const currentPortfolioItems = portfolioId
+    ? (portfolioItems ?? [])
+    : (selectedPortfolio?.portfolioItems ?? []);
 
   useEffect(() => {
     if (selectedStockProp) {
@@ -74,10 +84,10 @@ const TransactionModal = ({
     } else {
       clearTransactionData();
     }
-  }, [transactionType, open]);
+  }, [transactionType, open, currentPortfolioId]);
 
   useEffect(() => {
-    const available = portfolioItems.find(
+    const available = currentPortfolioItems.find(
       (x) => x.stock?.id == selectedStock?.id
     )?.quantity;
 
@@ -102,7 +112,7 @@ const TransactionModal = ({
         setStocks(res.data);
       } else if (transactionType == 'Sell') {
         const portfolioStocks =
-          portfolioItems
+          currentPortfolioItems
             .filter((item) => item.stock !== undefined)
             .map((item) => item.stock as StockDto) ?? [];
 
@@ -123,6 +133,7 @@ const TransactionModal = ({
     });
     setSelectedStock(undefined);
     setTransactionType('Buy');
+    setSelectedPortfolio(null);
   };
 
   const create = () => {
@@ -131,8 +142,13 @@ const TransactionModal = ({
       return;
     }
 
-    if (portfolioId == null) {
+    if (currentPortfolioId == null) {
       enqueueSnackbar('Please select a portfolio.', { variant: 'warning' });
+      return;
+    }
+
+    if (Number(transactionCreateData.quantity) == 0) {
+      enqueueSnackbar('The quantity cannot be 0.', { variant: 'warning' });
       return;
     }
 
@@ -145,7 +161,7 @@ const TransactionModal = ({
           ? TransactionType.NUMBER_0
           : TransactionType.NUMBER_1,
       stockId: selectedStock.id,
-      portfolioId,
+      portfolioId: currentPortfolioId,
       note: transactionCreateData.note,
       date: transactionCreateData.date,
     });
@@ -195,6 +211,29 @@ const TransactionModal = ({
                 </button>
               </div>
             </div>
+            {!portfolioId && (
+              <div className="field">
+                <label className="label">Portfolio</label>
+                <div className="control select is-fullwidth">
+                  <select
+                    value={selectedPortfolio?.id ?? ''}
+                    onChange={(e) => {
+                      const portfolio = portfolios?.find(
+                        (x) => x.id == Number(e.target.value)
+                      );
+                      setSelectedPortfolio(portfolio);
+                    }}
+                  >
+                    <option value="">Select Portfolio</option>
+                    {portfolios?.map((portfolio) => (
+                      <option key={portfolio.id} value={portfolio.id}>
+                        {portfolio.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            )}
 
             <div className="columns mb-0">
               <div className="field column is-6 mb-0">
@@ -250,7 +289,7 @@ const TransactionModal = ({
                     className="button"
                     style={{ backgroundColor: COLORS.infoBox }}
                     onClick={() => {
-                      const available = portfolioItems
+                      const available = currentPortfolioItems
                         .find((x) => x.stock?.id == selectedStock?.id)
                         ?.quantity?.toFixed(2);
                       if (available) {
@@ -262,7 +301,7 @@ const TransactionModal = ({
                     }}
                   >
                     Max (
-                    {portfolioItems
+                    {currentPortfolioItems
                       .find((x) => x.stock?.id == selectedStock?.id)
                       ?.quantity?.toFixed(2)}
                     )
@@ -276,7 +315,7 @@ const TransactionModal = ({
                 className="is-size-7 mb-3"
               >
                 Available:{' '}
-                {portfolioItems
+                {currentPortfolioItems
                   .find((x) => x.stock?.id == selectedStock?.id)
                   ?.quantity?.toFixed(2)}{' '}
                 shares

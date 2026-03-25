@@ -38,7 +38,6 @@ export const useStockHub = (symbols: string[]) => {
     });
 
     connection.onclose(async () => {
-      console.log('SignalR connection closed. Trying to reconnect...');
       try {
         await connection.start();
         console.log('SignalR reconnected after close');

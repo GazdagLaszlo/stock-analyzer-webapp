@@ -35,7 +35,7 @@ namespace StockManager.Services
 
                 bool isOpen = await updaterService.CheckMarketStatus();
 
-                var stocks = await stockService.GetAllAsync();                
+                var stocks = await stockService.GetAllAsync();
 
                 try
                 {

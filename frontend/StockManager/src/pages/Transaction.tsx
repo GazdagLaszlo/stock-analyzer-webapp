@@ -1,16 +1,21 @@
 import { useState } from 'react';
-import type { TransactionDto } from '../../generated-sources/openapi';
+import type {
+  TransactionDto,
+  TransactionType,
+} from '../../generated-sources/openapi';
 import api from '../api/api';
 import { formatMoney } from '../utils/formatMoney';
 import TransactionDeleteModal from '../components/Transaction/TransactionDeleteModal';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
+import TransactionModal from '../components/Portfolio/TransactionModal';
 
 const Transaction = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [selectedTransaction, setSelectedTransaction] =
     useState<TransactionDto>();
+  const [transactionModalOpen, setTransactionModalOpen] = useState(false);
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
@@ -26,6 +31,32 @@ const Transaction = () => {
           new Date(b.date ?? 0).getTime() - new Date(a.date ?? 0).getTime()
       ),
   });
+
+  const { data: portfolios = [] } = useQuery({
+    queryKey: ['portfolios'],
+    queryFn: async () => {
+      const res = await api.Portfolio.apiPortfolioGetAllGet();
+      return res.data;
+    },
+  });
+
+  const createTransaction = async (dto: {
+    price: number;
+    quantity: number;
+    fee: number;
+    transactionType: TransactionType;
+    stockId?: number;
+    portfolioId: number;
+    note: string;
+    date: string;
+  }) => {
+    await api.Transaction.apiTransactionCreatePost(dto);
+    queryClient.invalidateQueries({
+      queryKey: ['transactions'],
+    });
+
+    setTransactionModalOpen(false);
+  };
 
   const deleteTransaction = async (id: number | undefined) => {
     if (!id) {
@@ -49,67 +80,77 @@ const Transaction = () => {
         Transactions
       </h1>
       {transactionsLoading ? (
-        <div
-          className="mt-6"
-          style={{ overflowY: 'scroll', width: '100%', height: '50vh' }}
-        >
-          <table className="custom-table">
-            <thead>
-              <tr>
-                <th style={{ width: '4vw' }}></th>
-                <th style={{ width: '8vw' }}>Symbol</th>
-                <th style={{ width: '18vw' }}>Company name</th>
-                <th style={{ width: '10vw' }}>Date</th>
-                <th style={{ width: '10vw' }}>Price</th>
-                <th style={{ width: '10vw' }}>Quantity</th>
-                <th style={{ width: '8vw' }}>Fee</th>
-                <th style={{ width: '10vw' }}>Total</th>
-                <th style={{ width: '8vw' }}>Transaction</th>
-                <th style={{ width: '5vw' }}>Note</th>
-                <th style={{ width: '4vw' }}></th>
-              </tr>
-            </thead>
-            <tbody>
-              {[...Array(5)].map((_, i) => (
-                <tr key={i}>
-                  <td style={{ width: '4vw' }}>
-                    <div className="skeleton skeleton-text"></div>
-                  </td>
-                  <td style={{ width: '8vw' }}>
-                    <div className="skeleton skeleton-text"></div>
-                  </td>
-                  <td style={{ width: '18vw' }}>
-                    <div className="skeleton skeleton-text"></div>
-                  </td>
-                  <td style={{ width: '10vw' }}>
-                    <div className="skeleton skeleton-text"></div>
-                  </td>
-                  <td style={{ width: '10vw' }}>
-                    <div className="skeleton skeleton-text"></div>
-                  </td>
-                  <td style={{ width: '10vw' }}>
-                    <div className="skeleton skeleton-text"></div>
-                  </td>
-                  <td style={{ width: '8vw' }}>
-                    <div className="skeleton skeleton-text"></div>
-                  </td>
-                  <td style={{ width: '10vw' }}>
-                    <div className="skeleton skeleton-text"></div>
-                  </td>
-                  <td style={{ width: '8vw' }}>
-                    <div className="skeleton skeleton-text"></div>
-                  </td>
-                  <td style={{ width: '5vw' }}>
-                    <div className="skeleton skeleton-text"></div>
-                  </td>
-                  <td style={{ width: '4vw' }}>
-                    <div className="skeleton skeleton-text"></div>
-                  </td>
+        <>
+          <div className="is-flex is-justify-content-right mb-5">
+            <button
+              className="button button-navy is-dark"
+              onClick={() => setTransactionModalOpen(true)}
+            >
+              Add Transaction
+            </button>
+          </div>
+          <div
+            className="mt-6"
+            style={{ overflowY: 'scroll', width: '100%', height: '50vh' }}
+          >
+            <table className="custom-table">
+              <thead>
+                <tr>
+                  <th style={{ width: '4vw' }}></th>
+                  <th style={{ width: '8vw' }}>Symbol</th>
+                  <th style={{ width: '18vw' }}>Company name</th>
+                  <th style={{ width: '10vw' }}>Date</th>
+                  <th style={{ width: '10vw' }}>Price</th>
+                  <th style={{ width: '10vw' }}>Quantity</th>
+                  <th style={{ width: '8vw' }}>Fee</th>
+                  <th style={{ width: '10vw' }}>Total</th>
+                  <th style={{ width: '8vw' }}>Transaction</th>
+                  <th style={{ width: '5vw' }}>Note</th>
+                  <th style={{ width: '4vw' }}></th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {[...Array(5)].map((_, i) => (
+                  <tr key={i}>
+                    <td style={{ width: '4vw' }}>
+                      <div className="skeleton skeleton-text"></div>
+                    </td>
+                    <td style={{ width: '8vw' }}>
+                      <div className="skeleton skeleton-text"></div>
+                    </td>
+                    <td style={{ width: '18vw' }}>
+                      <div className="skeleton skeleton-text"></div>
+                    </td>
+                    <td style={{ width: '10vw' }}>
+                      <div className="skeleton skeleton-text"></div>
+                    </td>
+                    <td style={{ width: '10vw' }}>
+                      <div className="skeleton skeleton-text"></div>
+                    </td>
+                    <td style={{ width: '10vw' }}>
+                      <div className="skeleton skeleton-text"></div>
+                    </td>
+                    <td style={{ width: '8vw' }}>
+                      <div className="skeleton skeleton-text"></div>
+                    </td>
+                    <td style={{ width: '10vw' }}>
+                      <div className="skeleton skeleton-text"></div>
+                    </td>
+                    <td style={{ width: '8vw' }}>
+                      <div className="skeleton skeleton-text"></div>
+                    </td>
+                    <td style={{ width: '5vw' }}>
+                      <div className="skeleton skeleton-text"></div>
+                    </td>
+                    <td style={{ width: '4vw' }}>
+                      <div className="skeleton skeleton-text"></div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       ) : transactions.length === 0 ? (
         <div
           className="is-flex is-flex-direction-column is-justify-content-center is-align-items-center"
@@ -134,97 +175,112 @@ const Transaction = () => {
           </div>
         </div>
       ) : (
-        <div
-          className="mt-6"
-          style={{ overflowY: 'scroll', width: '100%', height: '50vh' }}
-        >
-          <table className="custom-table">
-            <thead>
-              <tr>
-                <th style={{ width: '4vw' }}></th>
-                <th style={{ width: '8vw' }}>Symbol</th>
-                <th style={{ width: '18vw' }}>Company name</th>
-                <th style={{ width: '10vw' }}>Date</th>
-                <th style={{ width: '10vw' }}>Price</th>
-                <th style={{ width: '10vw' }}>Quantity</th>
-                <th style={{ width: '8vw' }}>Fee</th>
-                <th style={{ width: '10vw' }}>Total</th>
-                <th style={{ width: '8vw' }}>Transaction</th>
-                <th style={{ width: '4vw' }}></th>
-              </tr>
-            </thead>
-            <tbody>
-              {transactions.map((transaction) => (
-                <tr
-                  key={transaction.id}
-                  onClick={() =>
-                    navigate(`/app/transactions/${transaction.id}`)
-                  }
-                >
-                  <td style={{ width: '4vw' }}>
-                    <figure className="image is-24x24">
-                      <img
-                        className="border-radius-5"
-                        src={`https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${transaction.stock?.symbol}.png`}
-                      />
-                    </figure>
-                  </td>
-                  <td style={{ width: '8vw' }}>{transaction.stock?.symbol}</td>
-                  <td style={{ width: '18vw' }}>
-                    {transaction.stock?.companyName}
-                  </td>
-                  <td style={{ width: '10vw' }}>
-                    {transaction.date
-                      ? new Date(transaction.date).toLocaleDateString()
-                      : '-'}
-                  </td>
-                  <td style={{ width: '10vw' }}>
-                    {transaction.price?.toLocaleString('en-US', {
-                      maximumFractionDigits: 2,
-                    })}{' '}
-                    USD
-                  </td>
-                  <td style={{ width: '10vw' }}>
-                    {transaction.quantity?.toFixed(4)}
-                  </td>
-                  <td style={{ width: '8vw' }}>
-                    {formatMoney(transaction.fee ?? 0)} USD
-                  </td>
-                  <td style={{ width: '10vw' }}>
-                    {formatMoney(
-                      (transaction.price ?? 0) * (transaction.quantity ?? 0) +
-                        (transaction.fee ?? 0)
-                    )}{' '}
-                    USD
-                  </td>
-                  <td
-                    style={{
-                      color:
-                        transaction.transactionType === 0 ? 'green' : 'red',
-                      width: '8vw',
-                    }}
+        <>
+          <div
+            className="is-flex is-justify-content-right mb-5"
+            style={{ width: '100%' }}
+          >
+            <button
+              className="button button-navy is-dark"
+              onClick={() => setTransactionModalOpen(true)}
+            >
+              Add transaction
+            </button>
+          </div>
+          <div
+            className="mt-5"
+            style={{ overflowY: 'scroll', width: '100%', height: '50vh' }}
+          >
+            <table className="custom-table">
+              <thead>
+                <tr>
+                  <th style={{ width: '4vw' }}></th>
+                  <th style={{ width: '8vw' }}>Symbol</th>
+                  <th style={{ width: '18vw' }}>Company name</th>
+                  <th style={{ width: '10vw' }}>Date</th>
+                  <th style={{ width: '10vw' }}>Price</th>
+                  <th style={{ width: '10vw' }}>Quantity</th>
+                  <th style={{ width: '8vw' }}>Fee</th>
+                  <th style={{ width: '15vw' }}>Total</th>
+                  <th style={{ width: '8vw' }}>Transaction</th>
+                  <th style={{ width: '4vw' }}></th>
+                </tr>
+              </thead>
+              <tbody>
+                {transactions.map((transaction) => (
+                  <tr
+                    key={transaction.id}
+                    onClick={() =>
+                      navigate(`/app/transactions/${transaction.id}`)
+                    }
                   >
-                    {transaction.transactionType === 0 ? 'Buy' : 'Sell'}
-                  </td>
-                  <td style={{ width: '4vw' }}>
-                    <button
-                      className="button is-small"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setDeleteModalOpen(true);
-                        setSelectedTransaction(transaction);
+                    <td style={{ width: '4vw' }}>
+                      <figure className="image is-24x24">
+                        <img
+                          className="border-radius-5"
+                          src={`https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${transaction.stock?.symbol}.png`}
+                        />
+                      </figure>
+                    </td>
+                    <td style={{ width: '8vw' }}>
+                      {transaction.stock?.symbol}
+                    </td>
+                    <td style={{ width: '18vw' }}>
+                      {transaction.stock?.companyName}
+                    </td>
+                    <td style={{ width: '10vw' }}>
+                      {transaction.date
+                        ? new Date(transaction.date).toLocaleDateString()
+                        : '-'}
+                    </td>
+                    <td style={{ width: '10vw' }}>
+                      {transaction.price?.toLocaleString('en-US', {
+                        maximumFractionDigits: 2,
+                      })}{' '}
+                      USD
+                    </td>
+                    <td style={{ width: '10vw' }}>
+                      {transaction.quantity?.toFixed(4)}
+                    </td>
+                    <td style={{ width: '8vw' }}>
+                      {formatMoney(transaction.fee ?? 0)} USD
+                    </td>
+                    <td style={{ width: '15vw' }}>
+                      {formatMoney(
+                        (transaction.price ?? 0) * (transaction.quantity ?? 0) +
+                          (transaction.fee ?? 0)
+                      )}{' '}
+                      USD
+                    </td>
+                    <td
+                      style={{
+                        color:
+                          transaction.transactionType === 0 ? 'green' : 'red',
+                        width: '8vw',
                       }}
                     >
-                      <span className="icon">
-                        <i className="fa-regular fa-trash-can"></i>
-                      </span>
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                      {transaction.transactionType === 0 ? 'Buy' : 'Sell'}
+                    </td>
+                    <td style={{ width: '4vw' }}>
+                      <button
+                        className="button is-small"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setDeleteModalOpen(true);
+                          setSelectedTransaction(transaction);
+                        }}
+                      >
+                        <span className="icon">
+                          <i className="fa-regular fa-trash-can"></i>
+                        </span>
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
 
       <TransactionDeleteModal
@@ -232,6 +288,14 @@ const Transaction = () => {
         selectedTransactionId={selectedTransaction?.id}
         onClose={() => setDeleteModalOpen(false)}
         onDelete={deleteTransaction}
+      />
+      <TransactionModal
+        open={transactionModalOpen}
+        onClose={() => {
+          setTransactionModalOpen(false);
+        }}
+        onCreate={createTransaction}
+        portfolios={portfolios}
       />
     </div>
   );

@@ -37,10 +37,6 @@ export const LiveStockPriceProvider = ({
     }
   }, []);
 
-  useEffect(() => {
-    console.log('Active symbols:', symbols);
-  }, [symbols]);
-
   const unregisterSymbols = useCallback((oldSymbols: string[]) => {
     const toRemove: string[] = [];
 

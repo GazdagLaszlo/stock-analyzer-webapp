@@ -88,6 +88,10 @@ const Portfolio = () => {
     }
   }, [portfolioId, portfolios]);
 
+  useEffect(() => {
+    fetchPortfolios();
+  }, []);
+
   const createTransaction = async (dto: {
     price: number;
     quantity: number;
