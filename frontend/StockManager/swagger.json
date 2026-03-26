@@ -1278,6 +1278,13 @@
             "schema": {
               "$ref": "#/components/schemas/TransactionType"
             }
+          },
+          {
+            "name": "portfolioId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {

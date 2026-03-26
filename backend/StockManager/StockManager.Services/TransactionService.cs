@@ -16,7 +16,7 @@ namespace StockManager.Services
     public interface ITransactionService
     {
         Task CreateAsync(TransactionCreateDto transactionCreateDto, int userId);
-        Task<IList<TransactionDto>> GetAllAsync(int userId, TransactionType? type);
+        Task<IList<TransactionDto>> GetAllAsync(int userId, TransactionType? type, string portfolioId);
         Task<TransactionDto> GetByIdAsync(int id);
         Task<TransactionDto> UpdateAsync(int id, TransactionUpdateDto updateDto);
         Task DeleteAsync(int id);
@@ -136,12 +136,23 @@ namespace StockManager.Services
             await context.AddAsync(transaction);
             await context.SaveChangesAsync();
         }
-        public async Task<IList<TransactionDto>> GetAllAsync(int userId, TransactionType? type)
+        public async Task<IList<TransactionDto>> GetAllAsync(int userId, TransactionType? type, string portfolioId)
         {
-            var transactions = await context.Transactions
-                .IgnoreQueryFilters()
+            var query = context.Transactions
                 .Include(x => x.Stock)
-                .Where(x => x.UserId == userId && (type == null || x.TransactionType == type))
+                .Include(x => x.PortfolioItem)
+                    .ThenInclude(x => x.Portfolio)
+                .AsQueryable();
+
+            query = query.Where(x => x.UserId == userId && (type == null || x.TransactionType == type));
+
+            if (!string.IsNullOrWhiteSpace(portfolioId))
+            {
+                query = query.Where(x => x.PortfolioItem != null && x.PortfolioItem.Portfolio.Id == int.Parse(portfolioId));
+            }
+
+            var transactions = await query
+                .IgnoreQueryFilters()
                 .ToListAsync();
 
             return mapper.Map<IList<TransactionDto>>(transactions);

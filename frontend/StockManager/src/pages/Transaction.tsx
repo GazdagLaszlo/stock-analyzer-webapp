@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type {
+  PortfolioDto,
   TransactionDto,
   TransactionType,
 } from '../../generated-sources/openapi';
@@ -15,14 +16,19 @@ const Transaction = () => {
   const queryClient = useQueryClient();
   const [selectedTransaction, setSelectedTransaction] =
     useState<TransactionDto>();
+  const [selectedPortfolioId, setSelectedPortfolioId] = useState<
+    number | undefined
+  >();
   const [transactionModalOpen, setTransactionModalOpen] = useState(false);
-
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   const { data: transactions = [], isLoading: transactionsLoading } = useQuery({
-    queryKey: ['transactions'],
+    queryKey: ['transactions', selectedPortfolioId],
     queryFn: async () => {
-      const res = await api.Transaction.apiTransactionGetAllGet();
+      const res = await api.Transaction.apiTransactionGetAllGet(
+        undefined,
+        selectedPortfolioId !== undefined ? selectedPortfolioId?.toString() : ''
+      );
       return res.data;
     },
     select: (data) =>
@@ -32,7 +38,15 @@ const Transaction = () => {
       ),
   });
 
-  const { data: portfolios = [] } = useQuery({
+  const { data: allTransactions = [] } = useQuery({
+    queryKey: ['transactions', 'all'],
+    queryFn: async () => {
+      const res = await api.Transaction.apiTransactionGetAllGet();
+      return res.data;
+    },
+  });
+
+  const { data: portfolios = [] } = useQuery<PortfolioDto[]>({
     queryKey: ['portfolios'],
     queryFn: async () => {
       const res = await api.Portfolio.apiPortfolioGetAllGet();
@@ -81,12 +95,36 @@ const Transaction = () => {
       </h1>
       {transactionsLoading ? (
         <>
-          <div className="is-flex is-justify-content-right mb-5">
+          <div
+            className="is-flex is-justify-content-space-between"
+            style={{ width: '100%' }}
+          >
+            <div className="field mb-0">
+              <div className="control">
+                <div className="select is-fullwidth" style={{ width: '20vw' }}>
+                  <select
+                    value={selectedPortfolioId ?? ''}
+                    onChange={(e) => {
+                      setSelectedPortfolioId(
+                        e.target.value ? Number(e.target.value) : undefined
+                      );
+                    }}
+                  >
+                    <option value="">All portfolios</option>
+                    {portfolios.map((portfolio) => (
+                      <option key={portfolio.id} value={portfolio.id ?? ''}>
+                        {portfolio.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
             <button
               className="button button-navy is-dark"
               onClick={() => setTransactionModalOpen(true)}
             >
-              Add Transaction
+              Add transaction
             </button>
           </div>
           <div
@@ -151,7 +189,7 @@ const Transaction = () => {
             </table>
           </div>
         </>
-      ) : transactions.length === 0 ? (
+      ) : allTransactions.length === 0 ? (
         <div
           className="is-flex is-flex-direction-column is-justify-content-center is-align-items-center"
           style={{ marginTop: '5vh' }}
@@ -177,9 +215,30 @@ const Transaction = () => {
       ) : (
         <>
           <div
-            className="is-flex is-justify-content-right mb-5"
+            className="is-flex is-justify-content-space-between mb-5"
             style={{ width: '100%' }}
           >
+            <div className="field mb-0">
+              <div className="control">
+                <div className="select is-fullwidth" style={{ width: '20vw' }}>
+                  <select
+                    value={selectedPortfolioId}
+                    onChange={(e) => {
+                      setSelectedPortfolioId(
+                        e.target.value ? Number(e.target.value) : undefined
+                      );
+                    }}
+                  >
+                    <option value="">All portfolios</option>
+                    {portfolios.map((portfolio) => (
+                      <option key={portfolio.id} value={portfolio.id ?? ''}>
+                        {portfolio.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
             <button
               className="button button-navy is-dark"
               onClick={() => setTransactionModalOpen(true)}
