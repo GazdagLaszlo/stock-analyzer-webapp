@@ -1,12 +1,54 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import useAuth from '../hooks/useAuth';
 import { AuthContext } from '../context/AuthContext';
 import { COLORS } from '../constants/colors';
+import ChangePasswordModal, {
+  type ChangePasswordForm,
+} from '../components/ChangePasswordModal';
+import api from '../api/api';
+import { enqueueSnackbar } from 'notistack';
 
 const Profile = () => {
   const { username, email, role } = useContext(AuthContext);
+  const [changePasswordModalOpen, setChangePasswordModalOpen] = useState(false);
 
   const { logout } = useAuth();
+
+  const changePassword = async (form: ChangePasswordForm) => {
+    if (
+      form.oldPassword == '' ||
+      form.newPassword == '' ||
+      form.confirmPassword == ''
+    ) {
+      enqueueSnackbar('Please fill all fields!', { variant: 'warning' });
+      return;
+    }
+
+    if (form.oldPassword == form.newPassword) {
+      enqueueSnackbar(
+        'The new password cannot be the same as the old password!',
+        { variant: 'warning' }
+      );
+      return;
+    }
+
+    if (form.newPassword.length < 8) {
+      enqueueSnackbar('The password must be at least 8 characters long!', {
+        variant: 'warning',
+      });
+      return;
+    }
+
+    try {
+      await api.User.apiUserChangePasswordPut(form);
+      enqueueSnackbar('Password changed successfully!', { variant: 'success' });
+      setChangePasswordModalOpen(false);
+    } catch (error: any) {
+      if (error?.response?.status === 401 && error.response.data?.message) {
+        enqueueSnackbar(error.response.data.message, { variant: 'error' });
+      }
+    }
+  };
 
   return (
     <div
@@ -51,7 +93,7 @@ const Profile = () => {
                 height: '5vh',
                 cursor: 'pointer',
               }}
-              onClick={() => console.log('change password')}
+              onClick={() => setChangePasswordModalOpen(true)}
             >
               <span className="icon mr-2">
                 <i className="fa-solid fa-key"></i>
@@ -77,6 +119,11 @@ const Profile = () => {
           </div>
         </div>
       </div>
+      <ChangePasswordModal
+        open={changePasswordModalOpen}
+        onClose={() => setChangePasswordModalOpen(false)}
+        onChange={(form) => changePassword(form)}
+      />
     </div>
   );
 };

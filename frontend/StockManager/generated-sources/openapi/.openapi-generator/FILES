@@ -7,6 +7,7 @@ configuration.ts
 docs/ArticleApi.md
 docs/ArticleCreateUpdateDto.md
 docs/ArticleDto.md
+docs/ChangePasswordDto.md
 docs/ClosedTradeDto.md
 docs/Earningscalendar.md
 docs/PeriodType.md

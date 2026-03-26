@@ -92,11 +92,12 @@ const Register = () => {
               <label className="label">Email</label>
               <div className="control">
                 <input
-                  className={`input ${
-                    loginError?.toLowerCase().includes('email')
-                      ? 'is-danger'
-                      : ''
-                  }`}
+                  className={'input'}
+                  style={{
+                    color: loginError?.toLowerCase().includes('email')
+                      ? COLORS.error
+                      : COLORS.text,
+                  }}
                   required
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
@@ -108,11 +109,12 @@ const Register = () => {
               <label className="label">Password</label>
               <div className="control">
                 <input
-                  className={`input ${
-                    loginError?.toLowerCase().includes('password')
-                      ? 'is-danger'
-                      : ''
-                  }`}
+                  className={'input'}
+                  style={{
+                    color: loginError?.toLowerCase().includes('password')
+                      ? COLORS.error
+                      : COLORS.text,
+                  }}
                   type="password"
                   required
                   value={form.password}
@@ -127,11 +129,12 @@ const Register = () => {
               <label className="label">Confirm Password</label>
               <div className="control">
                 <input
-                  className={`input ${
-                    loginError?.toLowerCase().includes('password')
-                      ? 'is-danger'
-                      : ''
-                  }`}
+                  className={'input'}
+                  style={{
+                    color: loginError?.toLowerCase().includes('password')
+                      ? COLORS.error
+                      : COLORS.text,
+                  }}
                   type="password"
                   required
                   value={form.confirmPassword}
@@ -143,7 +146,10 @@ const Register = () => {
             </div>
 
             {loginError && (
-              <p className="help is-danger has-text-centered mt-2 is-size-6">
+              <p
+                className="help has-text-centered mt-2 is-size-6"
+                style={{ color: COLORS.error }}
+              >
                 {loginError}
               </p>
             )}

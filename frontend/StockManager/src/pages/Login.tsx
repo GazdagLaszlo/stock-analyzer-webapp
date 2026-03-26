@@ -112,7 +112,10 @@ const Login = () => {
               </div>
             </div>
             {loginError && (
-              <p className="help is-danger mt-3 has-text-centered">
+              <p
+                className="help mt-3 has-text-centered"
+                style={{ color: COLORS.error }}
+              >
                 {loginError}
               </p>
             )}

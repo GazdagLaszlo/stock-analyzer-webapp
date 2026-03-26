@@ -121,7 +121,7 @@ const Transaction = () => {
               </div>
             </div>
             <button
-              className="button button-navy is-dark"
+              className="button button-navy"
               onClick={() => setTransactionModalOpen(true)}
             >
               Add transaction
@@ -240,7 +240,7 @@ const Transaction = () => {
               </div>
             </div>
             <button
-              className="button button-navy is-dark"
+              className="button button-navy"
               onClick={() => setTransactionModalOpen(true)}
             >
               Add transaction

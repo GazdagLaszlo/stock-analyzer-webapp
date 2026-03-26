@@ -99,4 +99,20 @@ public class UserController(IUserService userService) : ControllerBase
         await userService.DeleteUserAsync(id);
         return Ok(new { message = "User deleted successfully." });
     }
+
+    [HttpPut]        
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
+    {
+        try
+        {
+            await userService.ChangePassword(UserId, dto);
+            return Ok();
+        } catch (InvalidOperationException ex)
+        {
+            return Unauthorized(new {message=ex.Message});
+        }catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+    }
 }

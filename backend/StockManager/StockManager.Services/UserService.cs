@@ -24,6 +24,7 @@ public interface IUserService
     Task<IList<UserDto>> GetAllUsersAsync();
     Task DeleteUserAsync(int userId);
     Task<UserDto> Me(int userId);
+    Task ChangePassword(int userId, ChangePasswordDto dto);
 }
 
 public class UserService(AppDbContext context, IMapper mapper) : IUserService
@@ -178,11 +179,30 @@ public class UserService(AppDbContext context, IMapper mapper) : IUserService
             throw new KeyNotFoundException($"User not found with id: {userId}");
         }
 
-        mapper.Map(userUpdateDto, user);
+        user.Name = userUpdateDto.Name;
+        user.Email = userUpdateDto.Email;        
 
         await context.SaveChangesAsync();
 
         return mapper.Map<UserDto>(user);
+    }
+
+    public async Task ChangePassword(int userId, ChangePasswordDto dto)
+    {
+        var user = await context.Users
+            .FirstOrDefaultAsync(x => x.Id == userId);
+        if (user == null)
+        {
+            throw new KeyNotFoundException($"User not found with id: {userId}");
+        }
+
+        if(!BCrypt.Net.BCrypt.Verify(dto.OldPassword, user.PasswordHash))
+        {
+            throw new InvalidOperationException("Old password is incorrect");
+        }
+
+        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
+        await context.SaveChangesAsync();
     }
 
     public async Task DeleteUserAsync(int userId)

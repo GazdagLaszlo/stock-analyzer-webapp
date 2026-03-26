@@ -120,7 +120,7 @@ const Watchlist = () => {
         <>
           <div className="is-flex is-justify-content-right my-5">
             <button
-              className="button button-navy is-dark"
+              className="button button-navy"
               onClick={() => setStockModalOpen(true)}
             >
               Add stocks
@@ -169,7 +169,7 @@ const Watchlist = () => {
         <>
           <div className="is-flex is-justify-content-right my-5">
             <button
-              className="button button-navy is-dark"
+              className="button button-navy"
               onClick={() => setStockModalOpen(true)}
             >
               Add stocks
