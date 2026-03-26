@@ -21,6 +21,7 @@ const StockView = () => {
   const [stock, setStock] = useState<StockDto>();
   const [stockQuote, setStockQuote] = useState<StockQuote>();
   const [onWatchlist, setOnWatchlist] = useState<true | false>(false);
+  const [imageError, setImageError] = useState(false);
 
   const activeTab = tab || 'overview';
 
@@ -130,14 +131,24 @@ const StockView = () => {
           style={{ height: '40vh' }}
         >
           <div className="is-flex is-align-items-flex-end">
-            <figure className="image">
-              <img
-                className="border-radius-10"
-                style={{ height: '25vh' }}
-                src={`https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${stock?.symbol}.png`}
-                alt={`${stock?.symbol} logo`}
-              />
-            </figure>
+            {!imageError ? (
+              <figure className="image">
+                <img
+                  className="border-radius-10"
+                  style={{ height: '25vh' }}
+                  src={`https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${stock?.symbol}.png`}
+                  alt={`${stock?.symbol} logo`}
+                  onError={() => setImageError(true)}
+                />
+              </figure>
+            ) : (
+              <span
+                className="icon is-small has-text-grey-light has-background-light border-radius-5"
+                style={{ height: '25vh', width: '15vw' }}
+              >
+                <i className="fas fa-chart-line fa-4x"></i>
+              </span>
+            )}
             <div className="ml-5">
               <p className="is-size-3 has-font-weight-bold">
                 {stock?.companyName} ({stock?.symbol})
@@ -228,7 +239,6 @@ const StockView = () => {
           {activeTab === 'financials' && (
             <Financial stock={stock} activeSubTab={subtab} />
           )}
-          {activeTab === 'technical' && <Technical stock={stock} />}
         </div>
       </nav>
     </div>

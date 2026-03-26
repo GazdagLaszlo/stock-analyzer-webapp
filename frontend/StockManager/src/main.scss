@@ -257,3 +257,13 @@ header .navbar-item {
 .menu-list a.is-active {
   background-color: rgb(11, 39, 71);
 }
+
+.tabs li.is-active a {
+  border-bottom-color: #0b2747;
+  background-color: #0b2747 !important;
+  border-color: #0b2747 !important;
+}
+
+.tabs li.is-active a span {
+  color: #f8fafc !important;
+}

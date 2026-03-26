@@ -11,7 +11,7 @@ import UpdateUserModal from '../components/Portfolio/UpdateUserModal';
 import type { UserUpdateDto } from '../../generated-sources/openapi';
 
 const Profile = () => {
-  const { username, email, role } = useContext(AuthContext);
+  const { username, email, role, setUsername } = useContext(AuthContext);
   const [changePasswordModalOpen, setChangePasswordModalOpen] = useState(false);
   const [updateUserModalOpen, setUpdateUserModalOpen] = useState(false);
 
@@ -19,10 +19,13 @@ const Profile = () => {
 
   const updateUser = async (form: UserUpdateDto) => {
     try {
-      await api.User.apiUserUpdateOwnProfilePut(form);
+      if (form.name) {
+        await api.User.apiUserUpdateOwnProfilePut(form);
 
-      enqueueSnackbar('Profile edited successfully!', { variant: 'success' });
-      setUpdateUserModalOpen(false);
+        enqueueSnackbar('Profile edited successfully!', { variant: 'success' });
+        setUsername(form.name);
+        setUpdateUserModalOpen(false);
+      }
     } catch (error: any) {
       enqueueSnackbar('Error while editing profile!', { variant: 'error' });
       console.log(error);

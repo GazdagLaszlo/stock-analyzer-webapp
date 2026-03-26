@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { type StockDto } from '../../../generated-sources/openapi';
+import StockImage from '../../pages/StockImage';
 
 type Props = {
   open: boolean;
@@ -61,10 +62,7 @@ const StockSelectModal = ({ open, onClose, stocks, onSelectStock }: Props) => {
                     <td>{index + 1}</td>
                     <td>
                       <figure className="image is-24x24">
-                        <img
-                          className="border-radius-5"
-                          src={`https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${stock.symbol}.png`}
-                        />
+                        <StockImage symbol={stock.symbol ?? ''} />
                       </figure>
                     </td>
                     <td>{stock.symbol}</td>

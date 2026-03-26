@@ -10,6 +10,7 @@ import TransactionDeleteModal from '../components/Transaction/TransactionDeleteM
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import TransactionModal from '../components/Portfolio/TransactionModal';
+import StockImage from './StockImage';
 
 const Transaction = () => {
   const navigate = useNavigate();
@@ -275,10 +276,7 @@ const Transaction = () => {
                   >
                     <td style={{ width: '4vw' }}>
                       <figure className="image is-24x24">
-                        <img
-                          className="border-radius-5"
-                          src={`https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${transaction.stock?.symbol}.png`}
-                        />
+                        <StockImage symbol={transaction.stock?.symbol ?? ''} />
                       </figure>
                     </td>
                     <td style={{ width: '8vw' }}>

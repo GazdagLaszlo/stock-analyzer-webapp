@@ -50,24 +50,29 @@ const Dashboard = () => {
                 style={{
                   height: '23vh',
                   cursor: 'pointer',
-                  minWidth: '400px',
+                  minWidth: '450px',
                 }}
                 onClick={() => navigate(`/app/portfolio/${portfolio.id}`)}
               >
                 <p className="is-size-5 mb-4">{portfolio.name}</p>
                 <div className="is-flex flex-direction-row is-justify-content-space-between">
-                  <div className="mr-6">
+                  <div
+                    className="pr-4"
+                    style={{ borderRight: '1px solid black' }}
+                  >
                     <p className="box-title">Total value</p>
                     {portfolioValue ? (
                       <span className="subtitle mt- is-size-4">
-                        {portfolioValue?.toFixed(2)}{' '}
+                        {portfolioValue.toLocaleString('en-US', {
+                          maximumFractionDigits: 2,
+                        })}{' '}
                         <span className="is-size-6">USD</span>
                       </span>
                     ) : (
                       <span className="subtitle mt-3 is-size-4">-</span>
                     )}
                   </div>
-                  <div>
+                  <div className="pl-4" style={{ flex: 1 }}>
                     <p className="box-title">Unrealized profit</p>
                     {totalProfit ? (
                       <span
@@ -82,8 +87,12 @@ const Dashboard = () => {
                         }}
                       >
                         {(totalProfit ?? 0) > 0
-                          ? `+${totalProfit?.toFixed(2)}`
-                          : totalProfit?.toFixed(2)}
+                          ? `+${totalProfit?.toLocaleString('en-US', {
+                              maximumFractionDigits: 2,
+                            })}`
+                          : totalProfit?.toLocaleString('en-US', {
+                              maximumFractionDigits: 2,
+                            })}
                         <span
                           className="is-size-6"
                           style={{ color: 'inherit' }}

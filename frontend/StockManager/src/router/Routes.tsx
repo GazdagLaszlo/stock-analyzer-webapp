@@ -4,12 +4,12 @@ import Stock from '../pages/Stock.tsx';
 import Transaction from '../pages/Transaction';
 import Watchlist from '../pages/WatchList';
 import StockView from '../pages/StockView/StockView.tsx';
-import TradeSummary from '../pages/TradeSummary.tsx';
 import Login from '../pages/Login.tsx';
 import Register from '../pages/Register.tsx';
 import Profile from '../pages/Profile.tsx';
 import TransactionDetails from '../pages/TransactionDetails.tsx';
 import Education from '../pages/Education.tsx';
+import Statistics from '../pages/Statistics.tsx';
 
 export const routes = [
   {
@@ -53,8 +53,8 @@ export const routes = [
     isPrivate: true,
   },
   {
-    path: 'results',
-    component: <TradeSummary />,
+    path: 'statistics/:tab?',
+    component: <Statistics />,
     isPrivate: true,
   },
   {

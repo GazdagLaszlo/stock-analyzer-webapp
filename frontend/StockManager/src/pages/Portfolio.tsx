@@ -17,6 +17,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useContext } from 'react';
 import { PortfolioContext } from '../context/PortfolioContext';
 import { COLORS } from '../constants/colors';
+import StockImage from './StockImage';
 
 const Portfolio = () => {
   const portfolioContext = useContext(PortfolioContext);
@@ -280,10 +281,7 @@ const Portfolio = () => {
                       >
                         <td className="is-narrow" style={{ width: '3vw' }}>
                           <figure className="image is-24x24">
-                            <img
-                              className="border-radius-5"
-                              src={`https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${item.stock?.symbol}.png`}
-                            />
+                            <StockImage symbol={item.stock?.symbol ?? ''} />
                           </figure>
                         </td>
                         <td style={{ width: '8vw' }}>{item.stock?.symbol}</td>

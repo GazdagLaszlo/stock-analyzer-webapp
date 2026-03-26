@@ -5,8 +5,9 @@ import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 import InfoButton from '../components/InfoButton';
 import { COLORS } from '../constants/colors';
 import { useState } from 'react';
+import StockImage from './StockImage';
 
-const TradeSummary = () => {
+const TraderStatistics = () => {
   const [selectedTradeId, setSelectedTradeId] = useState<string | null>(null);
 
   const toggleExpand = (tradeId: string) => {
@@ -70,7 +71,10 @@ const TradeSummary = () => {
                 '-'
               ) : (
                 <>
-                  {tradeSummary.totalProfitLoss.toFixed(2)}{' '}
+                  {tradeSummary.totalProfitLoss.toLocaleString('en-US', {
+                    maximumFractionDigits: 2,
+                    minimumFractionDigits: 2,
+                  })}{' '}
                   <span className="is-size-6" style={{ color: 'inherit' }}>
                     USD
                   </span>
@@ -150,7 +154,11 @@ const TradeSummary = () => {
             </div>
             <p className="mr-2">
               {tradeSummary?.averageGain
-                ? '$' + tradeSummary?.averageGain?.toFixed(2)
+                ? '$' +
+                  tradeSummary?.averageGain?.toLocaleString('en-US', {
+                    maximumFractionDigits: 2,
+                    minimumFractionDigits: 2,
+                  })
                 : '-'}
             </p>
           </div>
@@ -164,7 +172,11 @@ const TradeSummary = () => {
             </div>
             <p className="mr-2">
               {tradeSummary?.averageLoss
-                ? '$' + tradeSummary?.averageLoss?.toFixed(2)
+                ? '$' +
+                  tradeSummary?.averageLoss?.toLocaleString('en-US', {
+                    maximumFractionDigits: 2,
+                    minimumFractionDigits: 2,
+                  })
                 : '-'}
             </p>
           </div>
@@ -248,7 +260,11 @@ const TradeSummary = () => {
             </div>
             <p className="mr-2">
               {tradeSummary?.totalVolume
-                ? '$' + tradeSummary?.totalVolume?.toFixed(2)
+                ? '$' +
+                  tradeSummary?.totalVolume?.toLocaleString('en-US', {
+                    maximumFractionDigits: 2,
+                    minimumFractionDigits: 2,
+                  })
                 : '-'}
             </p>
           </div>
@@ -303,10 +319,7 @@ const TradeSummary = () => {
                       >
                         <td style={{ width: '4vw' }}>
                           <figure className="image is-24x24">
-                            <img
-                              className="border-radius-5"
-                              src={`https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${trade.stockSymbol}.png`}
-                            />
+                            <StockImage symbol={trade.stockSymbol ?? ''} />
                           </figure>
                         </td>
                         <td style={{ width: '8vw' }}>{trade.stockSymbol}</td>
@@ -333,7 +346,11 @@ const TradeSummary = () => {
                                 : COLORS.error,
                           }}
                         >
-                          {trade.realizedProfit?.toFixed(2)} USD
+                          {trade.realizedProfit?.toLocaleString('en-US', {
+                            maximumFractionDigits: 2,
+                            minimumFractionDigits: 2,
+                          })}{' '}
+                          USD
                         </td>
                       </tr>
 
@@ -542,9 +559,8 @@ const TradeSummary = () => {
                 <tr key={tradeSummary?.bestTrade?.tradeId}>
                   <td style={{ width: '4vw' }}>
                     <figure className="image is-24x24">
-                      <img
-                        className="border-radius-5"
-                        src={`https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${tradeSummary?.bestTrade?.stockSymbol}.png`}
+                      <StockImage
+                        symbol={tradeSummary?.bestTrade?.stockSymbol ?? ''}
                       />
                     </figure>
                   </td>
@@ -580,7 +596,14 @@ const TradeSummary = () => {
                           : COLORS.error,
                     }}
                   >
-                    {tradeSummary?.bestTrade?.realizedProfit?.toFixed(2)} USD
+                    {tradeSummary?.bestTrade?.realizedProfit?.toLocaleString(
+                      'en-US',
+                      {
+                        maximumFractionDigits: 2,
+                        minimumFractionDigits: 2,
+                      }
+                    )}{' '}
+                    USD
                   </td>
                 </tr>
               </tbody>
@@ -625,9 +648,8 @@ const TradeSummary = () => {
                 <tr key={tradeSummary?.worstTrade?.tradeId}>
                   <td style={{ width: '4vw' }}>
                     <figure className="image is-24x24">
-                      <img
-                        className="border-radius-5"
-                        src={`https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${tradeSummary?.worstTrade?.stockSymbol}.png`}
+                      <StockImage
+                        symbol={tradeSummary?.worstTrade?.stockSymbol ?? ''}
                       />
                     </figure>
                   </td>
@@ -663,7 +685,14 @@ const TradeSummary = () => {
                           : COLORS.error,
                     }}
                   >
-                    {tradeSummary?.worstTrade?.realizedProfit?.toFixed(2)} USD
+                    {tradeSummary?.worstTrade?.realizedProfit?.toLocaleString(
+                      'en-US',
+                      {
+                        maximumFractionDigits: 2,
+                        minimumFractionDigits: 2,
+                      }
+                    )}{' '}
+                    USD
                   </td>
                 </tr>
               </tbody>
@@ -675,4 +704,4 @@ const TradeSummary = () => {
   );
 };
 
-export default TradeSummary;
+export default TraderStatistics;

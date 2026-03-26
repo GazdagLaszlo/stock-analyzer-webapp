@@ -7,6 +7,7 @@ import { PortfolioContext } from '../context/PortfolioContext';
 import TransactionDeleteModal from '../components/Transaction/TransactionDeleteModal';
 import { COLORS } from '../constants/colors';
 import { TransactionType } from '../../generated-sources/openapi';
+import StockImage from './StockImage';
 
 const TransactionDetails = () => {
   const { id } = useParams();
@@ -407,9 +408,8 @@ const TransactionDetails = () => {
                       >
                         <td style={{ width: '4vw' }}>
                           <figure className="image is-24x24">
-                            <img
-                              className="border-radius-5"
-                              src={`https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${transaction.stock?.symbol}.png`}
+                            <StockImage
+                              symbol={transaction.stock?.symbol ?? ''}
                             />
                           </figure>
                         </td>
@@ -480,11 +480,7 @@ const TransactionDetails = () => {
           <div className="box border-radius-10">
             <div className="is-flex is-align-items-center mb-3">
               <figure className="image is-32x32 mr-3">
-                <img
-                  style={{ borderRadius: 5 }}
-                  src={`https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${transaction.stock?.symbol}.png`}
-                  alt="logo"
-                />
+                <StockImage symbol={transaction.stock?.symbol ?? ''} />
               </figure>
               <h2 className="subtitle is-5 mb-0">
                 {transaction.stock?.symbol} Market

@@ -14,6 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient, useQueries } from '@tanstack/react-query';
 import { COLORS } from '../constants/colors';
 import { useLivePrice } from '../hooks/useLivePrice';
+import StockImage from './StockImage';
 
 const Watchlist = () => {
   const navigate = useNavigate();
@@ -211,11 +212,8 @@ const Watchlist = () => {
                       }
                     >
                       <td style={{ width: '3vw' }}>
-                        <figure className="image is-24x24 ">
-                          <img
-                            className="border-radius-5"
-                            src={`https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${item.stock?.symbol}.png`}
-                          />
+                        <figure className="image is-24x24">
+                          <StockImage symbol={item.stock?.symbol ?? ''} />
                         </figure>
                       </td>
                       <td style={{ width: '8vw' }}>{item.stock?.symbol}</td>

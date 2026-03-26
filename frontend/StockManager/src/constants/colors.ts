@@ -13,6 +13,7 @@ export const COLORS = {
   header: '#E6F0FA',
   headerActive: '#cae2fa',
   tableHeader: '#eaecf0',
+  navy: '#0B2747',
 
   text: '#1F2933',
   subtext: '#3B4A59',

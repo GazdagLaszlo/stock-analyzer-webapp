@@ -111,7 +111,7 @@ const Header = () => {
                     ? COLORS.headerActive
                     : 'transparent',
                 })}
-                to="/app/results"
+                to="/app/statistics"
               >
                 Statistics
               </NavLink>
