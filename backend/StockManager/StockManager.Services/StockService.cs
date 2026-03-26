@@ -17,12 +17,13 @@ namespace StockManager.Services
     public interface IStockService
     {
         Task<StockDto> CreateAsync(StockCreateDto stockCreateDto);
-        Task<IList<StockDto>> GetAllAsync();
+        Task<IList<StockDto>> GetAllAsync(string? search = null, string? sector = null);
         Task<StockDto> GetBySymbolAsync(string symbol);
         Task<StockDto> UpdateAsync(int id, StockUpdateDto updateDto);
         Task<StockQuote> GetStockQuote(string symbol);
         Task<Earningscalendar> GetNextEarningsEvent(string symbol);
         Task<List<string>> GetCompanyPeers(string symbol);
+        Task<List<string>> GetSectors();
     }
     public class StockService : IStockService
     {
@@ -48,9 +49,24 @@ namespace StockManager.Services
             return _mapper.Map<StockDto>(stock);
         }
 
-        public async Task<IList<StockDto>> GetAllAsync()
+        public async Task<IList<StockDto>> GetAllAsync(string? search = null, string? sector = null)
         {
-            var stocks = await _context.Stocks.ToListAsync();
+            var query = _context.Stocks
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(sector))
+            {
+                query = query.Where(x => x.Sector == sector);
+            }
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                query = query.Where(x =>
+                    x.Symbol.ToLower().Contains(search.ToLower()) ||
+                    x.CompanyName.ToLower().Contains(search.ToLower()));
+            }
+
+            var stocks = await query.ToListAsync();
 
             return _mapper.Map<IList<StockDto>>(stocks);
         }
@@ -131,6 +147,14 @@ namespace StockManager.Services
 
             List<string>? peers = JsonSerializer.Deserialize<List<string>>(responseString);
             return peers ?? new List<string>();
+        }
+
+        public async Task<List<string>> GetSectors()
+        {
+            var sectors = await _context.Stocks
+                .Select(x => x.Sector).Distinct().ToListAsync();
+
+            return sectors;
         }
 
     }

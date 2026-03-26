@@ -190,7 +190,7 @@ const Portfolio = () => {
                 height: '20vh',
               }}
             >
-              <p className="box-title is-size-7">PORTFOLIO VALUE</p>
+              <p className="box-title">PORTFOLIO VALUE</p>
               {portfolioValue ? (
                 <span className="subtitle mt-3 is-size-4">
                   {portfolioValue.toLocaleString('en-US', {
@@ -209,7 +209,7 @@ const Portfolio = () => {
                 height: '20vh',
               }}
             >
-              <p className="box-title is-size-7">UNREALIZED PROFIT</p>
+              <p className="box-title">UNREALIZED PROFIT</p>
               {totalProfit !== null ? (
                 <p
                   className="subtitle mt-3 is-size-4"

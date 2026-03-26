@@ -6,11 +6,12 @@ import { formatMoney } from '../utils/formatMoney';
 import { List, AutoSizer } from 'react-virtualized';
 import StockImage from './StockImage';
 import { useLivePrice } from '../hooks/useLivePrice';
+import { useQuery } from '@tanstack/react-query';
 
 const Stock = () => {
   const navigate = useNavigate();
-  const [stocks, setStocks] = useState<StockDto[]>([]);
   const [searchInput, setSearchInput] = useState('');
+  const [selectedSector, setSelectedSector] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
   const [visibleSymbols, setVisibleSymbols] = useState<string[]>([]);
 
@@ -18,26 +19,31 @@ const Stock = () => {
     inputRef.current?.focus();
   }, []);
 
-  useEffect(() => {
-    api.Stock.apiStockGetAllGet()
-      .then((res) => {
-        setStocks(res.data);
-      })
-      .catch((error) => {
-        console.error('Error while loading stocks: ', error);
-      });
-  }, []);
+  const { data: stocks = [] } = useQuery<StockDto[]>({
+    queryKey: ['allStocks', searchInput, selectedSector],
+    queryFn: async () => {
+      const res = await api.Stock.apiStockGetAllGet(
+        searchInput,
+        selectedSector
+      );
+      return res.data;
+    },
+  });
+
+  const { data: sectors = [] } = useQuery({
+    queryKey: ['sectors'],
+    queryFn: async () => {
+      const res = await api.Stock.apiStockGetSectorsGet();
+      return res.data;
+    },
+  });
 
   const filteredStocks = useMemo(() => {
     const sorted = [...stocks].sort(
       (a, b) => (b.marketCap ?? 0) - (a.marketCap ?? 0)
     );
-    return sorted.filter(
-      (stock) =>
-        stock.symbol?.toLowerCase().startsWith(searchInput.toLowerCase()) ||
-        stock.companyName?.toLowerCase().startsWith(searchInput.toLowerCase())
-    );
-  }, [stocks, searchInput]);
+    return sorted;
+  }, [stocks]);
 
   const getLivePrice = useLivePrice(visibleSymbols ? visibleSymbols : []);
 
@@ -93,18 +99,39 @@ const Stock = () => {
       <h1 className="is-size-3 has-text-weight-bold has-text-centered my-6">
         Stocks by market capitalization
       </h1>
-      <div className="field" style={{ width: '70%' }}>
-        <div className="control has-icons-left">
-          <input
-            type="text"
-            className="input pl-6"
-            placeholder="Keresés..."
-            ref={inputRef}
-            onChange={(e) => setSearchInput(e.target.value)}
-          />
-          <span className="icon is-left">
-            <i className="fas fa-search"></i>
-          </span>
+      <div className="is-flex is-flex-direction-row">
+        <div className="field mr-2" style={{ width: '40vw' }}>
+          <div className="control has-icons-left">
+            <input
+              type="text"
+              className="input pl-6"
+              placeholder="Keresés..."
+              ref={inputRef}
+              onChange={(e) => setSearchInput(e.target.value)}
+            />
+            <span className="icon is-left">
+              <i className="fas fa-search"></i>
+            </span>
+          </div>
+        </div>
+        <div className="field">
+          <div className="control">
+            <div className="select is-fullwidth" style={{ width: '20vw' }}>
+              <select
+                value={selectedSector}
+                onChange={(e) => {
+                  setSelectedSector(e.target.value);
+                }}
+              >
+                <option value="">All sectors</option>
+                {sectors.map((sector) => (
+                  <option key={sector} value={sector ?? ''}>
+                    {sector}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
         </div>
       </div>
       <div className="table-header is-flex has-text-weight-bold py-3 mt-6">

@@ -22,9 +22,11 @@ namespace StockManager.Controllers
         [HttpGet]
         //[Authorize(Roles = "")]
         [ProducesResponseType<IList<StockDto>>(StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAllAsync()
+        public async Task<IActionResult> GetAllAsync(
+            [FromQuery] string? search = null,
+            [FromQuery] string? sector = null)
         {
-            var result = await stockService.GetAllAsync();
+            var result = await stockService.GetAllAsync(search, sector);
             return Ok(result);
         }        
 
@@ -72,6 +74,13 @@ namespace StockManager.Controllers
         public async Task<ActionResult<List<string>>> GetCompanyPeers(string symbol)
         {
             var result = await stockService.GetCompanyPeers(symbol);
+            return Ok(result);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<List<string>>> GetSectors()
+        {
+            var result = await stockService.GetSectors();
             return Ok(result);
         }
     }

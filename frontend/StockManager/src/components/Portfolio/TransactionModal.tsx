@@ -137,13 +137,13 @@ const TransactionModal = ({
   };
 
   const create = () => {
-    if (!selectedStock) {
-      enqueueSnackbar('Please select a stock.', { variant: 'warning' });
+    if (currentPortfolioId == null) {
+      enqueueSnackbar('Please select a portfolio.', { variant: 'warning' });
       return;
     }
 
-    if (currentPortfolioId == null) {
-      enqueueSnackbar('Please select a portfolio.', { variant: 'warning' });
+    if (!selectedStock) {
+      enqueueSnackbar('Please select a stock.', { variant: 'warning' });
       return;
     }
 
