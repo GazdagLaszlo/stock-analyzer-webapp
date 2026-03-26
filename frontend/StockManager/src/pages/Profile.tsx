@@ -7,12 +7,27 @@ import ChangePasswordModal, {
 } from '../components/ChangePasswordModal';
 import api from '../api/api';
 import { enqueueSnackbar } from 'notistack';
+import UpdateUserModal from '../components/Portfolio/UpdateUserModal';
+import type { UserUpdateDto } from '../../generated-sources/openapi';
 
 const Profile = () => {
   const { username, email, role } = useContext(AuthContext);
   const [changePasswordModalOpen, setChangePasswordModalOpen] = useState(false);
+  const [updateUserModalOpen, setUpdateUserModalOpen] = useState(false);
 
   const { logout } = useAuth();
+
+  const updateUser = async (form: UserUpdateDto) => {
+    try {
+      await api.User.apiUserUpdateOwnProfilePut(form);
+
+      enqueueSnackbar('Profile edited successfully!', { variant: 'success' });
+      setUpdateUserModalOpen(false);
+    } catch (error: any) {
+      enqueueSnackbar('Error while editing profile!', { variant: 'error' });
+      console.log(error);
+    }
+  };
 
   const changePassword = async (form: ChangePasswordForm) => {
     if (
@@ -74,7 +89,12 @@ const Profile = () => {
           </div>
           <p className="is-size-4 has-text-weight-bold">{username}</p>
           <p style={{ color: 'grey' }}>{email}</p>
-          <button className="button button-navy mt-4">Edit Profile</button>
+          <button
+            className="button button-navy mt-4"
+            onClick={() => setUpdateUserModalOpen(true)}
+          >
+            Edit Profile
+          </button>
 
           <hr
             className="has-background-grey-light"
@@ -123,6 +143,12 @@ const Profile = () => {
         open={changePasswordModalOpen}
         onClose={() => setChangePasswordModalOpen(false)}
         onChange={(form) => changePassword(form)}
+      />
+      <UpdateUserModal
+        open={updateUserModalOpen}
+        onClose={() => setUpdateUserModalOpen(false)}
+        oldName={username}
+        onUpdate={(updateForm) => updateUser(updateForm)}
       />
     </div>
   );

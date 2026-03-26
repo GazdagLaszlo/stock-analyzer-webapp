@@ -25,6 +25,7 @@ public interface IUserService
     Task DeleteUserAsync(int userId);
     Task<UserDto> Me(int userId);
     Task ChangePassword(int userId, ChangePasswordDto dto);
+    Task<UserDto> UpdateOwnProfile(int userId, UserUpdateDto dto);
 }
 
 public class UserService(AppDbContext context, IMapper mapper) : IUserService
@@ -182,6 +183,21 @@ public class UserService(AppDbContext context, IMapper mapper) : IUserService
         user.Name = userUpdateDto.Name;
         user.Email = userUpdateDto.Email;        
 
+        await context.SaveChangesAsync();
+
+        return mapper.Map<UserDto>(user);
+    }
+
+    public async Task<UserDto> UpdateOwnProfile(int userId, UserUpdateDto dto)
+    {
+        var user = await context.Users
+            .FirstOrDefaultAsync(x => x.Id == userId);
+        if (user == null)
+        {
+            throw new KeyNotFoundException($"User not found with id: {userId}");
+        }
+
+        user.Name= dto.Name;
         await context.SaveChangesAsync();
 
         return mapper.Map<UserDto>(user);

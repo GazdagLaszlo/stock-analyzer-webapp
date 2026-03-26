@@ -115,4 +115,11 @@ public class UserController(IUserService userService) : ControllerBase
             return NotFound(new { message = ex.Message });
         }
     }
+
+    [HttpPut]
+    public async Task<ActionResult<UserDto>> UpdateOwnProfile([FromBody] UserUpdateDto dto)
+    {
+        var result = await userService.UpdateOwnProfile(UserId, dto);
+        return Ok(result);
+    }
 }
