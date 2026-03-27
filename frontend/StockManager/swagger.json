@@ -2194,6 +2194,14 @@
               "$ref": "#/components/schemas/TransactionDto"
             },
             "nullable": true
+          },
+          "sector": {
+            "type": "string",
+            "nullable": true
+          },
+          "positionSize": {
+            "type": "number",
+            "format": "double"
           }
         },
         "additionalProperties": false

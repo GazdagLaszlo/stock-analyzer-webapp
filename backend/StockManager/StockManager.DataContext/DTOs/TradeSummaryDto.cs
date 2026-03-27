@@ -34,5 +34,7 @@ namespace StockManager.DataContext.DTOs
         public DateTime EndDate { get; set; }
         public double TotalQuantity { get; set; }
         public IList<TransactionDto> Transactions { get; set; }
+        public string Sector { get; set; }
+        public double PositionSize { get; set; }
     }
 }

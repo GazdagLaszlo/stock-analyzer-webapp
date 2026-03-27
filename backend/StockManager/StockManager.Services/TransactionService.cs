@@ -260,6 +260,10 @@ namespace StockManager.Services
                    StockSymbol = x.First().Stock.Symbol,
                    TotalQuantity = x.Where(t => t.TransactionType == TransactionType.Sell)
                      .Sum(t => t.Quantity),
+                   Sector = x.First().Stock.Sector,
+                   PositionSize = x
+                    .Where(x => x.TransactionType == TransactionType.Buy)
+                    .Sum(x => x.Quantity * x.Price),
                })
                .ToList();
 

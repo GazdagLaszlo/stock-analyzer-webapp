@@ -1,5 +1,3 @@
-import { useQuery } from '@tanstack/react-query';
-import api from '../api/api';
 import { type TradeSummaryDto } from '../../generated-sources/openapi';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 import InfoButton from '../components/InfoButton';
@@ -7,31 +5,29 @@ import { COLORS } from '../constants/colors';
 import { useState } from 'react';
 import StockImage from './StockImage';
 
-const TraderStatistics = () => {
+type Props = {
+  transactionsSummary?: TradeSummaryDto;
+};
+
+const TraderStatistics = ({ transactionsSummary }: Props) => {
   const [selectedTradeId, setSelectedTradeId] = useState<string | null>(null);
 
   const toggleExpand = (tradeId: string) => {
     setSelectedTradeId((prev) => (prev === tradeId ? null : tradeId));
   };
 
-  const { data: tradeSummary } = useQuery<TradeSummaryDto>({
-    queryKey: ['getTradeSummary'],
-    queryFn: async () => {
-      const res =
-        await api.Transaction.apiTransactionGetTransactionsSummaryGet();
-      return res.data;
-    },
-  });
-
   const data = [
     {
       name: 'Results',
-      win: tradeSummary?.winRate ?? 0,
-      loss: tradeSummary?.winRate != null ? 100 - tradeSummary.winRate : 0,
+      win: transactionsSummary?.winRate ?? 0,
+      loss:
+        transactionsSummary?.winRate != null
+          ? 100 - transactionsSummary.winRate
+          : 0,
     },
   ];
 
-  const trades = [...(tradeSummary?.closedTrades ?? [])].sort(
+  const trades = [...(transactionsSummary?.closedTrades ?? [])].sort(
     (a, b) =>
       new Date(b.endDate ?? 0).getTime() - new Date(a.endDate ?? 0).getTime()
   );
@@ -58,23 +54,35 @@ const TraderStatistics = () => {
             <p
               className="subtitle mt-3 is-size-4"
               style={{
-                color: tradeSummary?.totalProfitLoss
-                  ? tradeSummary?.totalProfitLoss > 0
+                color: transactionsSummary?.totalProfitLoss
+                  ? transactionsSummary?.totalProfitLoss > 0
                     ? 'green'
-                    : tradeSummary.totalProfitLoss < 0
+                    : transactionsSummary.totalProfitLoss < 0
                       ? 'red'
                       : 'black'
                   : 'black',
               }}
             >
-              {tradeSummary?.totalProfitLoss == null ? (
+              {transactionsSummary?.totalProfitLoss == null ? (
                 '-'
               ) : (
                 <>
-                  {tradeSummary.totalProfitLoss.toLocaleString('en-US', {
-                    maximumFractionDigits: 2,
-                    minimumFractionDigits: 2,
-                  })}{' '}
+                  {transactionsSummary.totalProfitLoss > 0
+                    ? '+' +
+                      transactionsSummary.totalProfitLoss.toLocaleString(
+                        'en-US',
+                        {
+                          maximumFractionDigits: 2,
+                          minimumFractionDigits: 2,
+                        }
+                      )
+                    : transactionsSummary.totalProfitLoss.toLocaleString(
+                        'en-US',
+                        {
+                          maximumFractionDigits: 2,
+                          minimumFractionDigits: 2,
+                        }
+                      )}{' '}
                   <span className="is-size-6" style={{ color: 'inherit' }}>
                     USD
                   </span>
@@ -96,13 +104,13 @@ const TraderStatistics = () => {
                 Win Rate
               </p>
               <p className="box-title mr-2">
-                {tradeSummary?.winRate !== null
-                  ? tradeSummary?.winRate?.toFixed(2) + '%'
+                {transactionsSummary?.winRate !== null
+                  ? transactionsSummary?.winRate?.toFixed(2) + '%'
                   : '-'}
               </p>
             </div>
             <div style={{ height: 30 }}>
-              {tradeSummary?.winRate == null && (
+              {transactionsSummary?.winRate == null && (
                 <p
                   style={{
                     color: COLORS.infoText,
@@ -153,9 +161,9 @@ const TraderStatistics = () => {
               <InfoButton text="Average profit from all winning trades." />
             </div>
             <p className="mr-2">
-              {tradeSummary?.averageGain
+              {transactionsSummary?.averageGain
                 ? '$' +
-                  tradeSummary?.averageGain?.toLocaleString('en-US', {
+                  transactionsSummary?.averageGain?.toLocaleString('en-US', {
                     maximumFractionDigits: 2,
                     minimumFractionDigits: 2,
                   })
@@ -171,9 +179,9 @@ const TraderStatistics = () => {
               <InfoButton text="Average loss from all losing trades." />
             </div>
             <p className="mr-2">
-              {tradeSummary?.averageLoss
+              {transactionsSummary?.averageLoss
                 ? '$' +
-                  tradeSummary?.averageLoss?.toLocaleString('en-US', {
+                  transactionsSummary?.averageLoss?.toLocaleString('en-US', {
                     maximumFractionDigits: 2,
                     minimumFractionDigits: 2,
                   })
@@ -189,8 +197,8 @@ const TraderStatistics = () => {
               <InfoButton text="Average Risk/Reward Ratio of closed trades." />
             </div>
             <p className="mr-2">
-              {tradeSummary?.averageRRR
-                ? '1:' + tradeSummary?.averageRRR?.toFixed(2)
+              {transactionsSummary?.averageRRR
+                ? '1:' + transactionsSummary?.averageRRR?.toFixed(2)
                 : '-'}
             </p>
           </div>
@@ -203,8 +211,8 @@ const TraderStatistics = () => {
               <InfoButton text="Ratio of gross profit to gross loss. Values above 1 indicate profitability." />
             </div>
             <p className="mr-2">
-              {tradeSummary?.profitFactor
-                ? tradeSummary?.profitFactor?.toFixed(2)
+              {transactionsSummary?.profitFactor
+                ? transactionsSummary?.profitFactor?.toFixed(2)
                 : '-'}
             </p>
           </div>
@@ -217,8 +225,8 @@ const TraderStatistics = () => {
               <InfoButton text="Total number of closed trades." />
             </div>
             <p className="mr-2">
-              {tradeSummary?.totalClosedTrades
-                ? tradeSummary?.totalClosedTrades
+              {transactionsSummary?.totalClosedTrades
+                ? transactionsSummary?.totalClosedTrades
                 : '-'}
             </p>
           </div>
@@ -231,8 +239,8 @@ const TraderStatistics = () => {
               <InfoButton text="Number of profitable closed trades." />
             </div>
             <p className="mr-2">
-              {tradeSummary?.profitableTradesCount
-                ? tradeSummary?.profitableTradesCount
+              {transactionsSummary?.profitableTradesCount
+                ? transactionsSummary?.profitableTradesCount
                 : '-'}
             </p>
           </div>
@@ -245,8 +253,8 @@ const TraderStatistics = () => {
               <InfoButton text="Number of losing closed trades." />
             </div>
             <p className="mr-2">
-              {tradeSummary?.losingTradesCount
-                ? tradeSummary?.losingTradesCount
+              {transactionsSummary?.losingTradesCount
+                ? transactionsSummary?.losingTradesCount
                 : '-'}
             </p>
           </div>
@@ -259,9 +267,9 @@ const TraderStatistics = () => {
               <InfoButton text="Total traded value across all transactions, including fees." />
             </div>
             <p className="mr-2">
-              {tradeSummary?.totalVolume
+              {transactionsSummary?.totalVolume
                 ? '$' +
-                  tradeSummary?.totalVolume?.toLocaleString('en-US', {
+                  transactionsSummary?.totalVolume?.toLocaleString('en-US', {
                     maximumFractionDigits: 2,
                     minimumFractionDigits: 2,
                   })
@@ -271,7 +279,7 @@ const TraderStatistics = () => {
         </div>
       </div>
 
-      {tradeSummary?.closedTrades?.length !== 0 && (
+      {transactionsSummary?.closedTrades?.length !== 0 && (
         <div
           className="box is-flex is-justify-content-center is-flex-direction-column p-5 mt-6"
           style={{ backgroundColor: COLORS.boxBackground }}
@@ -519,7 +527,7 @@ const TraderStatistics = () => {
           </div>
         </div>
       )}
-      {tradeSummary?.bestTrade !== null && (
+      {transactionsSummary?.bestTrade !== null && (
         <div
           className="box is-flex is-justify-content-center is-flex-direction-column p-5"
           style={{ backgroundColor: COLORS.boxBackground }}
@@ -556,47 +564,50 @@ const TraderStatistics = () => {
                 </tr>
               </thead>
               <tbody>
-                <tr key={tradeSummary?.bestTrade?.tradeId}>
+                <tr key={transactionsSummary?.bestTrade?.tradeId}>
                   <td style={{ width: '4vw' }}>
                     <figure className="image is-24x24">
                       <StockImage
-                        symbol={tradeSummary?.bestTrade?.stockSymbol ?? ''}
+                        symbol={
+                          transactionsSummary?.bestTrade?.stockSymbol ?? ''
+                        }
                       />
                     </figure>
                   </td>
                   <td style={{ width: '8vw' }}>
-                    {tradeSummary?.bestTrade?.stockSymbol}
+                    {transactionsSummary?.bestTrade?.stockSymbol}
                   </td>
                   <td style={{ width: '18vw' }}>
-                    {tradeSummary?.bestTrade?.stockName}
+                    {transactionsSummary?.bestTrade?.stockName}
                   </td>
                   <td style={{ width: '10vw' }}>
                     {new Date(
-                      tradeSummary?.bestTrade?.startDate == undefined
+                      transactionsSummary?.bestTrade?.startDate == undefined
                         ? '-'
-                        : tradeSummary?.bestTrade?.startDate
+                        : transactionsSummary?.bestTrade?.startDate
                     ).toLocaleDateString()}
                   </td>
                   <td style={{ width: '10vw' }}>
                     {new Date(
-                      tradeSummary?.bestTrade?.endDate == undefined
+                      transactionsSummary?.bestTrade?.endDate == undefined
                         ? '-'
-                        : tradeSummary?.bestTrade?.endDate
+                        : transactionsSummary?.bestTrade?.endDate
                     ).toLocaleDateString()}
                   </td>
                   <td style={{ width: '10vw' }}>
-                    {tradeSummary?.bestTrade?.totalQuantity?.toFixed(4)}
+                    {transactionsSummary?.bestTrade?.totalQuantity?.toFixed(4)}
                   </td>
                   <td
                     style={{
                       width: '10vw',
                       color:
-                        (tradeSummary?.bestTrade?.realizedProfit ?? 0) > 0
+                        (transactionsSummary?.bestTrade?.realizedProfit ?? 0) >
+                        0
                           ? COLORS.success
                           : COLORS.error,
                     }}
                   >
-                    {tradeSummary?.bestTrade?.realizedProfit?.toLocaleString(
+                    {transactionsSummary?.bestTrade?.realizedProfit?.toLocaleString(
                       'en-US',
                       {
                         maximumFractionDigits: 2,
@@ -611,7 +622,7 @@ const TraderStatistics = () => {
           </div>
         </div>
       )}
-      {tradeSummary?.worstTrade !== null && (
+      {transactionsSummary?.worstTrade !== null && (
         <div
           className="box is-flex is-justify-content-center is-flex-direction-column p-5"
           style={{ backgroundColor: COLORS.boxBackground }}
@@ -645,47 +656,50 @@ const TraderStatistics = () => {
                 </tr>
               </thead>
               <tbody>
-                <tr key={tradeSummary?.worstTrade?.tradeId}>
+                <tr key={transactionsSummary?.worstTrade?.tradeId}>
                   <td style={{ width: '4vw' }}>
                     <figure className="image is-24x24">
                       <StockImage
-                        symbol={tradeSummary?.worstTrade?.stockSymbol ?? ''}
+                        symbol={
+                          transactionsSummary?.worstTrade?.stockSymbol ?? ''
+                        }
                       />
                     </figure>
                   </td>
                   <td style={{ width: '8vw' }}>
-                    {tradeSummary?.worstTrade?.stockSymbol}
+                    {transactionsSummary?.worstTrade?.stockSymbol}
                   </td>
                   <td style={{ width: '18vw' }}>
-                    {tradeSummary?.worstTrade?.stockName}
+                    {transactionsSummary?.worstTrade?.stockName}
                   </td>
                   <td style={{ width: '10vw' }}>
                     {new Date(
-                      tradeSummary?.worstTrade?.startDate == undefined
+                      transactionsSummary?.worstTrade?.startDate == undefined
                         ? '-'
-                        : tradeSummary?.worstTrade?.startDate
+                        : transactionsSummary?.worstTrade?.startDate
                     ).toLocaleDateString()}
                   </td>
                   <td style={{ width: '10vw' }}>
                     {new Date(
-                      tradeSummary?.worstTrade?.endDate == undefined
+                      transactionsSummary?.worstTrade?.endDate == undefined
                         ? '-'
-                        : tradeSummary?.worstTrade?.endDate
+                        : transactionsSummary?.worstTrade?.endDate
                     ).toLocaleDateString()}
                   </td>
                   <td style={{ width: '10vw' }}>
-                    {tradeSummary?.worstTrade?.totalQuantity?.toFixed(4)}
+                    {transactionsSummary?.worstTrade?.totalQuantity?.toFixed(4)}
                   </td>
                   <td
                     style={{
                       width: '10vw',
                       color:
-                        (tradeSummary?.worstTrade?.realizedProfit ?? 0) > 0
+                        (transactionsSummary?.worstTrade?.realizedProfit ?? 0) >
+                        0
                           ? COLORS.success
                           : COLORS.error,
                     }}
                   >
-                    {tradeSummary?.worstTrade?.realizedProfit?.toLocaleString(
+                    {transactionsSummary?.worstTrade?.realizedProfit?.toLocaleString(
                       'en-US',
                       {
                         maximumFractionDigits: 2,
