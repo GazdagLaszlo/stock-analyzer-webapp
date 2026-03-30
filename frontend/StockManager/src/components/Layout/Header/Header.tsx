@@ -1,10 +1,11 @@
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import ProfileMenu from './ProfileMenu';
 import useAuth from '../../../hooks/useAuth';
 import { COLORS } from '../../../constants/colors';
 
 const Header = () => {
-  const { logout } = useAuth();
+  const { logout, isLoggedIn } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <>
@@ -36,7 +37,10 @@ const Header = () => {
           </div>
 
           <div className="navbar-menu">
-            <div className="navbar-end is-flex is-flex-direction-row is-align-items-center">
+            <div
+              className={`${isLoggedIn ? `navbar-end` : 'is-justify-content-center'} is-flex is-flex-direction-row is-align-items-center`}
+              style={{ flexGrow: 1 }}
+            >
               <NavLink
                 className={({ isActive }) =>
                   'navbar-item' + (isActive ? ' active' : '')
@@ -63,60 +67,89 @@ const Header = () => {
               >
                 Stocks
               </NavLink>
-              <NavLink
-                className={({ isActive }) =>
-                  'navbar-item' + (isActive ? ' active' : '')
-                }
-                style={({ isActive }) => ({
-                  backgroundColor: isActive
-                    ? COLORS.headerActive
-                    : 'transparent',
-                })}
-                to="/app/portfolio"
-              >
-                Portfolio
-              </NavLink>
-              <NavLink
-                className={({ isActive }) =>
-                  'navbar-item' + (isActive ? ' active' : '')
-                }
-                style={({ isActive }) => ({
-                  backgroundColor: isActive
-                    ? COLORS.headerActive
-                    : 'transparent',
-                })}
-                to="/app/watchlist"
-              >
-                Watchlist
-              </NavLink>
-              <NavLink
-                className={({ isActive }) =>
-                  'navbar-item' + (isActive ? ' active' : '')
-                }
-                style={({ isActive }) => ({
-                  backgroundColor: isActive
-                    ? COLORS.headerActive
-                    : 'transparent',
-                })}
-                to="/app/transactions"
-              >
-                Transactions
-              </NavLink>
-              <NavLink
-                className={({ isActive }) =>
-                  'navbar-item' + (isActive ? ' active' : '')
-                }
-                style={({ isActive }) => ({
-                  backgroundColor: isActive
-                    ? COLORS.headerActive
-                    : 'transparent',
-                })}
-                to="/app/statistics"
-              >
-                Statistics
-              </NavLink>
-              <ProfileMenu onLogout={logout}></ProfileMenu>
+              {isLoggedIn && (
+                <>
+                  <NavLink
+                    className={({ isActive }) =>
+                      'navbar-item' + (isActive ? ' active' : '')
+                    }
+                    style={({ isActive }) => ({
+                      backgroundColor: isActive
+                        ? COLORS.headerActive
+                        : 'transparent',
+                    })}
+                    to="/app/portfolio"
+                  >
+                    Portfolio
+                  </NavLink>
+
+                  <NavLink
+                    className={({ isActive }) =>
+                      'navbar-item' + (isActive ? ' active' : '')
+                    }
+                    style={({ isActive }) => ({
+                      backgroundColor: isActive
+                        ? COLORS.headerActive
+                        : 'transparent',
+                    })}
+                    to="/app/watchlist"
+                  >
+                    Watchlist
+                  </NavLink>
+                  <NavLink
+                    className={({ isActive }) =>
+                      'navbar-item' + (isActive ? ' active' : '')
+                    }
+                    style={({ isActive }) => ({
+                      backgroundColor: isActive
+                        ? COLORS.headerActive
+                        : 'transparent',
+                    })}
+                    to="/app/transactions"
+                  >
+                    Transactions
+                  </NavLink>
+                  <NavLink
+                    className={({ isActive }) =>
+                      'navbar-item' + (isActive ? ' active' : '')
+                    }
+                    style={({ isActive }) => ({
+                      backgroundColor: isActive
+                        ? COLORS.headerActive
+                        : 'transparent',
+                    })}
+                    to="/app/statistics"
+                  >
+                    Statistics
+                  </NavLink>
+
+                  <ProfileMenu onLogout={logout}></ProfileMenu>
+                </>
+              )}
             </div>
+            {!isLoggedIn && (
+              <div className="is-flex is-align-items-center">
+                <button
+                  onClick={() => navigate('/login')}
+                  className="button "
+                  style={{
+                    backgroundColor: 'transparent',
+                    border: 'none',
+                    boxShadow: 'none',
+                  }}
+                >
+                  Login
+                </button>
+
+                <button
+                  className="button button-navy"
+                  style={{ height: '40px' }}
+                  onClick={() => navigate('/register')}
+                >
+                  Sign up
+                </button>
+              </div>
+            )}
           </div>
         </nav>
       </header>

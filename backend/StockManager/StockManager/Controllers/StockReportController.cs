@@ -12,7 +12,7 @@ namespace StockManager.Controllers
     public class StockReportController(IStockReportService stockReportService) : ControllerBase
     {
         [HttpGet("{symbol}")]
-        //[Authorize(Roles = "")]
+        [AllowAnonymous]
         [ProducesResponseType(typeof(List<StockReportDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetStockReportsToSymbol(string symbol)
         {

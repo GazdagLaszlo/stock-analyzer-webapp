@@ -13,7 +13,7 @@ namespace StockManager.Controllers
     {
         private int _userId => int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
-        [HttpPost]
+        [HttpPost]        
         public async Task<IActionResult> CreateAsync([FromBody] PortfolioCreateDto createDto)
         {
             var result = await portfolioService.CreateAsync(createDto, _userId);
@@ -21,16 +21,15 @@ namespace StockManager.Controllers
         }
 
         [HttpGet]
-        //[Authorize(Roles = "Investor")]
         [ProducesResponseType<IList<PortfolioDto>>(StatusCodes.Status200OK)]
+
         public async Task<IActionResult> GetAllAsync()
         {            
             var result = await portfolioService.GetAllAsync(_userId);
             return Ok(result);
         }
 
-        [HttpGet("{id:int}")]
-        //[Authorize(Roles = "")]
+        [HttpGet("{id:int}")]        
         [ProducesResponseType<PortfolioDto>(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
@@ -38,8 +37,7 @@ namespace StockManager.Controllers
             return Ok(result);
         }
 
-        [HttpPut("{id:int}")]
-        //[Authorize(Roles = "")]
+        [HttpPut("{id:int}")]        
         [ProducesResponseType<PortfolioDto>(StatusCodes.Status200OK)]
         public async Task<IActionResult> UpdateAsync(int id, [FromBody] PortfolioUpdateDto portfolioUpdateDto)
         {
@@ -47,8 +45,7 @@ namespace StockManager.Controllers
             return Ok(result);
         }
 
-        [HttpDelete("{id:int}")]
-        //[Authorize(Roles = "")]
+        [HttpDelete("{id:int}")]        
         [ProducesResponseType<PortfolioDto>(StatusCodes.Status200OK)]
         public async Task<IActionResult> DeleteAsync(int id)
         {

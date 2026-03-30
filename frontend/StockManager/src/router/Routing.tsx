@@ -31,17 +31,21 @@ const Routing = () => {
           />
         ))}
       <Route />
-      <Route path="app" element={<PrivateRoute element={<BasicLayout />} />}>
+      <Route path="app" element={<BasicLayout />}>
         <Route path="" element={<Navigate to="dashboard" />} />
-        {routes
-          .filter((route) => route.isPrivate)
-          .map((route) => (
-            <Route
-              key={route.path}
-              path={route.path}
-              element={<PrivateRoute element={route.component} />}
-            />
-          ))}
+        {routes.map((route) => (
+          <Route
+            key={route.path}
+            path={route.path}
+            element={
+              route.isPrivate ? (
+                <PrivateRoute element={route.component} />
+              ) : (
+                route.component
+              )
+            }
+          />
+        ))}
       </Route>
       <Route path="*" element={<div>404 - Page not found</div>} />
     </Routes>

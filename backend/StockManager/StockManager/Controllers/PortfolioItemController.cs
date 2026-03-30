@@ -19,8 +19,7 @@ namespace StockManager.Controllers
             return Ok();
         }
 
-        [HttpGet("{portfolioId:int}")]
-        //[Authorize(Roles = "")]
+        [HttpGet("{portfolioId:int}")]        
         [ProducesResponseType<IList<PortfolioItemDto>>(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllAsync(int portfolioId)
         {
@@ -28,8 +27,7 @@ namespace StockManager.Controllers
             return Ok(result);
         }
 
-        [HttpGet("{id:int}")]
-        //[Authorize(Roles = "")]
+        [HttpGet("{id:int}")]        
         [ProducesResponseType<PortfolioItemDto>(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
@@ -37,8 +35,7 @@ namespace StockManager.Controllers
             return Ok(result);
         }
 
-        [HttpPut("{id:int}")]
-        //[Authorize(Roles = "")]
+        [HttpPut("{id:int}")]        
         [ProducesResponseType<PortfolioItemDto>(StatusCodes.Status200OK)]
         public async Task<IActionResult> UpdateAsync(int id, [FromBody] PortfolioItemUpdateDto portfolioItemUpdateDto)
         {
@@ -46,8 +43,7 @@ namespace StockManager.Controllers
             return Ok(result);
         }
 
-        [HttpDelete("{id:int}")]
-        //[Authorize(Roles = "")]
+        [HttpDelete("{id:int}")]        
         [ProducesResponseType<PortfolioItemDto>(StatusCodes.Status200OK)]
         public async Task<IActionResult> DeleteAsync(int id)
         {

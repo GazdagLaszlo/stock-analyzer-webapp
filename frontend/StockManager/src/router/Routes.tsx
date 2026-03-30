@@ -15,12 +15,12 @@ export const routes = [
   {
     path: 'dashboard',
     component: <Dashboard />,
-    isPrivate: true,
+    isPrivate: false,
   },
   {
     path: 'stocks',
     component: <Stock />,
-    isPrivate: true,
+    isPrivate: false,
   },
   {
     path: 'portfolio',
@@ -50,7 +50,7 @@ export const routes = [
   {
     path: 'stocks/:symbol/:tab?/:subtab?',
     component: <StockView />,
-    isPrivate: true,
+    isPrivate: false,
   },
   {
     path: 'statistics/:tab?',

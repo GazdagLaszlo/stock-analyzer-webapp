@@ -12,7 +12,7 @@ namespace StockManager.Controllers
     public class StockController(IStockService stockService, StockPriceUpdaterWebSocketService priceService) : ControllerBase
     {
         [HttpPost]
-        //[Authorize(Roles = "")]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> CreateAsync([FromBody] StockCreateDto stockCreateDto)
         {
             var result = await stockService.CreateAsync(stockCreateDto);
@@ -20,7 +20,7 @@ namespace StockManager.Controllers
         }
 
         [HttpGet]
-        //[Authorize(Roles = "")]
+        [AllowAnonymous]
         [ProducesResponseType<IList<StockDto>>(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllAsync(
             [FromQuery] string? search = null,
@@ -31,7 +31,7 @@ namespace StockManager.Controllers
         }        
 
         [HttpGet("{symbol}")]
-        //[Authorize(Roles = "")]
+        [AllowAnonymous]
         [ProducesResponseType<StockDto>(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetBySymbolAsync(string symbol)
         {
@@ -40,7 +40,7 @@ namespace StockManager.Controllers
         }
 
         [HttpPut("{id:int}")]
-        //[Authorize(Roles = "")]
+        [Authorize(Roles = "Administrator")]
         [ProducesResponseType<StockDto>(StatusCodes.Status200OK)]
         public async Task<IActionResult> UpdateAsync(int id, [FromBody] StockUpdateDto stockUpdateDto)
         {
@@ -49,6 +49,7 @@ namespace StockManager.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult GetPrice([FromQuery] string symbol)
         {
             if (priceService.Latest.TryGetValue(symbol.ToUpperInvariant(), out var price))
@@ -57,6 +58,7 @@ namespace StockManager.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<StockQuote>> GetStockQuoteAsync(string symbol)
         {
             var result = await stockService.GetStockQuote(symbol);
@@ -64,6 +66,7 @@ namespace StockManager.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<Earningscalendar>> GetNextEarningsEvent(string symbol)
         {
             var result = await stockService.GetNextEarningsEvent(symbol);
@@ -71,6 +74,7 @@ namespace StockManager.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<List<string>>> GetCompanyPeers(string symbol)
         {
             var result = await stockService.GetCompanyPeers(symbol);
@@ -78,6 +82,7 @@ namespace StockManager.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<List<string>>> GetSectors()
         {
             var result = await stockService.GetSectors();

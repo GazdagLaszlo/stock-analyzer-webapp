@@ -147,8 +147,13 @@ export const PortfolioProvider = ({
   };
 
   useEffect(() => {
+    if (!token) {
+      setPortfolios([]);
+      setSelectedPortfolio(undefined);
+      return;
+    }
     fetchPortfolios();
-  }, [fetchPortfolios]);
+  }, [token, fetchPortfolios]);
 
   return (
     <PortfolioContext.Provider

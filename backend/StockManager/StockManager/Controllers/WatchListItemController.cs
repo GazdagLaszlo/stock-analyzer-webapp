@@ -20,8 +20,7 @@ namespace StockManager.Controllers
             return Ok();
         }
 
-        [HttpGet("{id:int}")]
-        //[Authorize(Roles = "")]
+        [HttpGet("{id:int}")]        
         [ProducesResponseType<WatchListItemDto>(StatusCodes.Status200OK)]
         public async Task<ActionResult<WatchListItemDto>> GetByIdAsync(int id)
         {
@@ -29,8 +28,7 @@ namespace StockManager.Controllers
             return Ok(result);
         }
 
-        [HttpPut("{id:int}")]
-        //[Authorize(Roles = "")]
+        [HttpPut("{id:int}")]        
         [ProducesResponseType<WatchListItemDto>(StatusCodes.Status200OK)]
         public async Task<ActionResult<WatchListItemDto>> UpdateAsync(int id, [FromBody] WatchListItemUpdateDto watchListItemUpdateDto)
         {
@@ -38,8 +36,7 @@ namespace StockManager.Controllers
             return Ok(result);
         }
 
-        [HttpDelete("{id:int}")]
-        //[Authorize(Roles = "")]
+        [HttpDelete("{id:int}")]        
         [ProducesResponseType<WatchListItemDto>(StatusCodes.Status200OK)]
         public async Task<IActionResult> DeleteAsync(int id)
         {

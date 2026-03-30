@@ -11,6 +11,7 @@ namespace StockManager.Controllers
     public class StockDataController(IStockDataService stockDataService) : ControllerBase
     {
         [HttpPost]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> CreateAsync([FromBody] StockDataCreateDto createDto)
         {
             await stockDataService.CreateAsync(createDto);
@@ -18,7 +19,7 @@ namespace StockManager.Controllers
         }
 
         [HttpGet]
-        //[Authorize(Roles = "")]
+        [AllowAnonymous]
         [ProducesResponseType<StockDataDto>(StatusCodes.Status200OK)]
         public async Task<ActionResult<StockDataDto>> GetBySymbolAsync(string symbol)
         {
@@ -27,7 +28,7 @@ namespace StockManager.Controllers
         }
 
         [HttpPut("{id:int}")]
-        //[Authorize(Roles = "")]
+        [Authorize(Roles = "Administrator")]
         [ProducesResponseType<StockDataDto>(StatusCodes.Status200OK)]
         public async Task<ActionResult<StockDataDto>> UpdateAsync(int id, [FromBody] StockDataUpdateDto stockDataUpdateDto)
         {

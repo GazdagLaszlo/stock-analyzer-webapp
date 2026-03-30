@@ -13,8 +13,7 @@ namespace StockManager.Controllers
     {
         private int _userId => int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
-        [HttpGet]
-        //[Authorize(Roles = "")]
+        [HttpGet]        
         [ProducesResponseType<WatchListDto>(StatusCodes.Status200OK)]
         public async Task<ActionResult<WatchListDto>> GetByUserIdAsync()
         {

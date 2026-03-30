@@ -13,6 +13,7 @@ namespace StockManager.Controllers
     {
         [HttpPost]
         [ProducesResponseType<ArticleDto>(StatusCodes.Status200OK)]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> CreateAsync([FromBody] ArticleCreateUpdateDto createDto)
         {
             var result = await articleService.CreateAsync(createDto);
@@ -20,7 +21,7 @@ namespace StockManager.Controllers
         }
 
         [HttpGet("{id:int}")]
-        [ProducesResponseType<ArticleDto>(StatusCodes.Status200OK)]
+        [ProducesResponseType<ArticleDto>(StatusCodes.Status200OK)]        
         public async Task<IActionResult> GetByIdAsync(int id)
         {
             var result = await articleService.GetByIdAsync(id);
@@ -40,6 +41,7 @@ namespace StockManager.Controllers
 
         [HttpPut("{id:int}")]
         [ProducesResponseType<ArticleDto>(StatusCodes.Status200OK)]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> UpdateAsync(int id, [FromBody] ArticleCreateUpdateDto updateDto)
         {
             var result = await articleService.UpdateAsync(id, updateDto);
@@ -48,6 +50,7 @@ namespace StockManager.Controllers
 
         [HttpDelete("{id:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> DeleteAsync(int id)
         {
             await articleService.DeleteAsync(id);

@@ -16,8 +16,7 @@ public class UserController(IUserService userService) : ControllerBase
 {
     private int UserId => int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
-    [HttpGet]
-    [Authorize]
+    [HttpGet]    
     [ProducesResponseType<UserDto>(StatusCodes.Status200OK)]
     public async Task<IActionResult> Me()
     {
@@ -41,8 +40,7 @@ public class UserController(IUserService userService) : ControllerBase
         }
     }
 
-    [HttpPost]
-    [AllowAnonymous]
+    [HttpPost]    
     [ProducesResponseType<TokenResponseDto>(StatusCodes.Status200OK)]
     public async Task<IActionResult> RefreshToken()
     {
@@ -100,7 +98,7 @@ public class UserController(IUserService userService) : ControllerBase
         return Ok(new { message = "User deleted successfully." });
     }
 
-    [HttpPut]        
+    [HttpPut]
     public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
     {
         try

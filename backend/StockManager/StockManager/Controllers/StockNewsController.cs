@@ -13,7 +13,7 @@ namespace StockManager.Controllers
     public class StockNewsController(IStockNewsService stockNewsService) : ControllerBase
     {
         [HttpGet]
-        //[Authorize(Roles = "")]
+        [AllowAnonymous]
         [ProducesResponseType(typeof(List<StockNews>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetNews()
         {

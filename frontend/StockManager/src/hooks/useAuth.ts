@@ -2,11 +2,13 @@ import { useContext } from 'react';
 import { AuthContext } from '../context/AuthContext.tsx';
 import api from '../api/api.ts';
 import { tokenKeyName } from '../constants/constants.ts';
+import { QueryClient, useQueryClient } from '@tanstack/react-query';
 
 const useAuth = () => {
   const { token, setToken, email, setEmail, role, setRole, setUsername } =
     useContext(AuthContext);
   const isLoggedIn = !!token;
+  const QueryClient = useQueryClient();
 
   const login = (email: string, password: string) => {
     return api.User.apiUserLoginPost({ email, password })
@@ -32,6 +34,7 @@ const useAuth = () => {
       setRole(null);
       setUsername(null);
       setEmail(null);
+      QueryClient.clear();
     }
   };
 

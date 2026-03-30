@@ -21,8 +21,7 @@ namespace StockManager.Controllers
             return Ok();
         }
 
-        [HttpGet]
-        //[Authorize(Roles = "")]
+        [HttpGet]        
         [ProducesResponseType<IList<TransactionDto>>(StatusCodes.Status200OK)]
         public async Task<ActionResult<IList<TransactionDto>>> GetAllAsync(
             [FromQuery] TransactionType? type,
@@ -32,8 +31,7 @@ namespace StockManager.Controllers
             return Ok(result);
         }
 
-        [HttpGet("{id:int}")]
-        //[Authorize(Roles = "")]
+        [HttpGet("{id:int}")]        
         [ProducesResponseType<TransactionDto>(StatusCodes.Status200OK)]
         public async Task<ActionResult<TransactionDto>> GetByIdAsync(int id)
         {
@@ -42,7 +40,6 @@ namespace StockManager.Controllers
         }
 
         [HttpPut("{id:int}")]
-        //[Authorize(Roles = "")]
         [ProducesResponseType<TransactionDto>(StatusCodes.Status200OK)]
         public async Task<ActionResult<TransactionDto>> UpdateAsync(int id, [FromBody] TransactionUpdateDto transactionUpdateDto)
         {
@@ -50,8 +47,7 @@ namespace StockManager.Controllers
             return Ok(result);
         }
 
-        [HttpDelete("{id:int}")]
-        //[Authorize(Roles = "")]
+        [HttpDelete("{id:int}")]        
         [ProducesResponseType<TransactionDto>(StatusCodes.Status200OK)]
         public async Task<IActionResult> DeleteAsync(int id)
         {
