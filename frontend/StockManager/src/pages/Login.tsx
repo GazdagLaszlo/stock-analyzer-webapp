@@ -57,7 +57,7 @@ const Login = () => {
           >
             <span
               className="icon mr-2 mb-5 is-size-2"
-              style={{ color: COLORS.success }}
+              style={{ color: COLORS.navy }}
             >
               <i className="fa-regular fa-circle-check"></i>
             </span>
@@ -67,73 +67,129 @@ const Login = () => {
           </div>
         )}
         <div
-          className="is-flex is-flex-direction-column p-6 box"
+          className="is-flex is-flex-direction-row box is-justify-content-space-between p-0"
           style={{
             backgroundColor: COLORS.boxBackground,
             borderRadius: 10,
-            width: '35vw',
-            maxWidth: '400px',
+            width: '60vw',
+            minWidth: '700px',
+            maxWidth: '800px',
           }}
         >
-          <form onSubmit={handleSubmit}>
-            <h3 className="title has-text-centered">Login</h3>
-            <div className="field mb-4">
-              <label className="label">Email</label>
-              <div className="control">
-                <input
-                  className="input"
-                  type="email"
-                  required
-                  value={loginData?.email}
-                  onChange={(e) =>
-                    setLoginData({
-                      ...loginData,
-                      email: e.target.value,
-                    })
-                  }
-                />
-              </div>
-            </div>
-            <div className="field mb-0">
-              <label className="label">Password</label>
-              <div className="control">
-                <input
-                  className="input"
-                  type="password"
-                  required
-                  value={loginData?.password}
-                  onChange={(e) =>
-                    setLoginData({
-                      ...loginData,
-                      password: e.target.value,
-                    })
-                  }
-                />
-              </div>
-            </div>
-            {loginError && (
-              <p
-                className="help mt-3 has-text-centered"
-                style={{ color: COLORS.error }}
-              >
-                {loginError}
+          <div
+            style={{
+              backgroundColor: COLORS.infoBox,
+              width: '50%',
+              borderRadius: '10px 0px 0px 10px',
+            }}
+            className="p-5"
+          >
+            <div onClick={() => navigate('/app')} style={{ cursor: 'pointer' }}>
+              <p className="is-size-5 has-text-weight-bold">StockAnalyzer</p>
+              <p style={{ color: COLORS.infoText, fontSize: 14 }}>
+                Stock Analysis & Portfolio Management
               </p>
-            )}
-            <div className="is-flex is-justify-content-center mt-6">
-              <button className="button button-navy is-fullwidth" type="submit">
-                Login
-              </button>
             </div>
-          </form>
-          <p className="mt-5 has-text-centered">
-            Don't have an account?
-            <a
-              className="pl-1 has-text-weight-bold"
-              onClick={() => navigate('/register')}
-            >
-              Register
-            </a>
-          </p>
+            <div className="mt-6">
+              <div className="is-flex is-justify-content-center">
+                <figure className="image is-128x128">
+                  <img src="../public/img/start_icon.png" />
+                </figure>
+              </div>
+              <div className="ml-6 mt-5">
+                <ul>
+                  <li className="py-2">
+                    <span className="icon mr-2" style={{ color: COLORS.navy }}>
+                      <i className="fa-solid fa-circle-check"></i>
+                    </span>
+                    Portfolio & Transaction tracking
+                  </li>
+                  <li className="py-2">
+                    <span className="icon mr-2" style={{ color: COLORS.navy }}>
+                      <i className="fa-solid fa-circle-check"></i>
+                    </span>
+                    Real-time prices & financials
+                  </li>
+                  <li className="py-2">
+                    <span className="icon mr-2" style={{ color: COLORS.navy }}>
+                      <i className="fa-solid fa-circle-check"></i>
+                    </span>
+                    Detailed transaction history
+                  </li>
+                  <li className="py-2">
+                    <span className="icon mr-2" style={{ color: COLORS.navy }}>
+                      <i className="fa-solid fa-circle-check"></i>
+                    </span>
+                    Trade statistics
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div style={{ width: '50%' }} className="mt-6 p-6">
+            <form onSubmit={handleSubmit}>
+              <h3 className="title has-text-centered">Login</h3>
+              <div className="field mb-4">
+                <label className="label">Email</label>
+                <div className="control">
+                  <input
+                    className="input"
+                    type="email"
+                    required
+                    value={loginData?.email}
+                    onChange={(e) =>
+                      setLoginData({
+                        ...loginData,
+                        email: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+              </div>
+              <div className="field mb-0">
+                <label className="label">Password</label>
+                <div className="control">
+                  <input
+                    className="input"
+                    type="password"
+                    required
+                    value={loginData?.password}
+                    onChange={(e) =>
+                      setLoginData({
+                        ...loginData,
+                        password: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+              </div>
+              {loginError && (
+                <p
+                  className="help mt-3 has-text-centered"
+                  style={{ color: COLORS.error }}
+                >
+                  {loginError}
+                </p>
+              )}
+              <div className="is-flex is-justify-content-center mt-6">
+                <button
+                  className="button button-navy is-fullwidth"
+                  type="submit"
+                >
+                  Login
+                </button>
+              </div>
+            </form>
+            <p className="mt-5 has-text-centered">
+              Don't have an account?
+              <a
+                className="pl-1 has-text-weight-bold"
+                onClick={() => navigate('/register')}
+              >
+                Register
+              </a>
+            </p>
+          </div>
         </div>
       </div>
       <Footer />
