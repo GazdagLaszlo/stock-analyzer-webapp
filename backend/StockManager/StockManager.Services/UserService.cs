@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -105,7 +106,7 @@ public class UserService(AppDbContext context, IMapper mapper) : IUserService
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
-
+    [AllowAnonymous]
     public async Task LogoutAsync(HttpRequest request, HttpResponse response)
     {
         var refreshToken = request.Cookies["refreshToken"];

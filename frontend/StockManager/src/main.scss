@@ -267,3 +267,18 @@ header .navbar-item {
 .tabs li.is-active a span {
   color: #f8fafc !important;
 }
+
+.navigation-button {
+  border: none;
+  background-color: transparent;
+  box-shadow: none;
+  font-size: 14px;
+  color: #3b4a59;
+}
+.navigation-button:hover {
+  background-color: #e6f0fa;
+}
+
+.navigation-button > span {
+  color: #3b4a59;
+}

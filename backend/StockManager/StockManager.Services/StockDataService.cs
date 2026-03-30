@@ -22,6 +22,7 @@ namespace StockManager.Services
         Task<StockDataDto> UpdateAsync(int id, StockDataUpdateDto updateDto);
         Task<StockDataDeserializer> GetStockFinancials(string symbol);
         Task StockDataRefresh(StockDto stock);
+        Task<Dictionary<string, decimal?>> GetBySymbolLatestDataASync(string symbol);
     }
     public class StockDataService : IStockDataService
     {
@@ -56,8 +57,7 @@ namespace StockManager.Services
         public async Task<StockDataDto> GetBySymbolAsync(string symbol)
         {
             var stockData = await _context.StockData
-                .Include(x => x.Stock)
-                .Include(x => x.StockDataItems)
+                .Include(x => x.Stock)                
                 .FirstOrDefaultAsync(x => x.Stock.Symbol == symbol);
 
             if (stockData == null)
@@ -66,6 +66,45 @@ namespace StockManager.Services
             }
 
             return _mapper.Map<StockDataDto>(stockData);
+        }
+
+        public async Task<Dictionary<string, decimal?>> GetBySymbolLatestDataASync(string symbol)
+        {
+            var allMetrics = new[]
+            {
+                "assetTurnoverTTM", "bookValue", "cashRatio", "currentRatio",
+                "ebitPerShare", "eps", "ev", "evEbitdaTTM", "evRevenueTTM",
+                "fcfMargin", "fcfPerShareTTM", "grossMargin", "inventoryTurnoverTTM",
+                "longtermDebtTotalAsset", "longtermDebtTotalCapital","longtermDebtTotalEquity",
+                "netDebtToTotalCapital", "netDebtToTotalEquity", "netMargin",
+                "operatingMargin", "payoutRatioTTM","pb", "peTTM", "pfcfTTM", "pretaxMargin",
+                "psTTM", "ptbv", "quickRatio", "receivablesTurnoverTTM", "roaTTM", "roeTTM", 
+                "roicTTM", "rotcTTM", "salesPerShare", "sgaToSale","tangibleBookValue",
+                "totalDebtToEquity", "totalDebtToTotalAsset", "totalDebtToTotalCapital",
+                "totalRatio"
+            };
+
+            var data = await GetLatestValue(symbol);
+            if (data == null)
+            {
+                return null;
+            }
+
+            var result = new Dictionary<string, decimal?>();
+
+            foreach(var metric in allMetrics)
+            {
+                if(data.TryGetValue(metric, out var item))
+                {
+                    result[metric] = item.V;
+                }
+                else
+                {
+                    result[metric] = null;
+                }
+            }
+
+            return result;
         }
 
         public async Task<StockDataDto> UpdateAsync(int id, StockDataUpdateDto updateDto)
@@ -210,6 +249,26 @@ namespace StockManager.Services
             var mainData = data.metric;
             var updateDto = _mapper.Map<StockDataUpdateDto>(mainData);
             await UpdateAsync(stockExists.Id, updateDto);            
+        }
+
+        private async Task<Dictionary<string, StockDataItem>?> GetLatestValue(string symbol)
+        {
+            //Az adatokat mindig a legfrissebb meglévő adat alapján adja vissza. 
+            //Ha van negyedéves (StockDataItem.PeriodType => 1) akkor azt, majd az éves adatot. 
+
+            var dataItems = await _context.StockDataItems
+                .Where(x => x.StockData.Stock.Symbol == symbol && x.PeriodType == PeriodType.Quarterly)
+                .GroupBy(x => x.MetricName)
+                .Select(x => x.OrderByDescending(x => x.Period).First())
+                .ToListAsync();
+
+            var resultDictionary = dataItems.ToDictionary(x => x.MetricName, x => x);
+
+            if (dataItems != null)
+            {
+                return resultDictionary;
+            }
+            return null;
         }
     }
 }

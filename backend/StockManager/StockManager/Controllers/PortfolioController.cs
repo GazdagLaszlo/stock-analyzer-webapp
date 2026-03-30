@@ -22,7 +22,6 @@ namespace StockManager.Controllers
 
         [HttpGet]
         [ProducesResponseType<IList<PortfolioDto>>(StatusCodes.Status200OK)]
-
         public async Task<IActionResult> GetAllAsync()
         {            
             var result = await portfolioService.GetAllAsync(_userId);

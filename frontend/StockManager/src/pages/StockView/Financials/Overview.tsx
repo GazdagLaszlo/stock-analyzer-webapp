@@ -6,7 +6,13 @@ import { formatMoney } from '../../../utils/formatMoney';
 import { useEffect, useMemo, useState } from 'react';
 import api from '../../../api/api';
 
-const Summary = ({ stock }: { stock?: StockDto }) => {
+const Summary = ({
+  stock,
+  data,
+}: {
+  stock?: StockDto;
+  data?: { [key: string]: number | null };
+}) => {
   const [stockData, setStockData] = useState<StockDataDto>();
   const [PEIndustryAvg, setPEIndustryAvg] = useState<number | null>(null);
 
@@ -32,7 +38,8 @@ const Summary = ({ stock }: { stock?: StockDto }) => {
     );
     if (currentEPSData) {
       currentEPSData.sort(
-        (a, b) => new Date(a.period).getTime() - new Date(b.period).getTime()
+        (a, b) =>
+          new Date(a.period ?? 0).getTime() - new Date(b.period ?? 0).getTime()
       );
     }
 
@@ -42,9 +49,6 @@ const Summary = ({ stock }: { stock?: StockDto }) => {
     const previousEPS = currentEPSData
       ? currentEPSData[currentEPSData.length - 5]
       : null;
-
-    console.log('current:' + currentEPS?.v);
-    console.log('prev:' + previousEPS?.v);
 
     if (currentEPS?.v && previousEPS?.v) {
       if (previousEPS.v < 0 || currentEPS.v < 0) {
@@ -205,13 +209,121 @@ const Summary = ({ stock }: { stock?: StockDto }) => {
           </div>
         </div>
       </div>
-
+      {/*Fejlesztési lehetőség lesz, hogy minden negyedéves és éves eredmény megjelenítésre kerül.*/}
+      {/*Jelenleg az utolsó negyedéves adatok megjelenítve*/}
       <div className="box p-5 mt-5">
         <p className="subtitle is-5 has-text-weight-bold">Profitability</p>
         <hr />
-        <p>Net income</p>
-        <p>Free cash flow növekedés</p>
-        <p>Árbevétel növekedés</p>
+        <table className="table financials-table is-fullwidth">
+          <tbody>
+            <tr>
+              <td>Net Margin</td>
+              <td>
+                {data?.netMargin != null
+                  ? (data?.netMargin * 100).toFixed(2) + '%'
+                  : '-'}
+              </td>
+            </tr>
+            <tr>
+              <td>Gross Margin</td>
+              <td>
+                {data?.grossMargin != null
+                  ? (data.grossMargin * 100).toFixed(2) + '%'
+                  : '-'}
+              </td>
+            </tr>
+            <tr>
+              <td>Operating Margin</td>
+              <td>
+                {data?.operatingMargin != null
+                  ? (data.operatingMargin * 100).toFixed(2) + '%'
+                  : '-'}
+              </td>
+            </tr>
+            <tr>
+              <td>Pretax Margin</td>
+              <td>
+                {data?.pretaxMargin != null
+                  ? (data.pretaxMargin * 100).toFixed(2) + '%'
+                  : '-'}
+              </td>
+            </tr>
+            <tr>
+              <td>Free Cash Flow Margin</td>
+              <td>
+                {data?.fcfMargin != null
+                  ? (data.fcfMargin * 100).toFixed(2) + '%'
+                  : '-'}
+              </td>
+            </tr>
+            <tr>
+              <td>Return on Equity (TTM)</td>
+              <td>
+                {data?.roeTTM != null
+                  ? (data.roeTTM * 100).toFixed(2) + '%'
+                  : '-'}
+              </td>
+            </tr>
+            <tr>
+              <td>Return on Assets (TTM)</td>
+              <td>
+                {data?.roaTTM != null
+                  ? (data.roaTTM * 100).toFixed(2) + '%'
+                  : '-'}
+              </td>
+            </tr>
+            <tr>
+              <td>Return on Invested Capital (TTM)</td>
+              <td>
+                {data?.roicTTM != null
+                  ? (data.roicTTM * 100).toFixed(2) + '%'
+                  : '-'}
+              </td>
+            </tr>
+            <tr>
+              <td>Return on Total Capital (TTM)</td>
+              <td>
+                {data?.rotcTTM != null
+                  ? (data.rotcTTM * 100).toFixed(2) + '%'
+                  : '-'}
+              </td>
+            </tr>
+            <tr>
+              <td>Earnings per Share</td>
+              <td>
+                {data?.eps != null
+                  ? data.eps.toLocaleString('en-US', {
+                      maximumFractionDigits: 4,
+                    })
+                  : '-'}
+                {data?.eps != null && (
+                  <span className="is-size-6 ml-1">USD</span>
+                )}
+              </td>
+            </tr>
+            <tr>
+              <td>EBIT per Share</td>
+              <td>
+                {data?.ebitPerShare != null
+                  ? data.ebitPerShare.toLocaleString('en-US', {
+                      maximumFractionDigits: 4,
+                    })
+                  : '-'}
+                {data?.ebitPerShare != null && (
+                  <span className="is-size-6 ml-1">USD</span>
+                )}
+              </td>
+            </tr>
+            <tr>
+              <td>SG&A to Sales</td>
+              <td>
+                {data?.sgaToSale != null
+                  ? (data.sgaToSale * 100).toFixed(2) + '%'
+                  : '-'}
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
       <div className="box p-5 mt-5">
@@ -223,21 +335,160 @@ const Summary = ({ stock }: { stock?: StockDto }) => {
           <table className="table financials-table is-fullwidth">
             <tbody>
               <tr>
-                <td>Long-Term Debt to Equity:</td>
-                <td>{(stockData?.longTermDebtToEquityAnnual ?? 0) * 100}%</td>
+                <td>Current Ratio</td>
+                <td>
+                  {data?.currentRatio != null
+                    ? data.currentRatio.toLocaleString('en-US', {
+                        maximumFractionDigits: 4,
+                      })
+                    : '-'}
+                </td>
               </tr>
               <tr>
-                <td>Cash flow per Share:</td>
-                <td>{stockData?.cashFlowPerShareTTM?.toFixed(2)}</td>
+                <td>Quick Ratio</td>
+                <td>
+                  {data?.quickRatio != null
+                    ? data.quickRatio.toLocaleString('en-US', {
+                        maximumFractionDigits: 4,
+                      })
+                    : '-'}
+                </td>
+              </tr>
+              <tr>
+                <td>Cash Ratio</td>
+                <td>
+                  {data?.cashRatio != null
+                    ? data.cashRatio.toLocaleString('en-US', {
+                        maximumFractionDigits: 4,
+                      })
+                    : '-'}
+                </td>
+              </tr>
+              <tr>
+                <td>Total Ratio</td>
+                <td>
+                  {data?.totalRatio != null
+                    ? data.totalRatio.toLocaleString('en-US', {
+                        maximumFractionDigits: 4,
+                      })
+                    : '-'}
+                </td>
+              </tr>
+              <tr>
+                <td>Total Debt to Equity</td>
+                <td>
+                  {data?.totalDebtToEquity != null
+                    ? data.totalDebtToEquity.toLocaleString('en-US', {
+                        maximumFractionDigits: 4,
+                      })
+                    : '-'}
+                </td>
+              </tr>
+              <tr>
+                <td>Total Debt to Total Assets</td>
+                <td>
+                  {data?.totalDebtToTotalAsset != null
+                    ? data.totalDebtToTotalAsset.toLocaleString('en-US', {
+                        maximumFractionDigits: 4,
+                      })
+                    : '-'}
+                </td>
+              </tr>
+              <tr>
+                <td>Total Debt to Total Capital</td>
+                <td>
+                  {data?.totalDebtToTotalCapital != null
+                    ? data.totalDebtToTotalCapital.toLocaleString('en-US', {
+                        maximumFractionDigits: 4,
+                      })
+                    : '-'}
+                </td>
+              </tr>
+              <tr>
+                <td>Long-term Debt to Equity</td>
+                <td>
+                  {data?.longtermDebtTotalEquity != null
+                    ? data.longtermDebtTotalEquity.toLocaleString('en-US', {
+                        maximumFractionDigits: 4,
+                      })
+                    : '-'}
+                </td>
+              </tr>
+              <tr>
+                <td>Long-term Debt to Assets</td>
+                <td>
+                  {data?.longtermDebtTotalAsset != null
+                    ? data.longtermDebtTotalAsset.toLocaleString('en-US', {
+                        maximumFractionDigits: 4,
+                      })
+                    : '-'}
+                </td>
+              </tr>
+              <tr>
+                <td>Long-term Debt to Capital</td>
+                <td>
+                  {data?.longtermDebtTotalCapital != null
+                    ? data.longtermDebtTotalCapital.toLocaleString('en-US', {
+                        maximumFractionDigits: 4,
+                      })
+                    : '-'}
+                </td>
+              </tr>
+              <tr>
+                <td>Net Debt to Equity</td>
+                <td>
+                  {data?.netDebtToTotalEquity != null
+                    ? data.netDebtToTotalEquity.toLocaleString('en-US', {
+                        maximumFractionDigits: 4,
+                      })
+                    : '-'}
+                </td>
+              </tr>
+              <tr>
+                <td>Net Debt to Capital</td>
+                <td>
+                  {data?.netDebtToTotalCapital != null
+                    ? data.netDebtToTotalCapital.toLocaleString('en-US', {
+                        maximumFractionDigits: 4,
+                      })
+                    : '-'}
+                </td>
+              </tr>
+              <tr>
+                <td>Book Value</td>
+                <td>
+                  {data?.bookValue != null
+                    ? data.bookValue.toLocaleString('en-US', {
+                        maximumFractionDigits: 2,
+                      })
+                    : '-'}
+                  {data?.bookValue != null && (
+                    <span className="is-size-6 ml-1">USD</span>
+                  )}
+                </td>
+              </tr>
+              <tr>
+                <td>Tangible Book Value</td>
+                <td>
+                  {data?.tangibleBookValue != null
+                    ? data.tangibleBookValue.toLocaleString('en-US', {
+                        maximumFractionDigits: 2,
+                      })
+                    : '-'}
+                  {data?.tangibleBookValue != null && (
+                    <span className="is-size-6 ml-1">USD</span>
+                  )}
+                </td>
+              </tr>
+
+              {/************************** */}
+              <tr>
+                <td>Cash flow per Share</td>
+                <td>{stockData?.cashFlowPerShareTTM?.toFixed(4)}</td>
               </tr>
             </tbody>
           </table>
         </div>
-
-        {/*
-                <p>Kifizetési ráta</p>
-                <p>Osztalék növekedés</p>
-                <p>Free cash flow</p>*/}
       </div>
 
       <div className="box p-5 mt-5">
@@ -291,34 +542,174 @@ const Summary = ({ stock }: { stock?: StockDto }) => {
                 </div>
               </td>
             </tr>
-
             <tr>
-              <td>Price to Earnings (TTM):</td>
-              <td>{stockData?.pettm}</td>
+              <td>P/E (TTM)</td>
+              <td>
+                {data?.peTTM != null
+                  ? data.peTTM.toLocaleString('en-US', {
+                      maximumFractionDigits: 4,
+                    })
+                  : '-'}
+              </td>
             </tr>
             <tr>
-              <td>Price to Book:</td>
-              <td>{stockData?.priceToBookvalue}</td>
+              <td>Price to Book Value</td>
+              <td>
+                {data?.pb != null
+                  ? data.pb.toLocaleString('en-US', {
+                      maximumFractionDigits: 4,
+                    })
+                  : '-'}
+              </td>
             </tr>
             <tr>
-              <td>Price to Sales (TTM):</td>
-              <td>{stockData?.psttm}</td>
+              <td>Price to Tangible Book Value</td>
+              <td>
+                {data?.ptbv != null
+                  ? data.ptbv.toLocaleString('en-US', {
+                      maximumFractionDigits: 4,
+                    })
+                  : '-'}
+              </td>
             </tr>
             <tr>
-              <td>Dividend yield per Share:</td>
-              <td>{stockData?.dividendPerShareTTM ? 0 : '-'}</td>
+              <td>Price to Sales (TTM)</td>
+              <td>
+                {data?.psTTM != null
+                  ? data.psTTM.toLocaleString('en-US', {
+                      maximumFractionDigits: 4,
+                    })
+                  : '-'}
+              </td>
+            </tr>
+            <tr>
+              <td>Price to Cash Flow (TTM)</td>
+              <td>
+                {data?.pcfTTM != null
+                  ? data.pcfTTM.toLocaleString('en-US', {
+                      maximumFractionDigits: 4,
+                    })
+                  : '-'}
+              </td>
+            </tr>
+            <tr>
+              <td>Enterprise Value</td>
+              <td>
+                {data?.ev != null ? formatMoney(data?.ev * 1000000) : '-'}
+              </td>
+            </tr>
+            <tr>
+              <td>Enterprise Value to EBITDA (TTM)</td>
+              <td>
+                {data?.evEbitdaTTM != null
+                  ? data.evEbitdaTTM.toLocaleString('en-US', {
+                      maximumFractionDigits: 4,
+                    })
+                  : '-'}
+              </td>
+            </tr>
+            <tr>
+              <td>Enterprise Value to Revenue (TTM)</td>
+              <td>
+                {data?.evRevenueTTM != null
+                  ? data.evRevenueTTM.toLocaleString('en-US', {
+                      maximumFractionDigits: 4,
+                    })
+                  : '-'}
+              </td>
+            </tr>
+            <tr>
+              <td>Free Cash Flow per Share (TTM)</td>
+              <td>
+                {data?.fcfPerShareTTM != null
+                  ? data.fcfPerShareTTM.toLocaleString('en-US', {
+                      maximumFractionDigits: 2,
+                    })
+                  : '-'}
+                {data?.fcfPerShareTTM != null && (
+                  <span className="is-size-6 ml-1">USD</span>
+                )}
+              </td>
+            </tr>
+            <tr>
+              <td>Revenue per Share</td>
+              <td>
+                {data?.salesPerShare != null
+                  ? data.salesPerShare.toLocaleString('en-US', {
+                      maximumFractionDigits: 2,
+                    })
+                  : '-'}
+                {data?.salesPerShare != null && (
+                  <span className="is-size-6 ml-1">USD</span>
+                )}
+              </td>
+            </tr>
+            <tr>
+              <td>Dividend yield per Share</td>
+              <td>
+                {stockData?.dividendPerShareTTM != null
+                  ? stockData.dividendPerShareTTM.toLocaleString('en-US', {
+                      maximumFractionDigits: 2,
+                    })
+                  : '-'}
+                {stockData?.dividendPerShareTTM != null && (
+                  <span className="is-size-6 ml-1">USD</span>
+                )}
+              </td>
             </tr>
           </tbody>
         </table>
       </div>
-
-      {/*      <div className="box p-5 mt-5">
-        <p className="title is-5">Technical metrics</p>
-        <p>RSI</p>
-        <p>200 napos mozgóátlag</p>
-        <p>Változás (Napi, Heti, Havi, Éves) %-ban kifejezve</p>
+      <div className="box p-5 mt-5">
+        <p className="subtitle is-5 has-text-weight-bold">
+          Efficiency & Activity
+        </p>
+        <hr />
+        <table className="table financials-table is-fullwidth mt-6">
+          <tbody>
+            <tr>
+              <td>Asset Turnover (TTM)</td>
+              <td>
+                {data?.assetTurnoverTTM != null
+                  ? data.assetTurnoverTTM.toLocaleString('en-US', {
+                      maximumFractionDigits: 4,
+                    })
+                  : '-'}
+              </td>
+            </tr>
+            <tr>
+              <td>Inventory Turnover (TTM)</td>
+              <td>
+                {data?.inventoryTurnoverTTM != null
+                  ? data.inventoryTurnoverTTM.toLocaleString('en-US', {
+                      maximumFractionDigits: 4,
+                    })
+                  : '-'}
+              </td>
+            </tr>
+            <tr>
+              <td>Receivables Turnover (TTM)</td>
+              <td>
+                {data?.receivablesTurnoverTTM != null
+                  ? data.receivablesTurnoverTTM.toLocaleString('en-US', {
+                      maximumFractionDigits: 4,
+                    })
+                  : '-'}
+              </td>
+            </tr>
+            <tr>
+              <td>Payout Ratio (TTM)</td>
+              <td>
+                {data?.payoutRatioTTM != null
+                  ? (data.payoutRatioTTM * 100).toLocaleString('en-US', {
+                      maximumFractionDigits: 4,
+                    }) + '%'
+                  : '-'}
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-      */}
     </div>
   );
 };

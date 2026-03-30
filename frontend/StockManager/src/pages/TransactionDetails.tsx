@@ -129,19 +129,16 @@ const TransactionDetails = () => {
 
   return (
     <div className="container mt-5 px-4">
+      <button className="button navigation-button" onClick={() => navigate(-1)}>
+        <span className="icon">
+          <i className="fa-solid fa-angle-left"></i>
+        </span>
+        <span>Back to transactions</span>
+      </button>
       <div className="level mb-6">
         <div className="level-left">
           <div>
-            <button
-              className="button is-small is-ghost pl-0 mb-2"
-              onClick={() => navigate(-1)}
-            >
-              <span className="icon">
-                <i className="fas fa-arrow-left"></i>
-              </span>
-              <span>Back to Transactions</span>
-            </button>
-            <h1 className="title is-3">
+            <h1 className="title is-3 mt-3">
               {isBuy ? 'Buy' : 'Sell'}: {transaction.stock?.symbol}
             </h1>
             <p className="subtitle is-6" style={{ color: COLORS.infoText }}>

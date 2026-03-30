@@ -48,7 +48,7 @@ namespace StockManager.Services
             CreateMap<StockDataCreateDto, StockDataUpdateDto>()
                 .ForMember(dest => dest.StockDataItems, opt => opt.Ignore());
 
-            CreateMap<StockDataItem, StockDataItemDto>().ReverseMap();
+            CreateMap<StockDataItem, StockDataItemDto>().ReverseMap();            
 
             CreateMap<StockReport, StockReportDto>();
 

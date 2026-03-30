@@ -27,6 +27,15 @@ namespace StockManager.Controllers
             return Ok(result);
         }
 
+        [HttpGet]
+        [AllowAnonymous]
+        [ProducesResponseType<Dictionary<string, decimal?>>(StatusCodes.Status200OK)]
+        public async Task<ActionResult<Dictionary<string, decimal?>>> GetBySymbolLatestDataASync(string symbol)
+        {
+            var result = await stockDataService.GetBySymbolLatestDataASync(symbol);
+            return Ok(result);
+        }
+
         [HttpPut("{id:int}")]
         [Authorize(Roles = "Administrator")]
         [ProducesResponseType<StockDataDto>(StatusCodes.Status200OK)]

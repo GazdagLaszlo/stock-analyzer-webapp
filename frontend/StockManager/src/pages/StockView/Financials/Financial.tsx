@@ -7,9 +7,11 @@ import Statements from './Statements';
 const Financial = ({
   stock,
   activeSubTab,
+  data,
 }: {
   stock?: StockDto;
   activeSubTab?: string;
+  data?: { [key: string]: number | null };
 }) => {
   const subTab = activeSubTab || 'summary';
 
@@ -31,7 +33,7 @@ const Financial = ({
       </p>
 
       <div>
-        {subTab === 'overview' && <Overview stock={stock} />}
+        {subTab === 'overview' && <Overview stock={stock} data={data} />}
         {subTab === 'statements' && <Statements stock={stock} />}
       </div>
     </div>

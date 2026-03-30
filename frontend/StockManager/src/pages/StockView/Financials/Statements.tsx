@@ -24,10 +24,6 @@ const Statements = ({ stock }: { stock?: StockDto }) => {
     }
   }, [stock?.symbol]);
 
-  useEffect(() => {
-    console.log('Updated reports:', reports);
-  }, [reports]);
-
   const itemLabels = (reportSection: string) => {
     /*
         const labelSet = new Set<string>();

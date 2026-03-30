@@ -1,4 +1,4 @@
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import api from '../../api/api';
 import type {
@@ -10,8 +10,53 @@ import type {
 import Overview from './Overview';
 import Financial from './Financials/Financial';
 import { useLivePrice } from '../../hooks/useLivePrice';
+import { useQuery } from '@tanstack/react-query';
+
+export type StockDataMetrics = {
+  assetTurnoverTTM: number;
+  bookValue: number;
+  cashRatio: number;
+  currentRatio: number;
+  ebitPerShare: number;
+  eps: number;
+  ev: number;
+  evEbitdaTTM: number;
+  evRevenueTTM: number;
+  fcfMargin: number;
+  fcfPerShareTTM: number;
+  grossMargin: number;
+  inventoryTurnoverTTM: number;
+  longtermDebtTotalAsset: number;
+  longtermDebtTotalCapital: number;
+  longtermDebtTotalEquity: number;
+  netDebtToTotalCapital: number;
+  netDebtToTotalEquity: number;
+  netMargin: number;
+  operatingMargin: number;
+  payoutRatioTTM: number;
+  pb: number;
+  peTTM: number;
+  pfcfTTM: number;
+  pretaxMargin: number;
+  psTTM: number;
+  ptbv: number;
+  quickRatio: number;
+  receivablesTurnoverTTM: number;
+  roaTTM: number;
+  roeTTM: number;
+  roicTTM: number;
+  rotcTTM: number;
+  salesPerShare: number;
+  sgaToSale: number;
+  tangibleBookValue: number;
+  totalDebtToEquity: number;
+  totalDebtToTotalAsset: number;
+  totalDebtToTotalCapital: number;
+  totalRatio: number;
+};
 
 const StockView = () => {
+  const navigate = useNavigate();
   const { symbol, tab, subtab } = useParams<{
     symbol: string;
     tab?: string;
@@ -34,6 +79,15 @@ const StockView = () => {
       .then((res) => setStock(res.data))
       .catch((err) => console.error(err));
   }, [symbol]);
+
+  const { data: financialData } = useQuery({
+    queryKey: ['getFinancialDataToStockSymbol', symbol],
+    queryFn: async () => {
+      const response =
+        await api.StockData.apiStockDataGetBySymbolLatestDataASyncGet(symbol);
+      return response.data;
+    },
+  });
 
   useEffect(() => {
     if (!symbol) {
@@ -112,22 +166,18 @@ const StockView = () => {
 
   return (
     <div className="stockview">
-      <nav className="breadcrumb mt-6" aria-label="breadcrumbs">
-        <ul>
-          <li>
-            <Link to="/app/stocks">Stocks</Link>
-          </li>
-          <li className="is-active">
-            <Link to="#" aria-current="page">
-              {stock?.symbol}
-            </Link>
-          </li>
-        </ul>
-      </nav>
-
+      <button
+        className="button mt-5 navigation-button"
+        onClick={() => navigate('/app/stocks')}
+      >
+        <span className="icon">
+          <i className="fa-solid fa-angle-left"></i>
+        </span>
+        <span>Back to stocks </span>
+      </button>
       <nav className="panel" style={{ boxShadow: 'none' }}>
         <div
-          className="panel-block is-flex is-justify-content-space-between is-align-items-center has-text-weight-bold py-6 px-5"
+          className="panel-block is-flex is-justify-content-space-between is-align-items-center has-text-weight-bold px-5 pt-0"
           style={{ height: '40vh' }}
         >
           <div className="is-flex is-align-items-flex-end">
@@ -237,7 +287,11 @@ const StockView = () => {
         <div className="main-box p-5">
           {activeTab === 'overview' && <Overview stock={stock} />}
           {activeTab === 'financials' && (
-            <Financial stock={stock} activeSubTab={subtab} />
+            <Financial
+              stock={stock}
+              activeSubTab={subtab}
+              data={financialData}
+            />
           )}
         </div>
       </nav>

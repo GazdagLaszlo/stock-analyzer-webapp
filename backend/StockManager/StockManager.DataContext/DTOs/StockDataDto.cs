@@ -99,4 +99,48 @@ namespace StockManager.DataContext.DTOs
         public double? PSTTM { get; set; }
         public List<StockDataItemDto> StockDataItems { get; set; } = new List<StockDataItemDto>();
     }
+
+    public class StockDataMetricsDto
+    {
+        public decimal? TangibleBookValue { get; set; }
+        public decimal? AssetTurnoverTTM { get; set; }
+        public decimal? PretaxMargin { get; set; }        
+        public decimal? CashRatio { get; set; }
+        public decimal? TotalRatio { get; set; }
+        public decimal? CurrentRatio { get; set; }
+        public decimal? PtBV { get; set; }
+        public decimal? EbitPerShare { get; set; }
+        public decimal? Eps { get; set; }
+        public decimal? Ev { get; set; }
+        public decimal? EvEbitdaTTM { get; set; }         
+        public decimal? FcfPerShareTTM { get; set; }
+        public decimal? GrossMargin { get; set; }
+        public decimal? InventoryTurnoverTTM { get; set; }
+        public decimal? BookValue { get; set; }
+        public decimal? LongtermDebtTotalAsset { get; set; }
+        public decimal? LongtermDebtTotalCapital { get; set; }
+        public decimal? LongtermDebtTotalEquity { get; set; }
+        public decimal? EvRevenueTTM { get; set; }
+        public decimal? QuickRatio { get; set; }
+        public decimal? NetDebtToTotalCapital { get; set; }
+        public decimal? NetDebtToTotalEquity { get; set; }
+        public decimal? NetMargin { get; set; }
+        public decimal? OperatingMargin { get; set; }        
+        public decimal? Pb { get; set; }
+        public decimal? PeTTM { get; set; }
+        public decimal? FcfMargin { get; set; }
+        public decimal? TotalDebtToTotalAsset { get; set; }
+        public decimal? PfcfTTM { get; set; }        
+        public decimal? PsTTM { get; set; }        
+        public decimal? ReceivablesTurnoverTTM { get; set; }
+        public decimal? RoaTTM { get; set; }
+        public decimal? RoeTTM { get; set; }
+        public decimal? RoicTTM { get; set; }
+        public decimal? RotcTTM { get; set; }
+        public decimal? SalesPerShare { get; set; }
+        public decimal? SgaToSale { get; set; }
+        public decimal? PayoutRatioTTM { get; set; }
+        public decimal? TotalDebtToEquity { get; set; }        
+        public decimal? TotalDebtToTotalCapital { get; set; }
+    }
 }
