@@ -14,6 +14,8 @@ export const COLORS = {
   headerActive: '#cae2fa',
   tableHeader: '#eaecf0',
   navy: '#0B2747',
+  orange: '#ff853e',
+  orangeLight: '#ffd8b5',
 
   text: '#1F2933',
   subtext: '#3B4A59',

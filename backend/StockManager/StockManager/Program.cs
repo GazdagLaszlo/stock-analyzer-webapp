@@ -32,6 +32,7 @@ builder.Services.AddScoped<IStockDataService, StockDataService>();
 builder.Services.AddScoped<IStockNewsService, StockNewsService>();
 builder.Services.AddScoped<IStockReportService, StockReportService>();
 builder.Services.AddScoped<IArticleService, ArticleService>();
+builder.Services.AddScoped<ITransactionStatisticsService, TransactionStatisticsService>();
 
 builder.Services.AddHostedService<StockUpdaterBackgroundService>();
 builder.Services.AddHostedService<StockNewsBackgroundService>();

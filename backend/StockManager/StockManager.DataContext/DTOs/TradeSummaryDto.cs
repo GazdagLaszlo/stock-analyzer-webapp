@@ -22,6 +22,8 @@ namespace StockManager.DataContext.DTOs
         public IList<ClosedTradeDto>? ClosedTrades { get; set; } = new List<ClosedTradeDto>();
         public ClosedTradeDto? BestTrade { get; set; }
         public ClosedTradeDto? WorstTrade { get; set; }
+        public double? TotalWin {  get; set; }
+        public double? TotalLoss { get; set; }
     }
 
     public class ClosedTradeDto

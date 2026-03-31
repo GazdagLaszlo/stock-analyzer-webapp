@@ -1,4 +1,8 @@
-import { type TradeSummaryDto } from '../../generated-sources/openapi';
+import {
+  TradeInsightType,
+  type TradeInsightDto,
+  type TradeSummaryDto,
+} from '../../generated-sources/openapi';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 import InfoButton from '../components/InfoButton';
 import { COLORS } from '../constants/colors';
@@ -7,9 +11,10 @@ import StockImage from './StockImage';
 
 type Props = {
   transactionsSummary?: TradeSummaryDto;
+  tradeInsights?: TradeInsightDto[];
 };
 
-const TraderStatistics = ({ transactionsSummary }: Props) => {
+const TraderStatistics = ({ transactionsSummary, tradeInsights }: Props) => {
   const [selectedTradeId, setSelectedTradeId] = useState<string | null>(null);
 
   const toggleExpand = (tradeId: string) => {
@@ -36,117 +41,194 @@ const TraderStatistics = ({ transactionsSummary }: Props) => {
     <div>
       <div className="is-flex is-flex-direction-row mt-5">
         <div
-          style={{ flex: 6, height: '20vh' }}
-          className="is-flex is-flex-direction-row mr-5"
+          className="is-flex is-flex-direction-column"
+          style={{ width: '50%' }}
         >
-          <div
-            className="box is-flex is-flex-direction-column is-justify-content-center pl-5 mr-4"
-            style={{
-              flex: 6,
-              backgroundColor: COLORS.boxBackground,
-              height: '20vh',
-            }}
-          >
-            <div className="is-flex is-flex-direction-row">
-              <p className="mr-1">Total P/L</p>
-              <InfoButton text="Total profit/loss on closed trades." />
-            </div>
-            <p
-              className="subtitle mt-3 is-size-4"
+          <div className="is-flex is-flex-direction-row mr-5">
+            <div
+              className="box is-flex is-flex-direction-column is-justify-content-center pl-5 mr-4"
               style={{
-                color: transactionsSummary?.totalProfitLoss
-                  ? transactionsSummary?.totalProfitLoss > 0
-                    ? 'green'
-                    : transactionsSummary.totalProfitLoss < 0
-                      ? 'red'
-                      : 'black'
-                  : 'black',
+                flex: 6,
+                backgroundColor: COLORS.boxBackground,
+                height: '20vh',
               }}
             >
-              {transactionsSummary?.totalProfitLoss == null ? (
-                '-'
-              ) : (
-                <>
-                  {transactionsSummary.totalProfitLoss > 0
-                    ? '+' +
-                      transactionsSummary.totalProfitLoss.toLocaleString(
-                        'en-US',
-                        {
-                          maximumFractionDigits: 2,
-                          minimumFractionDigits: 2,
-                        }
-                      )
-                    : transactionsSummary.totalProfitLoss.toLocaleString(
-                        'en-US',
-                        {
-                          maximumFractionDigits: 2,
-                          minimumFractionDigits: 2,
-                        }
-                      )}{' '}
-                  <span className="is-size-6" style={{ color: 'inherit' }}>
-                    USD
-                  </span>
-                </>
-              )}
-            </p>
+              <div className="is-flex is-flex-direction-row">
+                <p className="mr-1">Total P/L</p>
+                <InfoButton text="Total profit/loss on closed trades." />
+              </div>
+              <p
+                className="subtitle mt-3 is-size-4"
+                style={{
+                  color: transactionsSummary?.totalProfitLoss
+                    ? transactionsSummary?.totalProfitLoss > 0
+                      ? 'green'
+                      : transactionsSummary.totalProfitLoss < 0
+                        ? 'red'
+                        : 'black'
+                    : 'black',
+                }}
+              >
+                {transactionsSummary?.totalProfitLoss == null ? (
+                  '-'
+                ) : (
+                  <>
+                    {transactionsSummary.totalProfitLoss > 0
+                      ? '+' +
+                        transactionsSummary.totalProfitLoss.toLocaleString(
+                          'en-US',
+                          {
+                            maximumFractionDigits: 2,
+                            minimumFractionDigits: 2,
+                          }
+                        )
+                      : transactionsSummary.totalProfitLoss.toLocaleString(
+                          'en-US',
+                          {
+                            maximumFractionDigits: 2,
+                            minimumFractionDigits: 2,
+                          }
+                        )}{' '}
+                    <span className="is-size-6" style={{ color: 'inherit' }}>
+                      USD
+                    </span>
+                  </>
+                )}
+              </p>
+            </div>
+            <div
+              className="is-one-third box is-flex is-flex-direction-column is-justify-content-center pl-5"
+              style={{
+                paddingRight: 20,
+                flex: 6,
+                backgroundColor: COLORS.boxBackground,
+                height: '20vh',
+              }}
+            >
+              <div className="is-flex is-flex-direction-row is-justify-content-space-between">
+                <p className="box-title ml-1" style={{ marginBottom: 10 }}>
+                  Win Rate
+                </p>
+                <p className="box-title mr-2">
+                  {transactionsSummary?.winRate !== null
+                    ? transactionsSummary?.winRate?.toFixed(2) + '%'
+                    : '-'}
+                </p>
+              </div>
+              <div style={{ height: 30 }}>
+                {transactionsSummary?.winRate == null && (
+                  <p
+                    style={{
+                      color: COLORS.infoText,
+                      textAlign: 'center',
+                      marginTop: 10,
+                    }}
+                  >
+                    No data yet
+                  </p>
+                )}
+                <ResponsiveContainer>
+                  <BarChart layout="vertical" data={data} stackOffset="expand">
+                    <XAxis type="number" hide />
+                    <YAxis type="category" dataKey="name" hide />
+
+                    <Bar
+                      dataKey="win"
+                      stackId="a"
+                      fill={COLORS.success}
+                      radius={[4, 0, 0, 4]}
+                    />
+
+                    <Bar
+                      dataKey="loss"
+                      stackId="a"
+                      fill={COLORS.error}
+                      radius={[0, 4, 4, 0]}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
           </div>
           <div
-            className="is-one-third box is-flex is-flex-direction-column is-justify-content-center pl-5"
+            className="box mr-5 pt-0"
             style={{
-              paddingRight: 20,
-              flex: 6,
-              backgroundColor: COLORS.boxBackground,
-              height: '20vh',
+              height: '60vh',
+              overflowY: 'auto',
+              backgroundColor: 'white',
             }}
           >
-            <div className="is-flex is-flex-direction-row is-justify-content-space-between">
-              <p className="box-title ml-1" style={{ marginBottom: 10 }}>
-                Win Rate
-              </p>
-              <p className="box-title mr-2">
-                {transactionsSummary?.winRate !== null
-                  ? transactionsSummary?.winRate?.toFixed(2) + '%'
-                  : '-'}
-              </p>
+            <div
+              style={{
+                position: 'sticky',
+                top: 0,
+                backgroundColor: 'white',
+              }}
+            >
+              <h2 className="subtitle is-5 has-text-weight-bold pt-5">
+                Trade Insights
+              </h2>
+              <hr />
             </div>
-            <div style={{ height: 30 }}>
-              {transactionsSummary?.winRate == null && (
-                <p
+            {tradeInsights?.length === 0 || tradeInsights === null ? (
+              <div
+                className="is-flex is-flex-direction-column is-justify-content-center is-align-items-center"
+                style={{ marginTop: '5vh' }}
+              >
+                <div className="has-text-centered py-6">
+                  <span className="icon is-large has-text-grey-light mb-5">
+                    <i className="fas fa-lightbulb fa-3x"></i>
+                  </span>
+                  <h3 className="is-size-4 pb-2 has-text-weight-bold">
+                    No trade insights
+                  </h3>
+                  <p className="subtitle is-6 has-text-grey">
+                    Your trading behavior looks consistent. No insights to
+                    report.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              tradeInsights?.map((item) => (
+                <div
+                  className="block p-3"
                   style={{
-                    color: COLORS.infoText,
-                    textAlign: 'center',
-                    marginTop: 10,
+                    borderRadius: '0px 10px 10px 0px',
+                    backgroundColor:
+                      item.type === TradeInsightType.NUMBER_0
+                        ? COLORS.header
+                        : item.type === TradeInsightType.NUMBER_1
+                          ? COLORS.orangeLight
+                          : COLORS.errorLight,
+                    borderLeft:
+                      item.type === TradeInsightType.NUMBER_0
+                        ? `3px solid ${COLORS.secondaryButton}`
+                        : item.type === TradeInsightType.NUMBER_1
+                          ? `3px solid ${COLORS.orange}`
+                          : `3px solid ${COLORS.error}`,
                   }}
                 >
-                  No data yet
-                </p>
-              )}
-              <ResponsiveContainer>
-                <BarChart layout="vertical" data={data} stackOffset="expand">
-                  <XAxis type="number" hide />
-                  <YAxis type="category" dataKey="name" hide />
-
-                  <Bar
-                    dataKey="win"
-                    stackId="a"
-                    fill="#48c774"
-                    radius={[4, 0, 0, 4]}
-                  />
-
-                  <Bar
-                    dataKey="loss"
-                    stackId="a"
-                    fill="#ff3860"
-                    radius={[0, 4, 4, 0]}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
+                  <p
+                    className="has-text-weight-bold"
+                    style={{ color: COLORS.text }}
+                  >
+                    {item.title}
+                  </p>
+                  <p>{item.explanation}</p>
+                  <div className="is-flex is-flex-direction-row mt-2">
+                    <span className="icon is-large mb-5">
+                      <i className="fas fa-lightbulb"></i>
+                    </span>
+                    <p>{item.explanation}</p>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
         <div
           className="box p-5"
-          style={{ flex: 6, backgroundColor: COLORS.boxBackground }}
+          style={{ width: '50%', backgroundColor: COLORS.boxBackground }}
         >
           <h2 className="subtitle is-5 has-text-weight-bold">
             Performance Summary
@@ -157,7 +239,7 @@ const TraderStatistics = ({ transactionsSummary }: Props) => {
             style={{ height: 50, borderBottom: '1px solid lightgrey' }}
           >
             <div className="is-flex is-flex-direction-row">
-              <p className="mr-1">Avg. Winning Trade</p>
+              <p className="mr-1">Avg. Profit on Trade</p>
               <InfoButton text="Average profit from all winning trades." />
             </div>
             <p className="mr-2">
@@ -175,7 +257,7 @@ const TraderStatistics = ({ transactionsSummary }: Props) => {
             style={{ height: 50, borderBottom: '1px solid lightgrey' }}
           >
             <div className="is-flex is-flex-direction-row">
-              <p className="mr-1">Avg. Losing Trade</p>
+              <p className="mr-1">Avg. Loss on Trade</p>
               <InfoButton text="Average loss from all losing trades." />
             </div>
             <p className="mr-2">
@@ -199,6 +281,34 @@ const TraderStatistics = ({ transactionsSummary }: Props) => {
             <p className="mr-2">
               {transactionsSummary?.averageRRR
                 ? '1:' + transactionsSummary?.averageRRR?.toFixed(2)
+                : '-'}
+            </p>
+          </div>
+          <div
+            className="is-flex is-flex-direction-row is-justify-content-space-between is-align-items-center"
+            style={{ height: 50, borderBottom: '1px solid lightgrey' }}
+          >
+            <div className="is-flex is-flex-direction-row">
+              <p className="mr-1">Total Win</p>
+              <InfoButton text="The total loss on unprofitable trades." />
+            </div>
+            <p className="mr-2">
+              {transactionsSummary?.totalWin
+                ? '$' + transactionsSummary?.totalWin?.toFixed(2)
+                : '-'}
+            </p>
+          </div>
+          <div
+            className="is-flex is-flex-direction-row is-justify-content-space-between is-align-items-center"
+            style={{ height: 50, borderBottom: '1px solid lightgrey' }}
+          >
+            <div className="is-flex is-flex-direction-row">
+              <p className="mr-1">Total Loss</p>
+              <InfoButton text="The total gain on profitable trades." />
+            </div>
+            <p className="mr-2">
+              {transactionsSummary?.totalLoss
+                ? '$' + transactionsSummary?.totalLoss?.toFixed(2)
                 : '-'}
             </p>
           </div>
@@ -302,7 +412,7 @@ const TraderStatistics = ({ transactionsSummary }: Props) => {
             >
               <thead
                 style={{
-                  backgroundColor: COLORS.tableHeader,
+                  backgroundColor: COLORS.header,
                 }}
               >
                 <tr>
@@ -368,7 +478,7 @@ const TraderStatistics = ({ transactionsSummary }: Props) => {
                             colSpan={7}
                             style={{
                               padding: 0,
-                              backgroundColor: COLORS.tableHeader,
+                              backgroundColor: COLORS.header,
                             }}
                           >
                             <div
@@ -550,7 +660,7 @@ const TraderStatistics = ({ transactionsSummary }: Props) => {
             >
               <thead
                 style={{
-                  backgroundColor: COLORS.tableHeader,
+                  backgroundColor: COLORS.header,
                 }}
               >
                 <tr>
@@ -629,7 +739,6 @@ const TraderStatistics = ({ transactionsSummary }: Props) => {
         >
           <h2 className="subtitle is-5 has-text-weight-bold">Worst Trade</h2>
           <div
-            className="py-1"
             style={{
               borderRadius: 10,
               border: '1px solid lightgrey',
@@ -644,7 +753,7 @@ const TraderStatistics = ({ transactionsSummary }: Props) => {
                 width: '100%',
               }}
             >
-              <thead>
+              <thead style={{ backgroundColor: COLORS.header }}>
                 <tr>
                   <th></th>
                   <th>Symbol</th>

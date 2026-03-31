@@ -53,15 +53,7 @@ namespace StockManager.Controllers
         {
             await transactionService.DeleteAsync(id);
             return Ok();
-        }
-
-        [HttpGet]
-        [ProducesResponseType<TradeSummaryDto>(StatusCodes.Status200OK)]
-        public async Task<ActionResult<TradeSummaryDto>> GetTransactionsSummary()
-        {
-            var result = await transactionService.GetTransactionsSummary(_userId);
-            return Ok(result);
-        }
+        }        
 
         [HttpGet]
         public async Task<ActionResult<IList<TransactionDto>>> GetWithSameTradeId(Guid tradeId)

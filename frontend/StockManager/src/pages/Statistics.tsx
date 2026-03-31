@@ -2,7 +2,10 @@ import { NavLink, useNavigate, useParams } from 'react-router-dom';
 import TraderStatistics from './TraderStatistics';
 import InvestorStatistics from './InvestorStatistics';
 import { useEffect } from 'react';
-import type { TradeSummaryDto } from '../../generated-sources/openapi';
+import type {
+  TradeInsightDto,
+  TradeSummaryDto,
+} from '../../generated-sources/openapi';
 import { useQuery } from '@tanstack/react-query';
 import api from '../api/api';
 
@@ -20,7 +23,16 @@ const Statistics = () => {
     queryKey: ['getTransactionsSummary'],
     queryFn: async () => {
       const res =
-        await api.Transaction.apiTransactionGetTransactionsSummaryGet();
+        await api.TransactionStatistics.apiTransactionStatisticsGetTransactionsSummaryGet();
+      return res.data;
+    },
+  });
+
+  const { data: tradeInsights } = useQuery<TradeInsightDto[]>({
+    queryKey: ['getTradeInsights'],
+    queryFn: async () => {
+      const res =
+        await api.TransactionStatistics.apiTransactionStatisticsGetTradeInsightGet();
       return res.data;
     },
   });
@@ -47,7 +59,10 @@ const Statistics = () => {
       )}
 
       {tab === 'trader-statistics' && (
-        <TraderStatistics transactionsSummary={tradeSummary} />
+        <TraderStatistics
+          transactionsSummary={tradeSummary}
+          tradeInsights={tradeInsights}
+        />
       )}
     </div>
   );

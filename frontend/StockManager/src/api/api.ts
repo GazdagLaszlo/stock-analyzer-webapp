@@ -12,6 +12,7 @@ import {
   StockReportApi,
   StockDataApi,
   ArticleApi,
+  TransactionStatisticsApi,
 } from '../../generated-sources/openapi';
 import axios from 'axios';
 axios.defaults.withCredentials = true;
@@ -71,6 +72,11 @@ const Article = new ArticleApi(
   undefined,
   axiosInstance
 );
+const TransactionStatistics = new TransactionStatisticsApi(
+  new Configuration({ basePath: ' ' }),
+  undefined,
+  axiosInstance
+);
 
 const api = {
   User,
@@ -84,6 +90,7 @@ const api = {
   StockReports,
   StockData,
   Article,
+  TransactionStatistics,
 };
 
 export default api;

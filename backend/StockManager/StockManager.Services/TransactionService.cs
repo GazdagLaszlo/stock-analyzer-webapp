@@ -19,8 +19,7 @@ namespace StockManager.Services
         Task<IList<TransactionDto>> GetAllAsync(int userId, TransactionType? type, string portfolioId);
         Task<TransactionDto> GetByIdAsync(int id);
         Task<TransactionDto> UpdateAsync(int id, TransactionUpdateDto updateDto);
-        Task DeleteAsync(int id);
-        Task<TradeSummaryDto> GetTransactionsSummary(int userid);
+        Task DeleteAsync(int id);        
         Task<IList<TransactionDto>> GetWithSameTradeId(Guid tradeId);
     }
 
@@ -236,81 +235,7 @@ namespace StockManager.Services
 
             context.Transactions.Remove(transaction);
             await context.SaveChangesAsync();
-        }
-
-        public async Task<TradeSummaryDto> GetTransactionsSummary(int userId)   
-        {            
-            var allTransactions = await context.Transactions
-                .Include(x => x.Stock)
-                .Where(x => x.UserId == userId)
-                .ToListAsync();
-
-            var closedTrades = allTransactions
-               .GroupBy(x => x.TradeId)
-               .Where(x => x.All(x => !x.IsActive))
-               .Select(x => new ClosedTradeDto
-               {
-                   TradeId = x.Key,
-                   RealizedProfit = x.Where(x => x.TransactionType == TransactionType.Sell)
-                        .Sum(x => x.RealizedProfit),
-                   Transactions = mapper.Map<IList<TransactionDto>>(x.ToList()),
-                   StartDate = x.Min(x => x.Date),
-                   EndDate = x.Max(x => x.Date),
-                   StockName = x.First().Stock.CompanyName,
-                   StockSymbol = x.First().Stock.Symbol,
-                   TotalQuantity = x.Where(t => t.TransactionType == TransactionType.Sell)
-                     .Sum(t => t.Quantity),
-                   Sector = x.First().Stock.Sector,
-                   PositionSize = x
-                    .Where(x => x.TransactionType == TransactionType.Buy)
-                    .Sum(x => x.Quantity * x.Price),
-               })
-               .ToList();
-
-            if (!closedTrades.Any())
-            {
-                return new TradeSummaryDto();
-            }            
-
-            var wins = closedTrades.Where(x => x.RealizedProfit > 0).ToList();
-            var losses = closedTrades.Where(x => x.RealizedProfit < 0).ToList();
-
-            int? profitableCount = wins.Any() ? wins.Count : null;
-            int? losingCount = losses.Any() ? losses.Count : null;
-
-            double? avgGain = wins.Count() != 0 ? wins.Average(x => x.RealizedProfit) : null;
-            double? avgLoss = losses.Count() != 0 ? Math.Abs(losses.Average(x => x.RealizedProfit)) : null;
-
-            double? averageRRR = avgLoss != 0 ? avgGain / avgLoss : 0;
-
-            double totalWins = wins.Any() ? wins.Sum(x => x.RealizedProfit) : 0;
-            double totalLosses = losses.Any() ? losses.Sum(x => Math.Abs(x.RealizedProfit)) : 0;            
-           
-            var bestTrade = closedTrades.Any()
-                ? closedTrades.OrderByDescending(t => t.RealizedProfit).First()
-                : null;
-
-            var worstTrade = closedTrades.Any()
-                ? closedTrades.OrderBy(t => t.RealizedProfit).First()
-                : null;            
-
-            return new TradeSummaryDto
-            {
-                TotalProfitLoss = closedTrades.Count() != 0 ? closedTrades.Sum(x => x.RealizedProfit) : null,
-                TotalClosedTrades = closedTrades.Count() != 0 ? closedTrades.Count() : null,
-                ProfitableTradesCount = profitableCount,
-                LosingTradesCount = losingCount,
-                WinRate = closedTrades.Any() ? (double)wins.Count() / closedTrades.Count() * 100 : null,
-                AverageGain = avgGain,
-                AverageLoss = avgLoss,
-                AverageRRR = averageRRR,
-                ProfitFactor = totalLosses != 0 ? totalWins / totalLosses : null,
-                ClosedTrades = closedTrades != null ? closedTrades : null,
-                BestTrade = closedTrades != null ? bestTrade : null,
-                WorstTrade = worstTrade != null ? worstTrade : null,
-                TotalVolume = allTransactions.Count() != 0 ? allTransactions.Sum(x => x.Price+(x.Fee ?? 0)) : null,
-            };
-        }
+        }        
 
         public async Task<IList<TransactionDto>> GetWithSameTradeId(Guid tradeId)
         {            

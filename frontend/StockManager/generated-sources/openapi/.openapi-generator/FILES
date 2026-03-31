@@ -35,10 +35,13 @@ docs/StockReportDto.md
 docs/StockReportItemDto.md
 docs/StockUpdateDto.md
 docs/TokenResponseDto.md
+docs/TradeInsightDto.md
+docs/TradeInsightType.md
 docs/TradeSummaryDto.md
 docs/TransactionApi.md
 docs/TransactionCreateDto.md
 docs/TransactionDto.md
+docs/TransactionStatisticsApi.md
 docs/TransactionType.md
 docs/TransactionUpdateDto.md
 docs/UserApi.md

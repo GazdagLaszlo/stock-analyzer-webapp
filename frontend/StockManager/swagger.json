@@ -1512,35 +1512,6 @@
         }
       }
     },
-    "/api/Transaction/GetTransactionsSummary": {
-      "get": {
-        "tags": [
-          "Transaction"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/TradeSummaryDto"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TradeSummaryDto"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TradeSummaryDto"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/Transaction/GetWithSameTradeId": {
       "get": {
         "tags": [
@@ -1581,6 +1552,73 @@
                   "type": "array",
                   "items": {
                     "$ref": "#/components/schemas/TransactionDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/TransactionStatistics/GetTransactionsSummary": {
+      "get": {
+        "tags": [
+          "TransactionStatistics"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/TradeSummaryDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TradeSummaryDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TradeSummaryDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/TransactionStatistics/GetTradeInsight": {
+      "get": {
+        "tags": [
+          "TransactionStatistics"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TradeInsightDto"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TradeInsightDto"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TradeInsightDto"
                   }
                 }
               }
@@ -2990,6 +3028,36 @@
         },
         "additionalProperties": false
       },
+      "TradeInsightDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "explanation": {
+            "type": "string",
+            "nullable": true
+          },
+          "advice": {
+            "type": "string",
+            "nullable": true
+          },
+          "type": {
+            "$ref": "#/components/schemas/TradeInsightType"
+          }
+        },
+        "additionalProperties": false
+      },
+      "TradeInsightType": {
+        "enum": [
+          0,
+          1,
+          2
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
       "TradeSummaryDto": {
         "type": "object",
         "properties": {
@@ -3055,6 +3123,16 @@
           },
           "worstTrade": {
             "$ref": "#/components/schemas/ClosedTradeDto"
+          },
+          "totalWin": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "totalLoss": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
           }
         },
         "additionalProperties": false
