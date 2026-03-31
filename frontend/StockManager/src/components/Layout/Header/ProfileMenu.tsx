@@ -1,12 +1,15 @@
 import { useContext, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../../context/AuthContext';
+import { COLORS } from '../../../constants/colors';
 
 type Props = {
   onLogout: () => void;
+  burgerActive: boolean;
+  setBurgerActive: (active: boolean) => void;
 };
 
-const ProfileMenu = ({ onLogout }: Props) => {
+const ProfileMenu = ({ onLogout, burgerActive, setBurgerActive }: Props) => {
   const { username } = useContext(AuthContext);
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
@@ -18,7 +21,19 @@ const ProfileMenu = ({ onLogout }: Props) => {
     return () => document.removeEventListener('click', () => setOpen(false));
   }, [open]);
 
-  return (
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setBurgerActive(false);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return !burgerActive ? (
     <div
       className={`dropdown ${open ? 'is-active' : ''}`}
       style={{ paddingLeft: '1vw' }}
@@ -72,8 +87,11 @@ const ProfileMenu = ({ onLogout }: Props) => {
               setOpen(false);
             }}
           >
-            <div className="is-flex is-flex-direction-row is-align-items-center">
-              <span className="icon mr-2">
+            <div
+              className="is-flex is-flex-direction-row is-align-items-center"
+              style={{ color: COLORS.error }}
+            >
+              <span className="icon mr-2" style={{ color: 'inherit' }}>
                 <i className="fas fa-sign-out-alt"></i>
               </span>
               <p>Logout</p>
@@ -81,6 +99,49 @@ const ProfileMenu = ({ onLogout }: Props) => {
           </a>
         </div>
       </div>
+    </div>
+  ) : (
+    <div>
+      <NavLink
+        className={({ isActive }) =>
+          'navbar-item' + (isActive ? ' active' : '')
+        }
+        style={({ isActive }) => ({
+          backgroundColor: isActive ? COLORS.headerActive : 'transparent',
+        })}
+        to="/app/profile"
+      >
+        {username}
+      </NavLink>
+      <NavLink
+        className={({ isActive }) =>
+          'navbar-item' + (isActive ? ' active' : '')
+        }
+        style={({ isActive }) => ({
+          backgroundColor: isActive ? COLORS.headerActive : 'transparent',
+        })}
+        to="/app/education/dashboard"
+      >
+        Education Center
+      </NavLink>
+      <a
+        className="navbar-item"
+        onClick={(e) => {
+          e.stopPropagation();
+          onLogout();
+          setOpen(false);
+        }}
+      >
+        <div
+          className="is-flex is-flex-direction-row is-align-items-center"
+          style={{ color: COLORS.error }}
+        >
+          <span className="icon mr-2" style={{ color: 'inherit' }}>
+            <i className="fas fa-sign-out-alt"></i>
+          </span>
+          <p>Logout</p>
+        </div>
+      </a>
     </div>
   );
 };

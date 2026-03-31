@@ -2,10 +2,12 @@ import { Link, NavLink, useNavigate } from 'react-router-dom';
 import ProfileMenu from './ProfileMenu';
 import useAuth from '../../../hooks/useAuth';
 import { COLORS } from '../../../constants/colors';
+import { useState } from 'react';
 
 const Header = () => {
   const { logout, isLoggedIn } = useAuth();
   const navigate = useNavigate();
+  const [burgerActive, setBurgerActive] = useState<boolean>(false);
 
   return (
     <>
@@ -24,10 +26,11 @@ const Header = () => {
 
             <a
               role="button"
-              className="navbar-burger"
+              className={`navbar-burger ${burgerActive ? 'is-active' : ''}`}
               aria-label="menu"
               aria-expanded="false"
               data-target="navbarBasicExample"
+              onClick={() => setBurgerActive(!burgerActive)}
             >
               <span aria-hidden="true"></span>
               <span aria-hidden="true"></span>
@@ -36,9 +39,14 @@ const Header = () => {
             </a>
           </div>
 
-          <div className="navbar-menu">
+          <div
+            className={`navbar-menu ${burgerActive ? 'is-active' : ''}`}
+            id="navbarBasicExample"
+          >
             <div
-              className={`${isLoggedIn ? `navbar-end` : 'is-justify-content-center'} is-flex is-flex-direction-row is-align-items-center`}
+              className={`${isLoggedIn ? 'navbar-end' : 'is-justify-content-center'}
+                ${!burgerActive ? 'is-flex is-flex-direction-row is-align-items-center' : ''}
+              `}
               style={{ flexGrow: 1 }}
             >
               <NavLink
@@ -123,7 +131,11 @@ const Header = () => {
                     Statistics
                   </NavLink>
 
-                  <ProfileMenu onLogout={logout}></ProfileMenu>
+                  <ProfileMenu
+                    onLogout={logout}
+                    burgerActive={burgerActive}
+                    setBurgerActive={setBurgerActive}
+                  ></ProfileMenu>
                 </>
               )}
             </div>
