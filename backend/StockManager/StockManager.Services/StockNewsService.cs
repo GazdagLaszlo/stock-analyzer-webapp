@@ -22,7 +22,7 @@ namespace StockManager.Services
 
         public StockNewsService (IConfiguration configuration, HttpClient httpClient)
         {
-            _finnhubApiKey = configuration["FinnhubApiKey:ApiKey"];
+            _finnhubApiKey = configuration["FinnhubApiKey:ApiKey"] ?? "";
             _httpClient = httpClient;
         }
 
@@ -37,6 +37,12 @@ namespace StockManager.Services
         }
         public async Task RefreshNews()
         {
+            if (string.IsNullOrWhiteSpace(_finnhubApiKey))
+            {
+                Console.WriteLine("Finnhub API kulcs nincs beállítva.");
+                return;
+            }
+
             var getData = $"https://finnhub.io/api/v1/news?category=general&token={_finnhubApiKey}";
             var response = await _httpClient.GetAsync(getData);
             if (!response.IsSuccessStatusCode)

@@ -84,13 +84,19 @@ namespace StockManager.Services
         {
             _context = context;
             _mapper = mapper;
-            _finnhubApiKey = configuration["FinnhubApiKey:ApiKey"];
+            _finnhubApiKey = configuration["FinnhubApiKey:ApiKey"] ?? "";
             _httpClient = httpClient;
         }
 
         //ANNUAL REPORTS
         public async Task GetStockReportsFromAPI(string symbol)
         {
+            if (string.IsNullOrWhiteSpace(_finnhubApiKey))
+            {
+                Console.WriteLine("Finnhub API kulcs nincs beállítva.");
+                return;
+            }
+
             //Ellenőrizni, hogy nincs-e adatbázisban a legfrissebb jelentés.
             //Ha már van, akkor ne is induljon api lekérés, ezzel is csökkenthető a kérések száma.
             /*

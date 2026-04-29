@@ -26,10 +26,16 @@ namespace StockManager.Services
 
         public StockPriceUpdaterWebSocketService(IConfiguration configuration)
         {
-            _finnhubApiKey = configuration["FinnhubApiKey:ApiKey"];
+            _finnhubApiKey = configuration["FinnhubApiKey:ApiKey"] ?? "";
         }
         public async Task ConnectAndListenAsync(string symbol, bool subscribe, Func<string, decimal, Task> onTick, CancellationToken cancellationToken)
         {
+            if (string.IsNullOrWhiteSpace(_finnhubApiKey))
+            {
+                Console.WriteLine("Finnhub API kulcs nincs beállítva.");
+                return;
+            }
+
             _onTick = onTick;
 
             if (_webSocket == null || _webSocket.State != WebSocketState.Open)

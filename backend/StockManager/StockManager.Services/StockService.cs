@@ -36,7 +36,7 @@ namespace StockManager.Services
         {
             _context = context;
             _mapper = mapper;
-            _finnhubApiKey = configuration["FinnhubApiKey:ApiKey"];
+            _finnhubApiKey = configuration["FinnhubApiKey:ApiKey"] ?? "";
             _httpClient = httpClient;
         }
         public async Task<StockDto> CreateAsync(StockCreateDto stockCreateDto)
@@ -99,6 +99,12 @@ namespace StockManager.Services
 
         public async Task<StockQuote> GetStockQuote(string symbol)
         {
+            if (string.IsNullOrWhiteSpace(_finnhubApiKey))
+            {
+                Console.WriteLine("Finnhub API kulcs nincs beállítva.");
+                return null;
+            }
+
             var getData = $"https://finnhub.io/api/v1/quote?symbol={symbol}&token={_finnhubApiKey}";
             var response = await _httpClient.GetAsync(getData);
             if (!response.IsSuccessStatusCode)
@@ -114,6 +120,12 @@ namespace StockManager.Services
 
         public async Task<Earningscalendar> GetNextEarningsEvent(string symbol)
         {
+            if (string.IsNullOrWhiteSpace(_finnhubApiKey))
+            {
+                Console.WriteLine("Finnhub API kulcs nincs beállítva.");
+                return null;
+            }
+
             List<Earningscalendar> earningsCalendar = new List<Earningscalendar>();
 
             DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);
@@ -137,6 +149,12 @@ namespace StockManager.Services
 
         public async Task<List<string>> GetCompanyPeers(string symbol)
         {
+            if (string.IsNullOrWhiteSpace(_finnhubApiKey))
+            {
+                Console.WriteLine("Finnhub API kulcs nincs beállítva.");
+                return new List<string>();
+            }
+
             var getData = $"https://finnhub.io/api/v1/stock/peers?symbol={symbol}&grouping=sector&token={_finnhubApiKey}";
             var response = await _httpClient.GetAsync(getData);
             if (!response.IsSuccessStatusCode)

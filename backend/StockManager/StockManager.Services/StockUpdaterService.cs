@@ -25,8 +25,8 @@ namespace StockManager.Services
         {
             _httpClient = httpClient;
             _stockService = stockService;
-            _finnhubApiKey = configuration["FinnhubApiKey:ApiKey"];
-            _ninjaApiKey = configuration["NinjaApiKey:ApiKey"];
+            _finnhubApiKey = configuration["FinnhubApiKey:ApiKey"] ?? "";
+            _ninjaApiKey = configuration["NinjaApiKey:ApiKey"] ?? "";
 
             _httpClient.DefaultRequestHeaders.Add("X-Api-Key", _ninjaApiKey);
         }
@@ -57,12 +57,24 @@ namespace StockManager.Services
             }
         }
         public async Task<List<StockCreateDto>> GetSP500Companies()
-        {            
+        {
+            if (string.IsNullOrWhiteSpace(_ninjaApiKey))
+            {
+                Console.WriteLine("Ninja API kulcs nincs beállítva.");
+                return new List<StockCreateDto>();
+            }
+
             var ninjaResponse = await _httpClient.GetStringAsync("https://api.api-ninjas.com/v1/sp500");
             return JsonSerializer.Deserialize<List<StockCreateDto>>(ninjaResponse);
         }        
         public async Task<StockCreateDto> GetCompanyData(string symbol)
         {
+            if (string.IsNullOrWhiteSpace(_finnhubApiKey))
+            {
+                Console.WriteLine("Finnhub API kulcs nincs beállítva.");
+                return null;
+            }
+
             var getData = $"https://finnhub.io/api/v1/stock/profile2?symbol={symbol}&token={_finnhubApiKey}";
             var response = await _httpClient.GetAsync(getData);
             if (!response.IsSuccessStatusCode)
@@ -111,6 +123,12 @@ namespace StockManager.Services
         }
         public async Task<bool> CheckMarketStatus()
         {
+            if (string.IsNullOrWhiteSpace(_finnhubApiKey))
+            {
+                Console.WriteLine("Finnhub API kulcs nincs beállítva.");
+                return false;
+            }
+
             var getStatus = $"https://finnhub.io/api/v1/stock/market-status?exchange=US&token={_finnhubApiKey}";
             var response = await _httpClient.GetAsync(getStatus);
             if (!response.IsSuccessStatusCode)

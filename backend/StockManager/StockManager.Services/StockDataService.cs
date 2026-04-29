@@ -34,7 +34,7 @@ namespace StockManager.Services
         {
             _context = context;
             _mapper = mapper;
-            _finnhubApiKey = configuration["FinnhubApiKey:ApiKey"];
+            _finnhubApiKey = configuration["FinnhubApiKey:ApiKey"] ?? "";
             _httpClient = httpClient;
         }
 
@@ -125,6 +125,12 @@ namespace StockManager.Services
 
         public async Task<StockDataDeserializer> GetStockFinancials(string symbol)
         {
+            if (string.IsNullOrWhiteSpace(_finnhubApiKey))
+            {
+                Console.WriteLine("Finnhub API kulcs nincs beállítva.");
+                return null;
+            }
+
             var getData = $"https://finnhub.io/api/v1/stock/metric?symbol={symbol}&metric=all&token={_finnhubApiKey}";
 
             while (true)
