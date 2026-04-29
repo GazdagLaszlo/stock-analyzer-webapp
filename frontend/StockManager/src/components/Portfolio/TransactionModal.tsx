@@ -289,18 +289,18 @@ const TransactionModal = ({
                     className="button"
                     style={{ backgroundColor: COLORS.infoBox }}
                     onClick={() => {
-                      const available = currentPortfolioItems
-                        .find((x) => x.stock?.id == selectedStock?.id)
-                        ?.quantity?.toFixed(2);
+                      const available = currentPortfolioItems.find(
+                        (x) => x.stock?.id == selectedStock?.id
+                      )?.quantity;
                       if (available) {
                         setTransactionCreateData({
                           ...transactionCreateData,
-                          quantity: available,
+                          quantity: available.toString(),
                         });
                       }
                     }}
                   >
-                    Max (
+                    Max (~
                     {currentPortfolioItems
                       .find((x) => x.stock?.id == selectedStock?.id)
                       ?.quantity?.toFixed(2)}

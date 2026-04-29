@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import { AuthContext } from '../context/AuthContext.tsx';
 import api from '../api/api.ts';
 import { tokenKeyName } from '../constants/constants.ts';
-import { QueryClient, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 
 const useAuth = () => {
   const { token, setToken, email, setEmail, role, setRole, setUsername } =

@@ -64,7 +64,10 @@ public class UserService(AppDbContext context, IMapper mapper) : IUserService
     public async Task<TokenResponseDto> RefreshTokenAsync(HttpRequest request, HttpResponse response)
     {
         var refreshToken = request.Cookies["refreshToken"];
-        if (string.IsNullOrEmpty(refreshToken)) throw new UnauthorizedAccessException();
+        if (string.IsNullOrEmpty(refreshToken)) throw new UnauthorizedAccessException();        
+
+        //Dekódolni kell a +, = jelek miatt
+        refreshToken = Uri.UnescapeDataString(refreshToken); 
 
         var user = await context.Users.FirstOrDefaultAsync(x => x.RefreshToken == refreshToken);
 
@@ -105,8 +108,7 @@ public class UserService(AppDbContext context, IMapper mapper) : IUserService
             signingCredentials: creds);
 
         return new JwtSecurityTokenHandler().WriteToken(token);
-    }
-    [AllowAnonymous]
+    }    
     public async Task LogoutAsync(HttpRequest request, HttpResponse response)
     {
         var refreshToken = request.Cookies["refreshToken"];

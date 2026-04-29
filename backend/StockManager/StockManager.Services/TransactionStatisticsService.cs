@@ -185,19 +185,21 @@ namespace StockManager.Services
 
         public double? GetPositionSizeConsistency(List<double> investedValues)
         {
-            if (investedValues == null || investedValues.Count() == 0)
-            {
+            if (investedValues == null || investedValues.Count < 2)
                 return null;
-            }
 
-            double average = investedValues.Average();
+            double mean = investedValues.Average();
 
-            double diffsPowAvg = investedValues
-                .Select(x => Math.Pow(x - average, 2))
+            if (mean == 0)
+                return null;
+
+            double variance = investedValues
+                .Select(x => Math.Pow(x - mean, 2))
                 .Average();
 
-            double x = Math.Sqrt(diffsPowAvg);
-            return x / diffsPowAvg;
+            double standardDeviation = Math.Sqrt(variance);
+
+            return standardDeviation / mean;            
         }
         public async Task<TradeSummaryDto> GetTransactionsSummary(int userId)
         {

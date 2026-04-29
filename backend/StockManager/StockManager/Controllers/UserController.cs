@@ -42,8 +42,9 @@ public class UserController(IUserService userService) : ControllerBase
 
     [HttpPost]    
     [ProducesResponseType<TokenResponseDto>(StatusCodes.Status200OK)]
+    [AllowAnonymous]
     public async Task<IActionResult> RefreshToken()
-    {
+    {       
         try
         {
             var tokenResponse = await userService.RefreshTokenAsync(Request, Response);
@@ -56,7 +57,7 @@ public class UserController(IUserService userService) : ControllerBase
     }
 
     [HttpPost]
-    [Authorize]
+    [AllowAnonymous]
     public async Task<IActionResult> Logout()
     {
         await userService.LogoutAsync(Request, Response);

@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 // context/LiveStockPriceContext.tsx
 
-import { createContext, useState, useCallback, useRef, useEffect } from 'react';
+import { createContext, useState, useCallback, useRef } from 'react';
 import { useStockHub } from '../hooks/useStockHub';
 
 interface LiveStockPriceContextType {

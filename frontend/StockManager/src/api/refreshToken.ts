@@ -17,5 +17,3 @@ export const refreshAccessToken = async (): Promise<string | null> => {
     return null;
   }
 };
-
-//Itt frissiteni kellene a role... tagokat is

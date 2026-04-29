@@ -129,10 +129,8 @@ app.UseWebSockets(webSocketOptions);
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
-app.UseCors("AllowFrontend");
-
-
 app.UseHttpsRedirection();
+app.UseCors("AllowFrontend");
 
 app.UseAuthentication();
 app.UseAuthorization();
