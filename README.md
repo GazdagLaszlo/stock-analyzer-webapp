@@ -73,6 +73,18 @@ npm install
 npm run dev
 ```
 
+---
+
+## Képernyőképek
+
+![Login](docs/screenshots/login.png)
+![Stock View](docs/screenshots/stock-view.png)
+![Portfolio](docs/screenshots/portfolio.png)
+![Transaction Details](docs/screenshots/transaction-details.png)
+![Statistics](docs/screenshots/statistics-I.png)
+
+---
+
 ## Megjegyzés
 
 A projekt elindítható API kulcsok nélkül is, azonban a külső részvényadatok lekérése nem fog működni.
