@@ -1,4 +1,4 @@
-# StockManager
+# StockAnalyzer – Stock Analysis & Portfolio Management App
 
 A szoftver célja egy olyan web alapú alkalmazás fejlesztése, amely lehetőséget biztosít a felhasználók számára amerikai részvények fundamentális elemzésére, valamint saját részvényportfólió összeállítására és nyomon követésére. A funkcionalitások közé tartozik továbbá a portfólióban rögzített tranzakciók részletes kiértékelése, ezek alapján statisztikák és teljesítmény-optimalizáló javaslatok generálása.
 
